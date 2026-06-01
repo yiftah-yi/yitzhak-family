@@ -885,6 +885,14 @@ function saveModal() {
   var amount = parseFloat(el('m-amount').value)||0;
   var exp = parseFloat(el('m-exp').value)||0;
   var est = el('m-est').checked;
+  if (!state.chugim) state.chugim = [];
+  if (!state.income) state.income = [];
+  if (!state.nextMonth) state.nextMonth = [];
+  if (!state.fixed) state.fixed = [];
+  if (!state.splurges) state.splurges = [];
+  if (!state.allocations) state.allocations = [];
+  if (!state.food) state.food = {expected:0, entries:[]};
+  if (!state.food.entries) state.food.entries = [];
 
   if (mType === 'food-entry') {
     if (!amount) return;
@@ -900,6 +908,7 @@ function saveModal() {
   }
   if (mType === 'chug') {
     if (!name) return;
+    if (!state.chugim) state.chugim = [];
     var item = {name: name, expected: exp, entries: []};
     if (mIdx >= 0) {
       state.chugim[mIdx].name = name;
