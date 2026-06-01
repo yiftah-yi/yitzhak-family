@@ -305,7 +305,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 </nav>
 
 <!-- MODAL -->
-<div class="mbg" id="mbg">
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h3 id="m-title">הוסף</h3>
     <label>שם / תיאור</label>
@@ -325,25 +325,25 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       </label>
     </div>
     <div class="mbtns">
-      <button class="btn-save" id="btn-save">שמור</button>
-      <button class="btn-cancel" id="btn-cancel">ביטול</button>
+      <button class="btn-save" onclick="saveModal()">שמור</button>
+      <button class="btn-cancel" onclick="closeModal()">ביטול</button>
     </div>
   </div>
 </div>
 
 <!-- NEW MONTH MODAL -->
-<div class="mbg" id="nm-mbg">
+<div class="mbg" id="nm-mbg" onclick="if(event.target===this)newMonthCancelModal()">
   <div class="nm-modal">
     <h3>חודש חדש 🎉</h3>
-    <div class="nm-option" id="nm-copy">
+    <div class="nm-option" onclick="newMonthCopy()">
       <div>העתק מהחודש הקודם</div>
       <div class="nm-sub">הוצאות קבועות וחוגים מועתקים — הוצאות לא צפויות מתאפסות</div>
     </div>
-    <div class="nm-option" id="nm-empty">
+    <div class="nm-option" onclick="newMonthEmpty()">
       <div>התחל ריק</div>
       <div class="nm-sub">כל הנתונים נקיים</div>
     </div>
-    <button class="btn-cancel" id="nm-cancel" style="width:100%;margin-top:4px;">ביטול</button>
+    <button class="btn-cancel" onclick="el('nm-mbg').classList.remove('on')" style="width:100%;margin-top:4px;">ביטול</button>
   </div>
 </div>
 
@@ -878,6 +878,7 @@ function openFoodModal() {
 }
 
 function closeModal() { el('mbg').classList.remove('on'); }
+function newMonthCancelModal() { el('nm-mbg').classList.remove('on'); }
 
 function saveModal() {
   var name = (el('m-name').value||'').trim();
@@ -1005,9 +1006,6 @@ document.addEventListener('click', function(e) {
 });
 
 // ── MODAL BUTTONS ─────────────────────────────────────────────
-el('btn-save').addEventListener('click', saveModal);
-el('btn-cancel').addEventListener('click', closeModal);
-el('mbg').addEventListener('click', function(e){ if(e.target===el('mbg')) closeModal(); });
 
 // ── NEW MONTH ─────────────────────────────────────────────────
 function newMonthCopy() {
@@ -1040,10 +1038,6 @@ function newMonthEmpty() {
   fbPush(curMonth, state); fbListen(curMonth);
   render(); showToast('חודש חדש ריק נפתח ✓');
 }
-el('nm-copy').addEventListener('click', newMonthCopy);
-el('nm-empty').addEventListener('click', newMonthEmpty);
-el('nm-cancel').addEventListener('click', function(){ el('nm-mbg').classList.remove('on'); });
-el('nm-mbg').addEventListener('click', function(e){ if(e.target===el('nm-mbg')) el('nm-mbg').classList.remove('on'); });
 
 // ── BANK INPUTS ───────────────────────────────────────────────
 function onBankIn() { if(isHist) return; state.bankPrev=parseFloat(el('bank-in').value)||0; persist(); render(); }
