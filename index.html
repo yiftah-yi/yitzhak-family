@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>כלכלת בית</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1B5E42;--green-l:#E8F5EE;--green-m:#2A7A58;
+  --blue:#1A3A6B;--blue-l:#EAF0FB;
+  --orange:#7B3000;--orange-l:#FDF0E6;
+  --purple:#4A1A7A;--purple-l:#F3EDFB;
+  --red:#C0392B;--red-l:#FDEDEC;
+  --amber:#E67E22;--dark:#111827;
+  --bg:#F5F7FA;--card:#FFF;--border:#E5E7EB;
+  --text:#111827;--text-m:#6B7280;--text-l:#9CA3AF;
+  --r:14px;--rs:10px;--sh:0 1px 3px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{height:100%;-webkit-text-size-adjust:100%;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;display:flex;flex-direction:column;}
+.app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;width:100%;position:relative;}
+.nav{background:var(--card);border-top:1px solid var(--border);display:flex;flex-shrink:0;box-shadow:0 -1px 0 var(--border),0 -4px 12px rgba(0,0,0,0.05);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 7px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;gap:2px;}
+.nb .ni{font-size:20px;line-height:1;transition:transform .15s;}
+.nb .nl{font-size:9px;font-weight:600;color:var(--text-l);}
+.nb.on .ni{transform:scale(1.15);}
+.nb.on .nl{color:var(--blue);font-weight:700;}
+.screens{flex:1;overflow:hidden;position:relative;}
+.sc{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sc.on{display:block;}
+
+/* PAGE HEADER */
+.ph{background:var(--card);padding:14px 14px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+.ph-row{display:flex;justify-content:space-between;align-items:center;}
+.ph h1{font-size:18px;font-weight:900;}
+.mbadge{background:var(--blue-l);color:var(--blue);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+
+/* TABS inside screen */
+.tabs{display:flex;margin:10px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);}
+.tab{flex:1;padding:10px 6px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-left:1px solid var(--border);}
+.tab:first-child{border-left:none;}
+.tab.on{background:var(--blue);color:#fff;font-weight:700;}
+.tab-content{display:none;}.tab-content.on{display:block;}
+
+/* HERO */
+.hero{margin:10px 12px 0;background:var(--blue);border-radius:var(--r);padding:18px 16px 14px;color:#fff;}
+.hero-lbl{font-size:11px;font-weight:500;opacity:.7;margin-bottom:1px;}
+.hero-val{font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px;}
+.hero-val.neg{color:#FF8A80;}
+.hero-sub{font-size:11px;opacity:.65;margin-top:4px;}
+.prog-wrap{margin-top:10px;}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-bottom:4px;}
+.prog-track{height:5px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;background:#fff;transition:width .5s ease;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 12px 0;}
+.met{background:var(--card);border-radius:var(--rs);padding:11px 12px;border:1px solid var(--border);box-shadow:var(--sh);}
+.met-l{font-size:10px;font-weight:700;color:var(--text-m);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
+.met-v{font-size:19px;font-weight:900;letter-spacing:-.5px;}
+.c-green{color:var(--green);}.c-blue{color:var(--blue);}.c-orange{color:var(--orange);}.c-purple{color:var(--purple);}.c-red{color:var(--red);}
+
+/* SECTION */
+.sec{margin:10px 12px 0;}
+.sec-t{font-size:10px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+
+/* LIST */
+.lcard{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
+.lrow{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid var(--border);}
+.lrow:last-child{border-bottom:none;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rn{font-size:13px;flex:1;min-width:0;line-height:1.3;}
+.rn.est{color:var(--text-m);font-style:italic;}
+.rv{font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;}
+.del-btn{font-size:17px;color:var(--text-l);cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;}
+.empty{padding:14px;text-align:center;font-size:12px;color:var(--text-l);}
+.ltotal{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-top:2px solid var(--border);font-weight:700;font-size:13px;}
+.chip{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;margin-right:3px;background:#FFF3E0;color:#E65100;}
+
+/* CUMULATIVE CARD */
+.cum-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;margin-bottom:8px;}
+.cum-header{padding:12px 14px;border-bottom:1px solid var(--border);}
+.cum-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.cum-name{font-size:14px;font-weight:700;}
+.cum-amounts{display:flex;gap:12px;font-size:11px;color:var(--text-m);}
+.cum-amt span{font-weight:700;}
+.cum-amt span.over{color:var(--red);}
+.cum-prog-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px;}
+.cum-prog-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.cum-entries{padding:0;}
+.cum-entry{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
+.cum-entry:last-child{border-bottom:none;}
+.cum-entry .en{flex:1;color:var(--text-m);}
+.cum-entry .ev{font-weight:700;color:var(--text);}
+.cum-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:none;background:var(--bg);cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-top:1px solid var(--border);}
+
+/* CHUG ROW */
+.chug-row{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.chug-row:last-child{border-bottom:none;}
+.chug-info{flex:1;}
+.chug-name{font-size:13px;font-weight:600;}
+.chug-sub{font-size:11px;color:var(--text-m);margin-top:1px;}
+.chug-amt{font-size:14px;font-weight:700;cursor:pointer;}
+.chug-prog{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px;}
+.chug-prog-fill{height:100%;border-radius:2px;}
+
+/* TRANSFER ROWS */
+.transfer-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
+.transfer-row{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--border);}
+.transfer-row:last-child{border-bottom:none;}
+.transfer-label{font-size:13px;font-weight:600;}
+.transfer-sub{font-size:11px;color:var(--text-m);margin-top:2px;}
+.transfer-input{width:110px;border:1.5px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;text-align:center;background:var(--bg);}
+.transfer-input.to-bank{color:var(--blue);}
+.transfer-input.from-bank{color:var(--green);}
+.transfer-input:focus{outline:none;border-color:var(--blue);}
+
+/* ADD BTN */
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:var(--rs);border:1.5px dashed var(--border);background:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;color:var(--text-m);margin-top:7px;}
+.add-btn:active{background:var(--bg);}
+
+/* DATEBAR */
+.datebar{margin:10px 12px 0;background:var(--orange-l);border:1px solid #EAC08A;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;gap:8px;}
+.datebar label{font-size:11px;font-weight:700;color:var(--orange);white-space:nowrap;}
+.datebar input{flex:1;border:1px solid #EAC08A;border-radius:6px;padding:5px 8px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:#fff;}
+
+/* BANK */
+.bank-hdr{background:var(--dark);color:#fff;padding:9px 12px;font-size:12px;font-weight:700;border-radius:var(--rs) var(--rs) 0 0;}
+.bank-body{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);overflow:hidden;}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+.brow:last-child{border-bottom:none;}
+.brow.hi{background:var(--green-l);font-weight:700;color:var(--green);}
+.brow.dim{color:var(--text-m);font-size:12px;}
+.brow.total-row{background:var(--dark);color:#fff;font-weight:700;font-size:14px;}
+.bank-inp-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;box-shadow:var(--sh);}
+.bank-inp-wrap label{font-size:10px;font-weight:700;color:var(--text-m);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.bank-inp-wrap input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:18px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);background:var(--bg);}
+.bank-inp-wrap input:focus{border-color:var(--green);outline:none;}
+
+/* HIST BANNER */
+.hist-banner{margin:8px 12px 0;background:var(--amber);color:#fff;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;}
+.hist-back{background:rgba(255,255,255,.25);border:none;color:#fff;padding:4px 10px;border-radius:20px;font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+
+/* MODAL */
+.mbg{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mbg.on{opacity:1;pointer-events:all;}
+.modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
+.mbg.on .modal{transform:translateY(0);}
+.modal h3{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal label{font-size:11px;font-weight:700;color:var(--text-m);display:block;margin:10px 0 3px;text-transform:uppercase;letter-spacing:.4px;}
+.modal input,.modal select{width:100%;padding:10px 11px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);}
+.modal input:focus,.modal select:focus{border-color:var(--blue);outline:none;}
+.est-row{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;}
+.est-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);}
+.est-row span{font-size:13px;color:var(--text-m);}
+.mbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
+.btn-save{padding:12px;border-radius:var(--rs);border:none;background:var(--dark);color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-cancel{padding:12px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;color:var(--text-m);}
+.nm-modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
+.mbg.on .nm-modal{transform:translateY(0);}
+.nm-option{padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:9px;cursor:pointer;font-size:14px;font-weight:600;}
+.nm-option:active{background:var(--bg);}
+.nm-sub{font-size:11px;font-weight:400;color:var(--text-m);margin-top:2px;}
+
+/* TOAST */
+.toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
+.toast.on{opacity:1;}
+.pb{padding-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="screens">
+
+<!-- S1: DASHBOARD -->
+<div class="sc on" id="s-dashboard">
+  <div class="ph"><div class="ph-row"><h1>כלכלת בית 🏡</h1><span class="mbadge" id="b-dash">—</span></div></div>
+  <div id="hb-dash"></div>
+  <div class="hero">
+    <div class="hero-lbl">נשאר להוציא השבוע</div>
+    <div class="hero-val" id="d-weekly">₪0</div>
+    <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה</div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>הוצא עד כה: <span id="d-spent">₪0</span></span><span id="d-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
+    <div class="met"><div class="met-l">הוצאות קבועות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
+    <div class="met"><div class="met-l">נשאר להוציא החודש</div><div class="met-v c-blue" id="d-rem">₪0</div></div>
+    <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">הוצאות לא צפויות אחרונות</div>
+    <div class="lcard" id="d-recent"><div class="empty">אין הוצאות לא צפויות עדיין</div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S2: INCOME -->
+<div class="sc" id="s-income">
+  <div class="ph"><div class="ph-row"><h1>הכנסות 💰</h1><span class="mbadge" id="b-inc">—</span></div></div>
+  <div id="hb-inc"></div>
+  <div class="datebar"><label>📅 חודש:</label><input type="month" id="month-picker" onchange="onMonthPick(this.value)"></div>
+  <div class="sec"><div class="sec-t">מקורות הכנסה</div><div class="lcard" id="inc-list"></div><button class="add-btn" onclick="openModal('income')">＋ הוסף הכנסה</button></div>
+  <div class="sec"><div class="lcard"><div class="ltotal"><span>סה"כ הכנסות</span><span id="inc-tot" class="c-green">₪0</span></div></div></div>
+  <div class="sec">
+    <div class="sec-t">הכנסות עסק נעה — חודש הבא</div>
+    <div class="lcard" id="nm-list"></div>
+    <button class="add-btn" onclick="openModal('nextMonth')">＋ הוסף</button>
+    <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ לחודש הבא</span><span id="nm-tot" class="c-green">₪0</span></div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S3: FIXED EXPENSES -->
+<div class="sc" id="s-expenses">
+  <div class="ph"><div class="ph-row"><h1>הוצאות קבועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
+  <div id="hb-exp"></div>
+  <div class="sec"><div class="lcard" id="fixed-list"></div><button class="add-btn" onclick="openModal('fixed')">＋ הוסף</button><div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ</span><span id="fixed-tot" class="c-blue">₪0</span></div></div></div>
+  <div class="pb"></div>
+</div>
+
+<!-- S4: CUMULATIVE -->
+<div class="sc" id="s-cumul">
+  <div class="ph"><div class="ph-row"><h1>הוצאות מצטברות 📊</h1><span class="mbadge" id="b-cum">—</span></div></div>
+  <div id="hb-cum"></div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchCumulTab('food',this)">🛒 אוכל ופארם</button>
+    <button class="tab" onclick="switchCumulTab('chugim',this)">🎨 חוגים</button>
+  </div>
+
+  <!-- FOOD TAB -->
+  <div class="tab-content on" id="tc-food">
+    <div class="sec">
+      <div class="cum-card">
+        <div class="cum-header">
+          <div class="cum-title-row">
+            <span class="cum-name">אוכל ופארם</span>
+            <span style="font-size:12px;color:var(--text-m)">צפי: <strong id="food-exp-lbl">₪0</strong></span>
+          </div>
+          <div class="cum-amounts">
+            <div class="cum-amt">בפועל: <span id="food-actual">₪0</span></div>
+            <div class="cum-amt">נשאר: <span id="food-left">₪0</span></div>
+          </div>
+          <div class="cum-prog-track"><div class="cum-prog-fill" id="food-prog" style="width:0%;background:var(--green)"></div></div>
+        </div>
+        <div class="cum-entries" id="food-entries"></div>
+        <button class="cum-add" onclick="openCumulModal('food')">＋ הוסף קנייה</button>
+      </div>
+      <!-- Edit expected -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;background:var(--card);border-radius:var(--rs);border:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--text-m);flex:1;">עדכן צפי חודשי:</span>
+        <input type="number" id="food-exp-input" inputmode="numeric" placeholder="0"
+          style="width:100px;border:1.5px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:var(--bg);text-align:center;"
+          oninput="updateFoodExp(this.value)">
+        <span style="font-size:13px;font-weight:700;color:var(--orange);">₪</span>
+      </div>
+    </div>
+    <div class="pb"></div>
+  </div>
+
+  <!-- CHUGIM TAB -->
+  <div class="tab-content" id="tc-chugim">
+    <div class="sec">
+      <div class="lcard" id="chugim-list"></div>
+      <button class="add-btn" onclick="openModal('chug')">＋ הוסף חוג</button>
+      <div class="lcard" style="margin-top:6px;">
+        <div class="ltotal"><span>סה"כ צפי חוגים</span><span id="chugim-exp-tot" class="c-orange">₪0</span></div>
+        <div class="ltotal" style="border-top:1px solid var(--border);"><span>סה"כ בפועל</span><span id="chugim-act-tot" class="c-blue">₪0</span></div>
+      </div>
+    </div>
+    <div class="pb"></div>
+  </div>
+</div>
+
+<!-- S5: UNEXPECTED -->
+<div class="sc" id="s-unexp">
+  <div class="ph"><div class="ph-row"><h1>הוצאות לא צפויות 🛍️</h1><span class="mbadge" id="b-un">—</span></div></div>
+  <div id="hb-un"></div>
+  <div class="hero">
+    <div class="hero-lbl">נשאר להוציא השבוע</div>
+    <div class="hero-val" id="un-weekly">₪0</div>
+    <div class="hero-sub">מתוך <span id="un-alloc">₪0</span> שהוקצו לחודש זה</div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>הוצא עד כה: <span id="un-spent">₪0</span></span><span id="un-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="un-prog" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="sec"><div class="sec-t">הוצאות החודש</div><div class="lcard" id="un-list"><div class="empty">אין עדיין</div></div><button class="add-btn" onclick="openModal('unexp')">＋ הוסף הוצאה</button></div>
+  <div class="pb"></div>
+</div>
+
+<!-- S6: BANK -->
+<div class="sc" id="s-bank">
+  <div class="ph"><div class="ph-row"><h1>עו"ש 🏦</h1><span class="mbadge" id="b-bnk">—</span></div></div>
+  <div id="hb-bnk"></div>
+
+  <div class="sec"><div class="bank-inp-wrap"><label>עו"ש קודם (₪)</label><input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"></div></div>
+
+  <!-- Transfers -->
+  <div class="sec">
+    <div class="sec-t">העברות חודשיות</div>
+    <div class="transfer-card">
+      <div class="transfer-row">
+        <div>
+          <div class="transfer-label">העברה לעו"ש ↑</div>
+          <div class="transfer-sub">הקפאת עודף — מהתזרים לעו"ש</div>
+        </div>
+        <input type="number" class="transfer-input to-bank" id="transfer-to" inputmode="numeric" placeholder="0" oninput="onTransferTo()">
+      </div>
+      <div class="transfer-row">
+        <div>
+          <div class="transfer-label">העברה מעו"ש ↓</div>
+          <div class="transfer-sub">משיכת עודף — מהעו"ש לתזרים</div>
+        </div>
+        <input type="number" class="transfer-input from-bank" id="transfer-from" inputmode="numeric" placeholder="0" oninput="onTransferFrom()">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec"><div class="bank-hdr">יתרת עו"ש</div><div class="bank-body"><div class="brow"><span>עו"ש קודם</span><span id="bnk-prev" style="font-weight:700">₪0</span></div><div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div><div class="brow"><span>− העברה מעו"ש</span><span id="bnk-from" style="font-weight:700;color:var(--green)">₪0</span></div><div class="brow hi"><span>עו"ש עדכני</span><span id="bnk-curr">₪0</span></div></div></div>
+
+  <div class="sec"><div class="bank-hdr">הקצאות עתידיות</div><div class="bank-body" id="alloc-list"></div><button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button></div>
+  <div class="sec" style="margin-bottom:10px;"><div class="bank-body"><div class="brow total-row"><span>עו"ש פנוי</span><span id="bnk-free">₪0</span></div></div></div>
+  <div class="sec" style="margin-bottom:10px;">
+    <button onclick="forcePushToFirebase()" style="width:100%;padding:13px;border-radius:var(--rs);border:none;background:#1B5E42;color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">
+      ☁️ דחוף נתונים ל-Firebase
+    </button>
+    <div id="sync-status" style="text-align:center;font-size:12px;color:var(--text-m);margin-top:6px;"></div>
+  </div>
+</div>
+
+</div><!-- /screens -->
+
+<nav class="nav">
+  <button class="nb on" onclick="goScreen('dashboard',this)"><span class="ni">🏠</span><span class="nl">ראשי</span></button>
+  <button class="nb" onclick="goScreen('income',this)"><span class="ni">💰</span><span class="nl">הכנסות</span></button>
+  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' קבועות</span></button>
+  <button class="nb" onclick="goScreen('cumul',this)"><span class="ni">📊</span><span class="nl">הוצ' מצטברות</span></button>
+  <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' לא צפויות</span></button>
+  <button class="nb" onclick="goScreen('bank',this)"><span class="ni">🏦</span><span class="nl">עו"ש</span></button>
+</nav>
+
+<!-- MODAL ADD/EDIT -->
+<div class="mbg" id="mbg" onclick="closeBg(event)">
+  <div class="modal">
+    <h3 id="m-title">הוסף</h3>
+    <label>שם / תיאור</label><input type="text" id="m-name" placeholder="" autocomplete="off">
+    <label>סכום (₪)</label><input type="number" id="m-amount" placeholder="0" inputmode="decimal">
+    <div id="m-exp-wrap" style="display:none;">
+      <label>צפי חודשי (₪)</label><input type="number" id="m-exp" placeholder="0" inputmode="decimal">
+    </div>
+    <div id="m-est-wrap"><label class="est-row"><input type="checkbox" id="m-est"><span>הערכה — טרם נכנסה המשכורת</span></label></div>
+    <div class="mbtns"><button class="btn-save" onclick="saveModal()">שמור</button><button class="btn-cancel" onclick="closeModal()">ביטול</button></div>
+  </div>
+</div>
+
+<!-- MODAL NEW MONTH -->
+<div class="mbg" id="nm-mbg" onclick="closeNmBg(event)">
+  <div class="nm-modal">
+    <h3>חודש חדש 🎉</h3>
+    <div class="nm-option" onclick="newMonthCopy()"><div>העתק מהחודש הקודם</div><div class="nm-sub">הוצאות קבועות וחוגים מועתקים — הוצאות לא צפויות מתאפסות</div></div>
+    <div class="nm-option" onclick="newMonthEmpty()"><div>התחל ריק</div><div class="nm-sub">כל הנתונים נקיים</div></div>
+    <button class="btn-cancel" style="width:100%;margin-top:4px;" onclick="closeNmModal()">ביטול</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">נשמר ✓</div>
+</div><!-- /app -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+// ── FIREBASE ──────────────────────────────────────────────────
+const FB_CONFIG={
+  apiKey:"AIzaSyD2ntvEivlXuNo_ts76Ix4c35H_XoiOHfI",
+  authDomain:"yitzhak-family-finance.firebaseapp.com",
+  databaseURL:"https://yitzhak-family-finance-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"yitzhak-family-finance",
+  storageBucket:"yitzhak-family-finance.firebasestorage.app",
+  messagingSenderId:"350747913659",
+  appId:"1:350747913659:web:6ed3dd343a026242f3e89e"
+};
+let _db=null,_unsub=null,_curRef=null;
+function fbInit(){try{const app=firebase.initializeApp(FB_CONFIG);_db=firebase.database(app);}catch(e){console.warn('FB init:',e);}}
+function fbPush(month,data){if(!_db)return;try{_db.ref('kb/months/'+month).set(data);}catch(e){console.warn('fbPush:',e);}}
+function fbListen(month){
+  if(!_db)return;
+  if(_unsub){_unsub();_unsub=null;}
+  try{
+    _curRef=_db.ref('kb/months/'+month);
+    _unsub=_curRef.on('value',(snap)=>{
+      const remote=snap.val();
+      if(!remote)return;
+      if(JSON.stringify(state)!==JSON.stringify(remote)){
+        state=remote; try{localStorage.setItem('kb_v1_'+month,JSON.stringify(remote));}catch(e){}
+        render(); showToast('🔄 מסונכרן');
+      }
+    });
+  }catch(e){}
+}
+function fbStop(){
+  if(_unsub && _curRef){ _curRef.off('value',_unsub); _unsub=null; _curRef=null; }
+}
+
+// ── DEFAULTS ──────────────────────────────────────────────────
+const DEFAULTS={
+  income:[
+    {name:'יפתח',amount:22803,estimate:false},
+    {name:'נעה',amount:7525,estimate:false},
+    {name:'ביטוח לאומי',amount:598,estimate:false},
+    {name:'עודף מחודש קודם',amount:590,estimate:false},
+    {name:'הכנסות עסק נעה',amount:4778,estimate:false},
+    {name:'החזרים',amount:1063,estimate:false},
+    {name:'מילואים',amount:12311,estimate:false},
+  ],
+  nextMonth:[{name:'הכנסות חודש הבא',amount:5958}],
+  fixed:[
+    {name:'גני ילדים',amount:3023},{name:'מסי קהילה',amount:409},
+    {name:'חסכונות',amount:4000},{name:'בית ספר',amount:1229},
+    {name:'ביטוח רכב',amount:424},{name:'ביטוח דירה',amount:353},
+    {name:'בזק',amount:25},{name:'פלאפון',amount:59},
+    {name:'ספוטיפיי',amount:34},{name:'ארנונה וביוב',amount:1404},
+    {name:'חשמל',amount:1200},{name:'מים',amount:462},
+    {name:'ביטוח חיים',amount:143},{name:'קופת חולים',amount:181},
+    {name:'דלק',amount:368},{name:'אוכל חיות',amount:440},
+    {name:'גבות/ספר',amount:80},{name:'דיקור',amount:200},
+    {name:'אינטרנט',amount:95},{name:'רואה חשבון',amount:413},
+  ],
+  food:{expected:2665, entries:[
+    {desc:'קאסם 1/5',amount:95},{desc:'רמי לוי 3/5',amount:35},
+    {desc:'ויקטורי 5/5',amount:118},{desc:'קאסם 8/5',amount:77},
+    {desc:'פארם 10/5',amount:27},{desc:'רמי לוי 12/5',amount:230},
+    {desc:'קאסם 15/5',amount:733},{desc:'ויקטורי 18/5',amount:427},
+    {desc:'קאסם 22/5',amount:153},{desc:'פארם 25/5',amount:55},
+    {desc:'קאסם 28/5',amount:80},
+  ]},
+  chugim:[
+    {name:'מיקו',expected:520,actual:520},
+    {name:'קיאקים',expected:90,actual:90},
+    {name:'אפרת',expected:300,actual:300},
+    {name:"ג'ודו",expected:254,actual:254},
+    {name:'תיאטרון',expected:300,actual:300},
+    {name:'שומרי הגן',expected:420,actual:420},
+    {name:'כפר מוזיקלי',expected:437,actual:437},
+    {name:'ריקוד',expected:0,actual:0},
+    {name:'אביגיל',expected:200,actual:200},
+  ],
+  splurges:[],
+  bankPrev:9850,
+  transferTo:9685,
+  transferFrom:0,
+  allocations:[
+    {name:'פיקדון',amount:-5000},{name:'יוון',amount:12000},
+    {name:'ספייר פנוי',amount:10000},{name:'גילי',amount:2535},
+  ],
+};
+
+// ── STORAGE ───────────────────────────────────────────────────
+const SK='kb_v1';
+function lsMeta(){try{return JSON.parse(localStorage.getItem(SK+'_meta'))||{};}catch(e){return{};}}
+function ssMeta(m){try{localStorage.setItem(SK+'_meta',JSON.stringify(m));}catch(e){}}
+function lsMonth(m){try{const r=localStorage.getItem(SK+'_'+m);return r?JSON.parse(r):null;}catch(e){return null;}}
+function ssMonth(m,d){try{localStorage.setItem(SK+'_'+m,JSON.stringify(d));}catch(e){}}
+function regMonth(m){const meta=lsMeta();if(!meta.months)meta.months=[];if(!meta.months.includes(m))meta.months.push(m);meta.current=m;ssMeta(meta);}
+
+// ── STATE ─────────────────────────────────────────────────────
+let curMonth='', state={}, isHist=false;
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');};
+
+function initState(){
+  const meta=lsMeta(); curMonth=meta.current||today();
+  const saved=lsMonth(curMonth);
+  state=saved?saved:JSON.parse(JSON.stringify(DEFAULTS));
+  if(!saved){regMonth(curMonth);ssMonth(curMonth,state);}
+  isHist=(curMonth!==today());
+}
+function switchMonth(m){
+  fbStop(); ssMonth(curMonth,state); curMonth=m;
+  const saved=lsMonth(m); state=saved?saved:JSON.parse(JSON.stringify(DEFAULTS));
+  isHist=(m!==today()); regMonth(m);
+  document.getElementById('month-picker').value=m;
+  render(); fbListen(m);
+}
+function persist(){ssMonth(curMonth,state);regMonth(curMonth);fbPush(curMonth,state);showToast('נשמר ✓');}
+
+// ── HELPERS ───────────────────────────────────────────────────
+const fmt=n=>'₪'+Math.round(Math.abs(n)).toLocaleString('he-IL');
+const sum=(arr,k='amount')=>arr.reduce((s,i)=>s+(Number(i[k])||0),0);
+function monthLabel(m){if(!m)return'';const[y,mo]=m.split('-');const N=['','ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];return(N[+mo]||'')+' '+y;}
+function daysInMonth(m){if(!m)return 30;const[y,mo]=m.split('-');return new Date(+y,+mo,0).getDate();}
+function daysLeft(){const now=new Date();const[y,mo]=(curMonth||'').split('-');if(!y||!mo)return 15;if(now.getFullYear()===+y&&now.getMonth()+1===+mo)return Math.max(new Date(+y,+mo,0).getDate()-now.getDate()+1,0);return daysInMonth(curMonth);}
+function daysLeftWeek(){return Math.max(7-new Date().getDay(),1);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg||'נשמר ✓';t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1500);}
+
+// ── CALC ──────────────────────────────────────────────────────
+function calc(){
+  const income=sum(state.income);
+  const fixed=sum(state.fixed);
+  const foodActual=sum(state.food?.entries||[]);
+  const chugsActual=sum(state.chugim||[],'actual');
+  const chugsExp=sum(state.chugim||[],'expected');
+  const foodExp=state.food?.expected||0;
+  const cumul=foodExp+chugsExp; // cumulative expected (used in income calc)
+  const splurged=sum(state.splurges);
+  const transferTo=Number(state.transferTo)||0;
+  const transferFrom=Number(state.transferFrom)||0;
+  // Total expenses = fixed + cumulative expected + splurges
+  const totalExp=fixed+cumul;
+  // alloc = what's left for unexpected spending
+  const alloc=income+transferFrom-fixed-cumul-transferTo;
+  const totalD=daysInMonth(curMonth),leftD=daysLeft(),leftW=daysLeftWeek();
+  const daily=totalD>0?alloc/totalD:0;
+  const weeklyLeft=alloc-splurged-daily*Math.max(leftD-leftW,0);
+  const pct=alloc>0?Math.min(Math.round(splurged/alloc*100),100):0;
+  const bankPrev=Number(state.bankPrev)||0;
+  const bankCurr=bankPrev+transferTo-transferFrom;
+  const allocTot=sum(state.allocations||[]);
+  const bankFree=bankCurr-allocTot;
+  const remLeft=alloc-splurged;
+  return{income,fixed,foodActual,chugsActual,chugsExp,foodExp,cumul,splurged,alloc,weeklyLeft,pct,bankPrev,bankCurr,bankFree,remLeft,transferTo,transferFrom,totalExp};
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render(){
+  const c=calc(), ml=monthLabel(curMonth);
+  ['b-dash','b-inc','b-exp','b-cum','b-un','b-bnk'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ml;});
+  ['dash','inc','exp','cum','un','bnk'].forEach(s=>{
+    const el=document.getElementById('hb-'+s);if(!el)return;
+    el.innerHTML=isHist?`<div class="hist-banner">📅 צופה ב: ${ml}<button class="hist-back" onclick="switchMonth('${today()}')">חזור לחודש הנוכחי</button></div>`:'';
+  });
+  const mp=document.getElementById('month-picker');if(mp)mp.value=curMonth;
+
+  // DASHBOARD
+  const wEl=document.getElementById('d-weekly');wEl.textContent=fmt(c.weeklyLeft);wEl.className='hero-val'+(c.weeklyLeft<0?' neg':'');
+  document.getElementById('d-alloc').textContent=fmt(c.alloc);
+  document.getElementById('d-spent').textContent=fmt(c.splurged);
+  document.getElementById('d-pct').textContent=c.pct+'%';
+  const dp=document.getElementById('d-prog');dp.style.width=c.pct+'%';dp.style.background=c.pct>85?'#FF8A80':c.pct>65?'#FFD54F':'#fff';
+  document.getElementById('d-inc').textContent=fmt(c.income);
+  document.getElementById('d-exp').textContent=fmt(c.fixed+c.cumul);
+  const dr=document.getElementById('d-rem');dr.textContent=fmt(c.remLeft);dr.className='met-v '+(c.remLeft>=0?'c-blue':'c-red');
+  const dbf=document.getElementById('d-bf');dbf.textContent=fmt(c.bankFree);dbf.className='met-v '+(c.bankFree>=0?'c-purple':'c-red');
+  document.getElementById('d-recent').innerHTML=state.splurges.length===0
+    ?'<div class="empty">אין הוצאות לא צפויות עדיין</div>'
+    :[...state.splurges].reverse().slice(0,5).map(s=>`<div class="lrow"><div class="dot" style="background:var(--purple)"></div><span class="rn">${s.name}</span><span class="rv c-purple">${fmt(s.amount)}</span></div>`).join('');
+
+  const mkR=(type,it,i,dc,vc)=>`<div class="lrow"><div class="dot" style="background:${dc}"></div><span class="rn${it.estimate?' est':''}">${it.name}${it.estimate?'<span class="chip">הערכה</span>':''}</span><span class="rv ${vc}" onclick="editItem('${type}',${i})">${fmt(it.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('${type}',${i})">×</span>`:''}</div>`;
+
+  // INCOME
+  document.getElementById('inc-list').innerHTML=state.income.length===0?'<div class="empty">—</div>':state.income.map((it,i)=>mkR('income',it,i,'var(--green)','c-green')).join('');
+  document.getElementById('inc-tot').textContent=fmt(c.income);
+  document.getElementById('nm-list').innerHTML=state.nextMonth.length===0?'<div class="empty">—</div>':state.nextMonth.map((it,i)=>mkR('nextMonth',it,i,'var(--green-m)','c-green')).join('');
+  document.getElementById('nm-tot').textContent=fmt(sum(state.nextMonth));
+
+  // FIXED
+  document.getElementById('fixed-list').innerHTML=state.fixed.length===0?'<div class="empty">—</div>':state.fixed.map((it,i)=>mkR('fixed',it,i,'var(--blue)','c-blue')).join('');
+  document.getElementById('fixed-tot').textContent=fmt(c.fixed);
+
+  // FOOD
+  const foodAmt=sum(state.food?.entries||[]);
+  const foodExp=state.food?.expected||0;
+  const foodLeft=foodExp-foodAmt;
+  const foodPct=foodExp>0?Math.min(Math.round(foodAmt/foodExp*100),100):0;
+  document.getElementById('food-exp-lbl').textContent=fmt(foodExp);
+  document.getElementById('food-actual').textContent=fmt(foodAmt);
+  const flEl=document.getElementById('food-left');flEl.textContent=fmt(foodLeft);flEl.className=foodLeft>=0?'':'over';
+  const fp=document.getElementById('food-prog');fp.style.width=foodPct+'%';fp.style.background=foodPct>90?'var(--red)':foodPct>70?'var(--amber)':'var(--green)';
+  const fei=document.getElementById('food-exp-input');if(fei&&document.activeElement!==fei)fei.value=foodExp||'';
+  document.getElementById('food-entries').innerHTML=(state.food?.entries||[]).length===0
+    ?'<div class="empty">אין קניות עדיין</div>'
+    :[...(state.food?.entries||[])].reverse().map((e,i)=>`<div class="cum-entry"><span class="en">${e.desc||'—'}</span><span class="ev">${fmt(e.amount)}</span>${!isHist?`<span class="del-btn" onclick="delFoodEntry(${(state.food.entries.length-1-i)})">×</span>`:''}</div>`).join('');
+
+  // CHUGIM
+  const chugList=document.getElementById('chugim-list');
+  const chugItems=(state.chugim||[]);
+  chugList.innerHTML=chugItems.length===0?'<div class="empty">—</div>':chugItems.map((ch,i)=>{
+    const pct=ch.expected>0?Math.min(Math.round(ch.actual/ch.expected*100),100):0;
+    const color=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+    return `<div class="chug-row">
+      <div class="chug-info">
+        <div class="chug-name">${ch.name}</div>
+        <div class="chug-sub">צפי: ${fmt(ch.expected)}</div>
+        <div class="chug-prog"><div class="chug-prog-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+      <span class="chug-amt c-orange" onclick="editChug(${i})">${fmt(ch.actual)}</span>
+      ${!isHist?`<span class="del-btn" onclick="delItem('chugim',${i})">×</span>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('chugim-exp-tot').textContent=fmt(c.chugsExp);
+  document.getElementById('chugim-act-tot').textContent=fmt(c.chugsActual);
+
+  // UNEXP
+  const uwEl=document.getElementById('un-weekly');uwEl.textContent=fmt(c.weeklyLeft);uwEl.className='hero-val'+(c.weeklyLeft<0?' neg':'');
+  document.getElementById('un-alloc').textContent=fmt(c.alloc);
+  document.getElementById('un-spent').textContent=fmt(c.splurged);
+  document.getElementById('un-pct').textContent=c.pct+'%';
+  const upp=document.getElementById('un-prog');upp.style.width=c.pct+'%';upp.style.background=c.pct>85?'#FF8A80':c.pct>65?'#FFD54F':'#fff';
+  document.getElementById('un-list').innerHTML=state.splurges.length===0?'<div class="empty">אין עדיין</div>':[...state.splurges].reverse().map((s,i)=>`<div class="lrow"><div class="dot" style="background:var(--purple)"></div><span class="rn">${s.name}</span><span class="rv c-purple">${fmt(s.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('splurges',${state.splurges.length-1-i})">×</span>`:''}</div>`).join('');
+
+  // BANK
+  const bi=document.getElementById('bank-in');if(bi&&document.activeElement!==bi)bi.value=state.bankPrev||'';
+  const tti=document.getElementById('transfer-to');if(tti&&document.activeElement!==tti)tti.value=state.transferTo||'';
+  const tfi=document.getElementById('transfer-from');if(tfi&&document.activeElement!==tfi)tfi.value=state.transferFrom||'';
+  document.getElementById('bnk-prev').textContent=fmt(c.bankPrev);
+  document.getElementById('bnk-to').textContent=fmt(c.transferTo);
+  document.getElementById('bnk-from').textContent=fmt(c.transferFrom);
+  document.getElementById('bnk-curr').textContent=fmt(c.bankCurr);
+  const bfEl=document.getElementById('bnk-free');bfEl.textContent=fmt(c.bankFree);bfEl.parentElement.style.background=c.bankFree>=0?'var(--dark)':'var(--red)';
+  document.getElementById('alloc-list').innerHTML=(state.allocations||[]).length===0?'<div class="brow" style="color:var(--text-l)">—</div>':(state.allocations||[]).map((a,i)=>`<div class="brow${a.amount<0?' dim':''}"><span>${a.name}</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-weight:700;color:${a.amount<0?'var(--text-m)':'var(--blue)'}">${a.amount<0?'−':'+'}${fmt(a.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('allocations',${i})" style="color:var(--text-l)">×</span>`:''}</div></div>`).join('');
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function goScreen(name,btn){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+name).classList.add('on');
+  btn.classList.add('on');
+  document.querySelector('.screens').scrollTop=0;
+}
+function switchCumulTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tc-'+tab).classList.add('on');
+}
+
+// ── MONTH ─────────────────────────────────────────────────────
+function onMonthPick(val){
+  if(!val||val===curMonth)return;
+  ssMonth(curMonth,state);
+  if(lsMonth(val)){switchMonth(val);}
+  else{pendingNewMonth=val;document.getElementById('nm-mbg').classList.add('on');}
+}
+let pendingNewMonth='';
+function newMonthCopy(){
+  const prev=JSON.parse(JSON.stringify(state));
+  const ns={
+    income:prev.nextMonth.length>0?[{name:'הכנסות עסק נעה (מחודש קודם)',amount:sum(prev.nextMonth),estimate:false}]:[],
+    nextMonth:[],
+    fixed:JSON.parse(JSON.stringify(prev.fixed)),
+    food:{expected:prev.food?.expected||0,entries:[]},
+    chugim:prev.chugim.map(ch=>({...ch,actual:0})),
+    splurges:[],bankPrev:0,transferTo:0,transferFrom:0,
+    allocations:JSON.parse(JSON.stringify(prev.allocations)),
+  };
+  ssMonth(curMonth,state);curMonth=pendingNewMonth;state=ns;isHist=false;
+  regMonth(curMonth);ssMonth(curMonth,state);
+  document.getElementById('month-picker').value=curMonth;
+  closeNmModal();render();fbPush(curMonth,state);fbListen(curMonth);showToast('חודש חדש נפתח ✓');
+}
+function newMonthEmpty(){
+  ssMonth(curMonth,state);curMonth=pendingNewMonth;
+  state={income:[],nextMonth:[],fixed:[],food:{expected:0,entries:[]},chugim:[],splurges:[],bankPrev:0,transferTo:0,transferFrom:0,allocations:[]};
+  isHist=false;regMonth(curMonth);ssMonth(curMonth,state);
+  document.getElementById('month-picker').value=curMonth;
+  closeNmModal();render();fbPush(curMonth,state);fbListen(curMonth);showToast('חודש חדש ריק נפתח ✓');
+}
+function closeNmModal(){document.getElementById('nm-mbg').classList.remove('on');}
+function closeNmBg(e){if(e.target===document.getElementById('nm-mbg'))closeNmModal();}
+
+// ── MODAL ─────────────────────────────────────────────────────
+let mType='',mIdx=-1;
+const TITLES={income:'הכנסה',nextMonth:'הכנסה לחודש הבא',fixed:'הוצאה קבועה',chug:'חוג',unexp:'הוצאה לא צפויה',alloc:'הקצאה'};
+function getArr(t){
+  if(t==='unexp')return state.splurges;
+  if(t==='alloc')return state.allocations;
+  if(t==='chug'||t==='chugim')return state.chugim;
+  return state[t]||[];
+}
+function openModal(type,idx=-1){
+  if(isHist)return;
+  mType=type;mIdx=idx;
+  document.getElementById('m-title').textContent=(idx>=0?'ערוך ':'הוסף ')+(TITLES[type]||'');
+  document.getElementById('m-est-wrap').style.display=(type==='income'||type==='nextMonth')?'block':'none';
+  document.getElementById('m-exp-wrap').style.display=(type==='chug')?'block':'none';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-amount').value='';
+  document.getElementById('m-exp').value='';
+  document.getElementById('m-est').checked=false;
+  if(idx>=0){
+    const arr=getArr(type);
+    const it=arr[idx];
+    if(it){
+      document.getElementById('m-name').value=it.name||'';
+      document.getElementById('m-amount').value=Math.abs(it.amount||it.actual||0);
+      if(it.expected!==undefined)document.getElementById('m-exp').value=it.expected;
+      if(it.estimate!==undefined)document.getElementById('m-est').checked=it.estimate;
+    }
+  }
+  document.getElementById('mbg').classList.add('on');
+  setTimeout(()=>document.getElementById('m-name').focus(),280);
+}
+function closeModal(){document.getElementById('mbg').classList.remove('on');}
+function closeBg(e){if(e.target===document.getElementById('mbg'))closeModal();}
+function saveModal(){
+  const name=(document.getElementById('m-name').value||'').trim();
+  const raw=parseFloat(document.getElementById('m-amount').value)||0;
+  const expRaw=parseFloat(document.getElementById('m-exp').value)||0;
+  const est=document.getElementById('m-est').checked;
+  if(!name)return;
+  if(mType==='chug'){
+    const item={name,expected:expRaw,actual:raw};
+    const arr=getArr('chug');
+    if(mIdx>=0)arr[mIdx]=item;else arr.push(item);
+  } else {
+    if(!raw)return;
+    const arr=getArr(mType);
+    const item={name,amount:raw};
+    if(mType==='income'||mType==='nextMonth')item.estimate=est;
+    if(mIdx>=0)arr[mIdx]=item;else arr.push(item);
+  }
+  closeModal();persist();render();
+}
+function editItem(type,idx){openModal(type,idx);}
+function editChug(idx){openModal('chug',idx);}
+function delItem(type,idx){if(isHist)return;getArr(type).splice(idx,1);persist();render();}
+
+// ── FOOD ──────────────────────────────────────────────────────
+let cumulModalTarget='';
+function openCumulModal(target){
+  if(isHist)return;
+  cumulModalTarget=target;
+  mType='food-entry';mIdx=-1;
+  document.getElementById('m-title').textContent='הוסף קנייה';
+  document.getElementById('m-est-wrap').style.display='none';
+  document.getElementById('m-exp-wrap').style.display='none';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-amount').value='';
+  document.getElementById('mbg').classList.add('on');
+  setTimeout(()=>document.getElementById('m-name').focus(),280);
+}
+// Override saveModal for food-entry
+const _origSave=saveModal;
+window.saveModal=function(){
+  if(mType==='food-entry'){
+    const desc=(document.getElementById('m-name').value||'').trim()||'—';
+    const amount=parseFloat(document.getElementById('m-amount').value)||0;
+    if(!amount)return;
+    if(!state.food)state.food={expected:0,entries:[]};
+    state.food.entries.push({desc,amount});
+    closeModal();persist();render();
+    return;
+  }
+  _origSave();
+};
+function delFoodEntry(idx){if(isHist)return;state.food.entries.splice(idx,1);persist();render();}
+function updateFoodExp(val){if(isHist)return;if(!state.food)state.food={expected:0,entries:[]};state.food.expected=parseFloat(val)||0;persist();render();}
+
+// ── BANK ──────────────────────────────────────────────────────
+function onBankIn(){if(isHist)return;state.bankPrev=parseFloat(document.getElementById('bank-in').value)||0;persist();render();}
+function onTransferTo(){if(isHist)return;state.transferTo=parseFloat(document.getElementById('transfer-to').value)||0;persist();render();}
+function onTransferFrom(){if(isHist)return;state.transferFrom=parseFloat(document.getElementById('transfer-from').value)||0;persist();render();}
+
+// ── FORCE PUSH ───────────────────────────────────────────────
+function forcePushToFirebase(){
+  const statusEl = document.getElementById('sync-status');
+  if(!_db){ statusEl.textContent='❌ אין חיבור ל-Firebase'; return; }
+  statusEl.textContent='⏳ דוחף נתונים...';
+  try {
+    _db.ref('kb/months/'+curMonth).set(state)
+      .then(()=>{
+        statusEl.textContent='✅ הנתונים הועלו בהצלחה! עכשיו פתח בטלפון.';
+        showToast('✅ הועלה ל-Firebase!');
+      })
+      .catch(e=>{ statusEl.textContent='❌ שגיאה: '+e.message; });
+  } catch(e) {
+    statusEl.textContent='❌ שגיאה: '+e.message;
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+initState();
+document.getElementById('month-picker').value=curMonth;
+render();
+fbInit();
+if(_db){
+  // Show loading indicator
+  showToast('⏳ טוען נתונים...');
+  _db.ref('kb/months/'+curMonth).once('value').then(snap=>{
+    const remote=snap.val();
+    if(remote){
+      // Firebase has data — use it (most up to date)
+      state=remote;
+      ssMonth(curMonth,state);
+      render();
+      showToast('✓ נטען בהצלחה');
+    } else {
+      // Firebase empty — push local/default data to it
+      fbPush(curMonth,state);
+      showToast('✓ נתונים הועלו');
+    }
+    fbListen(curMonth);
+  }).catch(e=>{
+    console.warn('Firebase fetch failed:', e);
+    showToast('⚠️ מצב לא מקוון');
+  });
+} else {
+  showToast('⚠️ אין חיבור ל-Firebase');
+}
+</script>
+</body>
+</html>
