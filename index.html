@@ -688,7 +688,7 @@ function closeNmBg(e){if(e.target===document.getElementById('nm-mbg'))closeNmMod
 
 // ── MODAL ─────────────────────────────────────────────────────
 let mType='',mIdx=-1;
-const TITLES={income:'הכנסה',nextMonth:'הכנסה לחודש הבא',fixed:'הוצאה קבועה',chug:'חוג',unexp:'הוצאה לא צפויה',alloc:'הקצאה'};
+const TITLES={income:'הכנסה',nextMonth:'הכנסה לחודש הבא',fixed:'הוצאה קבועה',chug:'חוג (שם + צפי)',unexp:'הוצאה לא צפויה',alloc:'הקצאה'};
 function getArr(t){
   if(t==='unexp')return state.splurges;
   if(t==='alloc')return state.allocations;
@@ -710,10 +710,16 @@ function openModal(type,idx=-1){
     const it=arr[idx];
     if(it){
       document.getElementById('m-name').value=it.name||'';
-      document.getElementById('m-amount').value=Math.abs(it.amount||it.actual||0);
+      document.getElementById('m-amount').value=Math.abs(it.amount||0);
       if(it.expected!==undefined)document.getElementById('m-exp').value=it.expected;
       if(it.estimate!==undefined)document.getElementById('m-est').checked=it.estimate;
     }
+  }
+  // For chug: amount not required, show hint
+  if(type==='chug'){
+    document.getElementById('m-amount').placeholder='0 (לא חובה)';
+  } else {
+    document.getElementById('m-amount').placeholder='0';
   }
   document.getElementById('mbg').classList.add('on');
   setTimeout(()=>document.getElementById('m-name').focus(),280);
@@ -725,28 +731,67 @@ function saveModal(){
   const raw=parseFloat(document.getElementById('m-amount').value)||0;
   const expRaw=parseFloat(document.getElementById('m-exp').value)||0;
   const est=document.getElementById('m-est').checked;
-  if(!name)return;
-  if(mType==='chug'){
-    const item={name,expected:expRaw||raw,entries:[]};
-    const arr=getArr('chug');
-    if(mIdx>=0){arr[mIdx].name=name;arr[mIdx].expected=expRaw||raw;}
-    else arr.push(item);
-  } else {
-    if(!raw)return;
-    const arr=getArr(mType);
-    const item={name,amount:raw};
-    if(mType==='income'||mType==='nextMonth')item.estimate=est;
-    if(mIdx>=0)arr[mIdx]=item;else arr.push(item);
+
+  // Food entry
+  if(mType==='food-entry'){
+    const desc=name||'—'; const amount=raw;
+    if(!amount)return;
+    if(!state.food)state.food={expected:0,entries:[]};
+    state.food.entries.push({desc,amount});
+    closeModal();persist();render();return;
   }
+  // Chug entry (payment)
+  if(mType==='chug-entry'){
+    const desc=name||'—'; const amount=raw;
+    if(!amount)return;
+    if(!state.chugim[mIdx].entries)state.chugim[mIdx].entries=[];
+    state.chugim[mIdx].entries.push({desc,amount});
+    closeModal();persist();render();return;
+  }
+  // New/edit chug
+  if(mType==='chug'){
+    if(!name)return;
+    const arr=state.chugim;
+    if(mIdx>=0){
+      arr[mIdx].name=name;
+      arr[mIdx].expected=expRaw;
+    } else {
+      arr.push({name,expected:expRaw,entries:[]});
+    }
+    closeModal();persist();render();return;
+  }
+  // All other types
+  if(!name||!raw)return;
+  const arr=getArr(mType);
+  const item={name,amount:raw};
+  if(mType==='income'||mType==='nextMonth')item.estimate=est;
+  if(mIdx>=0)arr[mIdx]=item;else arr.push(item);
   closeModal();persist();render();
 }
+
 function editItem(type,idx){openModal(type,idx);}
+function delItem(type,idx){if(isHist)return;getArr(type).splice(idx,1);persist();render();}
+
+// ── FOOD ──────────────────────────────────────────────────────
+function openCumulModal(target){
+  if(isHist)return;
+  mType='food-entry';mIdx=-1;
+  document.getElementById('m-title').textContent='הוסף קנייה';
+  document.getElementById('m-est-wrap').style.display='none';
+  document.getElementById('m-exp-wrap').style.display='none';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-amount').value='';
+  document.getElementById('mbg').classList.add('on');
+  setTimeout(()=>document.getElementById('m-name').focus(),280);
+}
+function delFoodEntry(idx){if(isHist)return;state.food.entries.splice(idx,1);persist();render();}
+function updateFoodExp(val){if(isHist)return;if(!state.food)state.food={expected:0,entries:[]};state.food.expected=parseFloat(val)||0;persist();render();}
+
+// ── CHUGIM ────────────────────────────────────────────────────
 function delChug(idx){
   if(isHist)return;
-  if(confirm('למחוק את החוג?')){
-    state.chugim.splice(idx,1);
-    persist();render();
-  }
+  state.chugim.splice(idx,1);
+  persist();render();
 }
 function delChugEntry(chugIdx,entryIdx){
   if(isHist)return;
@@ -766,52 +811,9 @@ function addChugEntry(chugIdx){
 }
 function editChugExp(idx){
   if(isHist)return;
-  const val=prompt('צפי חודשי עבור '+state.chugim[idx].name+' (₪):', state.chugim[idx].expected||0);
-  if(val===null)return;
-  state.chugim[idx].expected=parseFloat(val)||0;
-  persist();render();
+  // Open modal to edit chug name+expected
+  openModal('chug',idx);
 }
-function delItem(type,idx){if(isHist)return;getArr(type).splice(idx,1);persist();render();}
-
-// ── FOOD ──────────────────────────────────────────────────────
-let cumulModalTarget='';
-function openCumulModal(target){
-  if(isHist)return;
-  cumulModalTarget=target;
-  mType='food-entry';mIdx=-1;
-  document.getElementById('m-title').textContent='הוסף קנייה';
-  document.getElementById('m-est-wrap').style.display='none';
-  document.getElementById('m-exp-wrap').style.display='none';
-  document.getElementById('m-name').value='';
-  document.getElementById('m-amount').value='';
-  document.getElementById('mbg').classList.add('on');
-  setTimeout(()=>document.getElementById('m-name').focus(),280);
-}
-// Override saveModal for food-entry
-const _origSave=saveModal;
-window.saveModal=function(){
-  if(mType==='food-entry'){
-    const desc=(document.getElementById('m-name').value||'').trim()||'—';
-    const amount=parseFloat(document.getElementById('m-amount').value)||0;
-    if(!amount)return;
-    if(!state.food)state.food={expected:0,entries:[]};
-    state.food.entries.push({desc,amount});
-    closeModal();persist();render();
-    return;
-  }
-  if(mType==='chug-entry'){
-    const desc=(document.getElementById('m-name').value||'').trim()||'—';
-    const amount=parseFloat(document.getElementById('m-amount').value)||0;
-    if(!amount)return;
-    if(!state.chugim[mIdx].entries)state.chugim[mIdx].entries=[];
-    state.chugim[mIdx].entries.push({desc,amount});
-    closeModal();persist();render();
-    return;
-  }
-  _origSave();
-};
-function delFoodEntry(idx){if(isHist)return;state.food.entries.splice(idx,1);persist();render();}
-function updateFoodExp(val){if(isHist)return;if(!state.food)state.food={expected:0,entries:[]};state.food.expected=parseFloat(val)||0;persist();render();}
 
 // ── BANK ──────────────────────────────────────────────────────
 function onBankIn(){if(isHist)return;state.bankPrev=parseFloat(document.getElementById('bank-in').value)||0;persist();render();}
