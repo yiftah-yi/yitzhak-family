@@ -353,8 +353,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
-'use strict';
-
 // ── FIREBASE ──────────────────────────────────────────────────
 const FB_CONFIG = {
   apiKey: "AIzaSyD2ntvEivlXuNo_ts76Ix4c35H_XoiOHfI",
@@ -569,7 +567,7 @@ function calc() {
 
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
-  var c = calc();
+  var cc = calc();
   var ml = monthLabel(curMonth);
 
   // Badges
@@ -594,22 +592,22 @@ function render() {
 
   // ── DASHBOARD ──
   var wEl = el('d-weekly');
-  wEl.textContent = fmt(c.weeklyLeft);
-  wEl.className = 'hero-val' + (c.weeklyLeft < 0 ? ' neg' : '');
-  el('d-alloc').textContent = fmt(c.alloc);
-  el('d-spent').textContent = fmt(c.splurged);
-  el('d-pct').textContent = c.pct + '%';
+  wEl.textContent = fmt(cc.weeklyLeft);
+  wEl.className = 'hero-val' + (cc.weeklyLeft < 0 ? ' neg' : '');
+  el('d-alloc').textContent = fmt(cc.alloc);
+  el('d-spent').textContent = fmt(cc.splurged);
+  el('d-pct').textContent = cc.pct + '%';
   var dp = el('d-prog');
-  dp.style.width = c.pct + '%';
-  dp.style.background = c.pct>85 ? '#FF8A80' : c.pct>65 ? '#FFD54F' : '#fff';
-  el('d-inc').textContent = fmt(c.income);
-  el('d-exp').textContent = fmt(c.fixed + foodExp + c.chugsExp);
+  dp.style.width = cc.pct + '%';
+  dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
+  el('d-inc').textContent = fmt(cc.income);
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp);
   var dr = el('d-rem');
-  dr.textContent = fmt(c.remLeft);
-  dr.className = 'met-v ' + (c.remLeft >= 0 ? 'c-blue' : 'c-red');
+  dr.textContent = fmt(cc.remLeft);
+  dr.className = 'met-v ' + (cc.remLeft >= 0 ? 'c-blue' : 'c-red');
   var dbf = el('d-bf');
-  dbf.textContent = fmt(c.bankFree);
-  dbf.className = 'met-v ' + (c.bankFree >= 0 ? 'c-purple' : 'c-red');
+  dbf.textContent = fmt(cc.bankFree);
+  dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red');
 
   // Recent unexpected
   var drc = el('d-recent');
@@ -628,13 +626,13 @@ function render() {
 
   // ── INCOME ──
   renderList('inc-list', state.income||[], 'income', 'var(--green)', 'c-green', true, true);
-  el('inc-tot').textContent = fmt(c.income);
+  el('inc-tot').textContent = fmt(cc.income);
   renderList('nm-list', state.nextMonth||[], 'nextMonth', 'var(--green-m)', 'c-green', true, false);
   el('nm-tot').textContent = fmt(sumArr(state.nextMonth||[]));
 
   // ── FIXED ──
   renderList('fixed-list', state.fixed||[], 'fixed', 'var(--blue)', 'c-blue', false, false);
-  el('fixed-tot').textContent = fmt(c.fixed);
+  el('fixed-tot').textContent = fmt(cc.fixed);
 
   // ── FOOD ──
   var foodExp = (state.food&&state.food.expected)||0;
@@ -714,19 +712,19 @@ function render() {
     });
     chugContainer.innerHTML = html;
   }
-  el('chugim-exp-tot').textContent = fmt(c.chugsExp);
-  el('chugim-act-tot').textContent = fmt(c.chugsAct);
+  el('chugim-exp-tot').textContent = fmt(cc.chugsExp);
+  el('chugim-act-tot').textContent = fmt(cc.chugsAct);
 
   // ── UNEXPECTED ──
   var uwEl = el('un-weekly');
-  uwEl.textContent = fmt(c.weeklyLeft);
-  uwEl.className = 'hero-val' + (c.weeklyLeft < 0 ? ' neg' : '');
-  el('un-alloc').textContent = fmt(c.alloc);
-  el('un-spent').textContent = fmt(c.splurged);
-  el('un-pct').textContent = c.pct + '%';
+  uwEl.textContent = fmt(cc.weeklyLeft);
+  uwEl.className = 'hero-val' + (cc.weeklyLeft < 0 ? ' neg' : '');
+  el('un-alloc').textContent = fmt(cc.alloc);
+  el('un-spent').textContent = fmt(cc.splurged);
+  el('un-pct').textContent = cc.pct + '%';
   var upp = el('un-prog');
-  upp.style.width = c.pct + '%';
-  upp.style.background = c.pct>85 ? '#FF8A80' : c.pct>65 ? '#FFD54F' : '#fff';
+  upp.style.width = cc.pct + '%';
+  upp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
   var unList = el('un-list');
   if (!state.splurges || state.splurges.length === 0) {
     unList.innerHTML = '<div class="empty">אין עדיין</div>';
@@ -745,13 +743,13 @@ function render() {
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var tti = el('transfer-to'); if(tti && document.activeElement!==tti) tti.value = state.transferTo||'';
   var tfi = el('transfer-from'); if(tfi && document.activeElement!==tfi) tfi.value = state.transferFrom||'';
-  el('bnk-prev').textContent = fmt(c.bankPrev);
-  el('bnk-to').textContent = fmt(c.tTo);
-  el('bnk-from').textContent = fmt(c.tFrom);
-  el('bnk-curr').textContent = fmt(c.bankCurr);
+  el('bnk-prev').textContent = fmt(cc.bankPrev);
+  el('bnk-to').textContent = fmt(cc.tTo);
+  el('bnk-from').textContent = fmt(cc.tFrom);
+  el('bnk-curr').textContent = fmt(cc.bankCurr);
   var bfEl = el('bnk-free');
-  bfEl.textContent = fmt(c.bankFree);
-  bfEl.parentElement.style.background = c.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
+  bfEl.textContent = fmt(cc.bankFree);
+  bfEl.parentElement.style.background = cc.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
 
   var allocList = el('alloc-list');
   var allocs = state.allocations||[];
