@@ -441,15 +441,15 @@ const DEFAULTS={
     {desc:'קאסם 28/5',amount:80},
   ]},
   chugim:[
-    {name:'מיקו',expected:520,actual:520},
-    {name:'קיאקים',expected:90,actual:90},
-    {name:'אפרת',expected:300,actual:300},
-    {name:"ג'ודו",expected:254,actual:254},
-    {name:'תיאטרון',expected:300,actual:300},
-    {name:'שומרי הגן',expected:420,actual:420},
-    {name:'כפר מוזיקלי',expected:437,actual:437},
-    {name:'ריקוד',expected:0,actual:0},
-    {name:'אביגיל',expected:200,actual:200},
+    {name:'מיקו',expected:520,entries:[{desc:'מאי',amount:520}]},
+    {name:'קיאקים',expected:90,entries:[{desc:'מאי',amount:90}]},
+    {name:'אפרת',expected:300,entries:[{desc:'מאי',amount:300}]},
+    {name:"ג'ודו",expected:254,entries:[{desc:'מאי',amount:254}]},
+    {name:'תיאטרון',expected:300,entries:[{desc:'מאי',amount:300}]},
+    {name:'שומרי הגן',expected:420,entries:[{desc:'מאי',amount:420}]},
+    {name:'כפר מוזיקלי',expected:437,entries:[{desc:'מאי',amount:437}]},
+    {name:'ריקוד',expected:0,entries:[]},
+    {name:'אביגיל',expected:200,entries:[{desc:'מאי',amount:200}]},
   ],
   splurges:[],
   bankPrev:9850,
@@ -503,7 +503,7 @@ function calc(){
   const income=sum(state.income);
   const fixed=sum(state.fixed);
   const foodActual=sum(state.food?.entries||[]);
-  const chugsActual=sum(state.chugim||[],'actual');
+  const chugsActual=(state.chugim||[]).reduce((s,ch)=>s+ch.entries.reduce((a,e)=>a+(Number(e.amount)||0),0),0);
   const chugsExp=sum(state.chugim||[],'expected');
   const foodExp=state.food?.expected||0;
   const cumul=foodExp+chugsExp; // cumulative expected (used in income calc)
@@ -577,21 +577,43 @@ function render(){
     :[...(state.food?.entries||[])].reverse().map((e,i)=>`<div class="cum-entry"><span class="en">${e.desc||'—'}</span><span class="ev">${fmt(e.amount)}</span>${!isHist?`<span class="del-btn" onclick="delFoodEntry(${(state.food.entries.length-1-i)})">×</span>`:''}</div>`).join('');
 
   // CHUGIM
-  const chugList=document.getElementById('chugim-list');
+  const chugContainer=document.getElementById('chugim-list');
   const chugItems=(state.chugim||[]);
-  chugList.innerHTML=chugItems.length===0?'<div class="empty">—</div>':chugItems.map((ch,i)=>{
-    const pct=ch.expected>0?Math.min(Math.round(ch.actual/ch.expected*100),100):0;
-    const color=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
-    return `<div class="chug-row">
-      <div class="chug-info">
-        <div class="chug-name">${ch.name}</div>
-        <div class="chug-sub">צפי: ${fmt(ch.expected)}</div>
-        <div class="chug-prog"><div class="chug-prog-fill" style="width:${pct}%;background:${color}"></div></div>
-      </div>
-      <span class="chug-amt c-orange" onclick="editChug(${i})">${fmt(ch.actual)}</span>
-      ${!isHist?`<span class="del-btn" onclick="delItem('chugim',${i})">×</span>`:''}
-    </div>`;
-  }).join('');
+  if(chugItems.length===0){
+    chugContainer.innerHTML='<div class="empty">אין חוגים</div>';
+  } else {
+    chugContainer.innerHTML=chugItems.map((ch,i)=>{
+      const actual=ch.entries.reduce((s,e)=>s+(Number(e.amount)||0),0);
+      const pct=ch.expected>0?Math.min(Math.round(actual/ch.expected*100),100):0;
+      const color=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+      const left=ch.expected-actual;
+      const entriesHtml=ch.entries.length===0
+        ?'<div class="cum-entry"><span class="en" style="color:var(--text-l)">אין תשלומים עדיין</span></div>'
+        :[...ch.entries].reverse().map((e,ei)=>`<div class="cum-entry">
+          <span class="en">${e.desc||'—'}</span>
+          <span class="ev">${fmt(e.amount)}</span>
+          ${!isHist?`<span class="del-btn" onclick="delChugEntry(${i},${ch.entries.length-1-ei})">×</span>`:''}
+        </div>`).join('');
+      return `<div class="cum-card" style="margin-bottom:10px;">
+        <div class="cum-header">
+          <div class="cum-title-row">
+            <span class="cum-name">${ch.name}</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:11px;color:var(--text-m)">צפי: <strong onclick="editChugExp(${i})" style="cursor:pointer;color:var(--orange)">${fmt(ch.expected)}</strong></span>
+              ${!isHist?`<span class="del-btn" onclick="delChug(${i})" style="font-size:15px;">×</span>`:''}
+            </div>
+          </div>
+          <div class="cum-amounts">
+            <div class="cum-amt">בפועל: <span style="font-weight:700">${fmt(actual)}</span></div>
+            <div class="cum-amt">נשאר: <span class="${left<0?'over':''}" style="font-weight:700">${fmt(left)}</span></div>
+          </div>
+          <div class="cum-prog-track"><div class="cum-prog-fill" style="width:${pct}%;background:${color}"></div></div>
+        </div>
+        <div class="cum-entries">${entriesHtml}</div>
+        ${!isHist?`<button class="cum-add" onclick="addChugEntry(${i})">＋ הוסף תשלום</button>`:''}
+      </div>`;
+    }).join('');
+  }
   document.getElementById('chugim-exp-tot').textContent=fmt(c.chugsExp);
   document.getElementById('chugim-act-tot').textContent=fmt(c.chugsActual);
 
@@ -645,7 +667,7 @@ function newMonthCopy(){
     nextMonth:[],
     fixed:JSON.parse(JSON.stringify(prev.fixed)),
     food:{expected:prev.food?.expected||0,entries:[]},
-    chugim:prev.chugim.map(ch=>({...ch,actual:0})),
+    chugim:prev.chugim.map(ch=>({name:ch.name,expected:ch.expected,entries:[]})),
     splurges:[],bankPrev:0,transferTo:0,transferFrom:0,
     allocations:JSON.parse(JSON.stringify(prev.allocations)),
   };
@@ -705,9 +727,10 @@ function saveModal(){
   const est=document.getElementById('m-est').checked;
   if(!name)return;
   if(mType==='chug'){
-    const item={name,expected:expRaw,actual:raw};
+    const item={name,expected:expRaw||raw,entries:[]};
     const arr=getArr('chug');
-    if(mIdx>=0)arr[mIdx]=item;else arr.push(item);
+    if(mIdx>=0){arr[mIdx].name=name;arr[mIdx].expected=expRaw||raw;}
+    else arr.push(item);
   } else {
     if(!raw)return;
     const arr=getArr(mType);
@@ -718,7 +741,36 @@ function saveModal(){
   closeModal();persist();render();
 }
 function editItem(type,idx){openModal(type,idx);}
-function editChug(idx){openModal('chug',idx);}
+function delChug(idx){
+  if(isHist)return;
+  if(confirm('למחוק את החוג?')){
+    state.chugim.splice(idx,1);
+    persist();render();
+  }
+}
+function delChugEntry(chugIdx,entryIdx){
+  if(isHist)return;
+  state.chugim[chugIdx].entries.splice(entryIdx,1);
+  persist();render();
+}
+function addChugEntry(chugIdx){
+  if(isHist)return;
+  mType='chug-entry';mIdx=chugIdx;
+  document.getElementById('m-title').textContent='הוסף תשלום — '+state.chugim[chugIdx].name;
+  document.getElementById('m-est-wrap').style.display='none';
+  document.getElementById('m-exp-wrap').style.display='none';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-amount').value='';
+  document.getElementById('mbg').classList.add('on');
+  setTimeout(()=>document.getElementById('m-name').focus(),280);
+}
+function editChugExp(idx){
+  if(isHist)return;
+  const val=prompt('צפי חודשי עבור '+state.chugim[idx].name+' (₪):', state.chugim[idx].expected||0);
+  if(val===null)return;
+  state.chugim[idx].expected=parseFloat(val)||0;
+  persist();render();
+}
 function delItem(type,idx){if(isHist)return;getArr(type).splice(idx,1);persist();render();}
 
 // ── FOOD ──────────────────────────────────────────────────────
@@ -744,6 +796,15 @@ window.saveModal=function(){
     if(!amount)return;
     if(!state.food)state.food={expected:0,entries:[]};
     state.food.entries.push({desc,amount});
+    closeModal();persist();render();
+    return;
+  }
+  if(mType==='chug-entry'){
+    const desc=(document.getElementById('m-name').value||'').trim()||'—';
+    const amount=parseFloat(document.getElementById('m-amount').value)||0;
+    if(!amount)return;
+    if(!state.chugim[mIdx].entries)state.chugim[mIdx].entries=[];
+    state.chugim[mIdx].entries.push({desc,amount});
     closeModal();persist();render();
     return;
   }
