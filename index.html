@@ -550,7 +550,13 @@ function render(){
     ?'<div class="empty">אין הוצאות לא צפויות עדיין</div>'
     :[...state.splurges].reverse().slice(0,5).map(s=>`<div class="lrow"><div class="dot" style="background:var(--purple)"></div><span class="rn">${s.name}</span><span class="rv c-purple">${fmt(s.amount)}</span></div>`).join('');
 
-  const mkR=(type,it,i,dc,vc)=>`<div class="lrow"><div class="dot" style="background:${dc}"></div><span class="rn${it.estimate?' est':''}">${it.name}${it.estimate?'<span class="chip">הערכה</span>':''}</span><span class="rv ${vc}" onclick="editItem('${type}',${i})">${fmt(it.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('${type}',${i})">×</span>`:''}</div>`;
+const mkR=(type,it,i,dc,vc)=>{
+  const est=it.estimate?' est':'';
+  const chip=it.estimate?'<span class="chip">הערכה</span>':'';
+  const delBtn=!isHist?`<span class="del-btn" data-action="del" data-type="${type}" data-idx="${i}">×</span>`:'';
+  const editAmt=`<span class="rv ${vc}" data-action="edit" data-type="${type}" data-idx="${i}">${fmt(it.amount)}</span>`;
+  return `<div class="lrow"><div class="dot" style="background:${dc}"></div><span class="rn${est}">${it.name}${chip}</span>${editAmt}${delBtn}</div>`;
+};
 
   // INCOME
   document.getElementById('inc-list').innerHTML=state.income.length===0?'<div class="empty">—</div>':state.income.map((it,i)=>mkR('income',it,i,'var(--green)','c-green')).join('');
@@ -574,7 +580,7 @@ function render(){
   const fei=document.getElementById('food-exp-input');if(fei&&document.activeElement!==fei)fei.value=foodExp||'';
   document.getElementById('food-entries').innerHTML=(state.food?.entries||[]).length===0
     ?'<div class="empty">אין קניות עדיין</div>'
-    :[...(state.food?.entries||[])].reverse().map((e,i)=>`<div class="cum-entry"><span class="en">${e.desc||'—'}</span><span class="ev">${fmt(e.amount)}</span>${!isHist?`<span class="del-btn" onclick="delFoodEntry(${(state.food.entries.length-1-i)})">×</span>`:''}</div>`).join('');
+    :[...(state.food?.entries||[])].reverse().map((e,i)=>`<div class="cum-entry"><span class="en">${e.desc||'—'}</span><span class="ev">${fmt(e.amount)}</span>${!isHist?`<span class="del-btn" data-action="del-food" data-idx="${state.food.entries.length-1-i}">×</span>`:''}</div>`).join('');
 
   // CHUGIM
   const chugContainer=document.getElementById('chugim-list');
@@ -592,15 +598,15 @@ function render(){
         :[...ch.entries].reverse().map((e,ei)=>`<div class="cum-entry">
           <span class="en">${e.desc||'—'}</span>
           <span class="ev">${fmt(e.amount)}</span>
-          ${!isHist?`<span class="del-btn" onclick="delChugEntry(${i},${ch.entries.length-1-ei})">×</span>`:''}
+          ${!isHist?`<span class="del-btn" data-action="del-chug-entry" data-chug="${i}" data-idx="${ch.entries.length-1-ei}">×</span>`:''}
         </div>`).join('');
       return `<div class="cum-card" style="margin-bottom:10px;">
         <div class="cum-header">
           <div class="cum-title-row">
             <span class="cum-name">${ch.name}</span>
             <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:11px;color:var(--text-m)">צפי: <strong onclick="editChugExp(${i})" style="cursor:pointer;color:var(--orange)">${fmt(ch.expected)}</strong></span>
-              ${!isHist?`<span class="del-btn" onclick="delChug(${i})" style="font-size:15px;">×</span>`:''}
+              <span style="font-size:11px;color:var(--text-m)">צפי: <strong data-action="edit-chug-exp" data-idx="${i}" style="cursor:pointer;color:var(--orange)">${fmt(ch.expected)}</strong></span>
+              ${!isHist?`<span class="del-btn" data-action="del-chug" data-idx="${i}" style="font-size:15px;">×</span>`:''}
             </div>
           </div>
           <div class="cum-amounts">
@@ -610,7 +616,7 @@ function render(){
           <div class="cum-prog-track"><div class="cum-prog-fill" style="width:${pct}%;background:${color}"></div></div>
         </div>
         <div class="cum-entries">${entriesHtml}</div>
-        ${!isHist?`<button class="cum-add" onclick="addChugEntry(${i})">＋ הוסף תשלום</button>`:''}
+        ${!isHist?`<button class="cum-add" data-action="add-chug-entry" data-idx="${i}">＋ הוסף תשלום</button>`:''}
       </div>`;
     }).join('');
   }
@@ -623,7 +629,12 @@ function render(){
   document.getElementById('un-spent').textContent=fmt(c.splurged);
   document.getElementById('un-pct').textContent=c.pct+'%';
   const upp=document.getElementById('un-prog');upp.style.width=c.pct+'%';upp.style.background=c.pct>85?'#FF8A80':c.pct>65?'#FFD54F':'#fff';
-  document.getElementById('un-list').innerHTML=state.splurges.length===0?'<div class="empty">אין עדיין</div>':[...state.splurges].reverse().map((s,i)=>`<div class="lrow"><div class="dot" style="background:var(--purple)"></div><span class="rn">${s.name}</span><span class="rv c-purple">${fmt(s.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('splurges',${state.splurges.length-1-i})">×</span>`:''}</div>`).join('');
+  document.getElementById('un-list').innerHTML=state.splurges.length===0
+    ?'<div class="empty">אין עדיין</div>'
+    :[...state.splurges].reverse().map((s,i)=>{
+      const del=!isHist?`<span class="del-btn" data-action="del" data-type="splurges" data-idx="${state.splurges.length-1-i}">×</span>`:'';
+      return `<div class="lrow"><div class="dot" style="background:var(--purple)"></div><span class="rn">${s.name}</span><span class="rv c-purple">${fmt(s.amount)}</span>${del}</div>`;
+    }).join('');
 
   // BANK
   const bi=document.getElementById('bank-in');if(bi&&document.activeElement!==bi)bi.value=state.bankPrev||'';
@@ -634,7 +645,15 @@ function render(){
   document.getElementById('bnk-from').textContent=fmt(c.transferFrom);
   document.getElementById('bnk-curr').textContent=fmt(c.bankCurr);
   const bfEl=document.getElementById('bnk-free');bfEl.textContent=fmt(c.bankFree);bfEl.parentElement.style.background=c.bankFree>=0?'var(--dark)':'var(--red)';
-  document.getElementById('alloc-list').innerHTML=(state.allocations||[]).length===0?'<div class="brow" style="color:var(--text-l)">—</div>':(state.allocations||[]).map((a,i)=>`<div class="brow${a.amount<0?' dim':''}"><span>${a.name}</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-weight:700;color:${a.amount<0?'var(--text-m)':'var(--blue)'}">${a.amount<0?'−':'+'}${fmt(a.amount)}</span>${!isHist?`<span class="del-btn" onclick="delItem('allocations',${i})" style="color:var(--text-l)">×</span>`:''}</div></div>`).join('');
+  document.getElementById('alloc-list').innerHTML=(state.allocations||[]).length===0
+    ?'<div class="brow" style="color:var(--text-l)">—</div>'
+    :(state.allocations||[]).map((a,i)=>{
+      const sign=a.amount<0?'−':'+';
+      const col=a.amount<0?'var(--text-m)':'var(--blue)';
+      const cls=a.amount<0?' dim':'';
+      const del=!isHist?`<span class="del-btn" data-action="del" data-type="allocations" data-idx="${i}" style="color:var(--text-l)">×</span>`:'';
+      return `<div class="brow${cls}"><span>${a.name}</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-weight:700;color:${col}">${sign}${fmt(a.amount)}</span>${del}</div></div>`;
+    }).join('');
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────
@@ -837,6 +856,23 @@ function forcePushToFirebase(){
   }
 }
 
+
+// ── EVENT DELEGATION ─────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+  const idx    = parseInt(el.dataset.idx);
+  const type   = el.dataset.type;
+  const chug   = parseInt(el.dataset.chug);
+  if (action==='del')                 delItem(type,idx);
+  else if (action==='edit')           editItem(type,idx);
+  else if (action==='del-food')       delFoodEntry(idx);
+  else if (action==='del-chug')       delChug(idx);
+  else if (action==='del-chug-entry') delChugEntry(chug,idx);
+  else if (action==='add-chug-entry') addChugEntry(idx);
+  else if (action==='edit-chug-exp')  editChugExp(idx);
+});
 // ── INIT ──────────────────────────────────────────────────────
 initState();
 document.getElementById('month-picker').value=curMonth;
