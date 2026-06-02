@@ -133,12 +133,17 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <!-- S1: DASHBOARD -->
 <div class="sc on" id="s-dashboard">
-  <div class="ph"><div class="ph-row"><h1>כלכלת בית 🏡</h1><span class="mbadge" id="b-dash">—</span></div></div>
+  <div class="ph">
+    <div class="ph-row"><h1>כלכלת בית 🏡</h1>
+      <input type="month" id="month-picker-dash" onchange="onMonthPick(this.value)"
+        style="border:none;background:var(--blue-l);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;">
+    </div>
+  </div>
   <div id="hb-dash"></div>
   <div class="hero">
     <div class="hero-lbl">נשאר להוציא השבוע</div>
     <div class="hero-val" id="d-weekly">₪0</div>
-    <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה</div>
+    <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה (<span id="d-daily">₪0</span> ליום)</div>
     <div class="prog-wrap">
       <div class="prog-row"><span>הוצא עד כה: <span id="d-spent">₪0</span></span><span id="d-pct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
@@ -146,7 +151,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   </div>
   <div class="metrics">
     <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
-    <div class="met"><div class="met-l">הוצ' קבועות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
+    <div class="met"><div class="met-l">הוצ' ידועות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
     <div class="met"><div class="met-l">נשאר להוציא החודש</div><div class="met-v c-blue" id="d-rem">₪0</div></div>
     <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
   </div>
@@ -177,7 +182,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <!-- S3: FIXED -->
 <div class="sc" id="s-expenses">
-  <div class="ph"><div class="ph-row"><h1>הוצ' קבועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
+  <div class="ph"><div class="ph-row"><h1>הוצ' ידועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
   <div id="hb-exp"></div>
   <div class="sec"><div class="lcard" id="fixed-list"></div>
     <button class="add-btn" onclick="openModal('fixed')">＋ הוסף</button>
@@ -298,7 +303,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <nav class="nav">
   <button class="nb on" onclick="goScreen('dashboard',this)"><span class="ni">🏠</span><span class="nl">ראשי</span></button>
   <button class="nb" onclick="goScreen('income',this)"><span class="ni">💰</span><span class="nl">הכנסות</span></button>
-  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' קבועות</span></button>
+  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' ידועות</span></button>
   <button class="nb" onclick="goScreen('cumul',this)"><span class="ni">📊</span><span class="nl">הוצ' מצטברות</span></button>
   <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' לא צפויות</span></button>
   <button class="nb" onclick="goScreen('bank',this)"><span class="ni">🏦</span><span class="nl">עו"ש</span></button>
@@ -309,7 +314,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="modal">
     <h3 id="m-title">הוסף</h3>
     <label>שם / תיאור</label>
-    <input type="text" id="m-name" placeholder="לדוגמה: משכורת יפתח" autocomplete="off">
+    <input type="text" id="m-name" placeholder="" autocomplete="new-password" autocorrect="off" autocapitalize="off">
     <div id="m-amount-wrap">
       <label>סכום (₪)</label>
       <input type="number" id="m-amount" placeholder="0" inputmode="decimal">
@@ -337,7 +342,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <h3>חודש חדש 🎉</h3>
     <div class="nm-option" onclick="newMonthCopy()">
       <div>העתק מהחודש הקודם</div>
-      <div class="nm-sub">הוצאות קבועות וחוגים מועתקים — הוצאות לא צפויות מתאפסות</div>
+      <div class="nm-sub">הוצאות ידועות וחוגים מועתקים — הוצאות לא צפויות מתאפסות</div>
     </div>
     <div class="nm-option" onclick="newMonthEmpty()">
       <div>התחל ריק</div>
@@ -410,16 +415,16 @@ var DEFAULTS = {
   ],
   nextMonth: [{name:'הכנסות חודש הבא', amount:5958}],
   fixed: [
-    {name:'גני ילדים', amount:3023}, {name:'מסי קהילה', amount:409},
-    {name:'חסכונות', amount:4000}, {name:'בית ספר', amount:1229},
-    {name:'ביטוח רכב', amount:424}, {name:'ביטוח דירה', amount:353},
-    {name:'בזק', amount:25}, {name:'פלאפון', amount:59},
-    {name:'ספוטיפיי', amount:34}, {name:'ארנונה וביוב', amount:1404},
-    {name:'חשמל', amount:1200}, {name:'מים', amount:462},
-    {name:'ביטוח חיים', amount:143}, {name:'קופת חולים', amount:181},
-    {name:'דלק', amount:368}, {name:'אוכל חיות', amount:440},
-    {name:'גבות/ספר', amount:80}, {name:'דיקור', amount:200},
-    {name:'אינטרנט', amount:95}, {name:'רואה חשבון', amount:413}
+    {name:'גני ילדים', amount:3023, confirmed:true}, {name:'מסי קהילה', amount:409, confirmed:true},
+    {name:'חסכונות', amount:4000, confirmed:true}, {name:'בית ספר', amount:1229, confirmed:true},
+    {name:'ביטוח רכב', amount:424, confirmed:true}, {name:'ביטוח דירה', amount:353, confirmed:true},
+    {name:'בזק', amount:25, confirmed:true}, {name:'פלאפון', amount:59, confirmed:true},
+    {name:'ספוטיפיי', amount:34, confirmed:true}, {name:'ארנונה וביוב', amount:1404, confirmed:false},
+    {name:'חשמל', amount:1200, confirmed:false}, {name:'מים', amount:462, confirmed:false},
+    {name:'ביטוח חיים', amount:143, confirmed:true}, {name:'קופת חולים', amount:181, confirmed:true},
+    {name:'דלק', amount:368, confirmed:false}, {name:'אוכל חיות', amount:440, confirmed:true},
+    {name:'גבות/ספר', amount:80, confirmed:true}, {name:'דיקור', amount:200, confirmed:true},
+    {name:'אינטרנט', amount:95, confirmed:true}, {name:'רואה חשבון', amount:413, confirmed:true}
   ],
   food: {
     expected: 2665,
@@ -574,6 +579,8 @@ function render() {
   ['b-dash','b-inc','b-exp','b-cum','b-un','b-bnk'].forEach(function(id){
     var e = el(id); if(e) e.textContent = ml;
   });
+  // Month picker on dashboard
+  var mpd = el('month-picker-dash'); if(mpd) mpd.value = curMonth;
 
   // History banners
   ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
@@ -606,8 +613,10 @@ function render() {
   dr.textContent = fmt(cc.remLeft);
   dr.className = 'met-v ' + (cc.remLeft >= 0 ? 'c-blue' : 'c-red');
   var dbf = el('d-bf');
-  dbf.textContent = fmt(cc.bankFree);
-  dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red');
+  if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red'); }
+  var totalDays = daysInMonth(curMonth);
+  var dailyAlloc = totalDays > 0 ? cc.alloc / totalDays : 0;
+  var ddaily = el('d-daily'); if (ddaily) ddaily.textContent = fmt(dailyAlloc);
 
   // Recent unexpected
   var drc = el('d-recent');
@@ -783,9 +792,23 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
     var est = showEst && item.estimate ? ' est' : '';
     var chip = showEst && item.estimate ? '<span class="chip">הערכה</span>' : '';
     var del = !isHist ? '<span class="del-btn" data-type="list-del" data-list="'+type+'" data-idx="'+i+'">×</span>' : '';
-    html += '<div class="lrow">' +
+    // For fixed items: show confirmed status
+    var rowStyle = '';
+    var confirmBtn = '';
+    if (type === 'fixed' && item.confirmed !== undefined) {
+      rowStyle = item.confirmed
+        ? 'background:#E8F5EE;'   // green = confirmed
+        : 'background:#FFFDE7;';  // yellow = estimate
+      if (!isHist) {
+        var btnLabel = item.confirmed ? '✓' : '?';
+        var btnColor = item.confirmed ? '#1B5E42' : '#F9A825';
+        confirmBtn = '<span data-type="fixed-toggle" data-idx="'+i+'" style="cursor:pointer;font-weight:700;font-size:14px;color:'+btnColor+';padding:0 4px;">'+btnLabel+'</span>';
+      }
+    }
+    html += '<div class="lrow" style="'+rowStyle+'">' +
             '<div class="dot" style="background:'+dotColor+'"></div>' +
             '<span class="rn'+est+'">'+item.name+chip+'</span>' +
+            confirmBtn +
             '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmt(item.amount)+'</span>' +
             del + '</div>';
   });
@@ -824,7 +847,7 @@ function onMonthPick(val) {
 var mType = '', mIdx = -1, mChugIdx = -1;
 
 var TITLES = {
-  income:'הכנסה', nextMonth:'הכנסה לחודש הבא', fixed:'הוצאה קבועה',
+  income:'הכנסה', nextMonth:'הכנסה לחודש הבא', fixed:'הוצאה ידועה',
   chug:'חוג (שם + צפי)', unexp:'הוצאה לא צפויה', alloc:'הקצאה',
   'food-entry':'קנייה', 'chug-entry':'תשלום לחוג'
 };
@@ -922,6 +945,7 @@ function saveModal() {
   if (!name || !amount) return;
   var newItem = {name: name, amount: amount};
   if (mType==='income'||mType==='nextMonth') newItem.estimate = est;
+  if (mType==='fixed') newItem.confirmed = false; // new fixed items start as estimate
 
   var arr = null;
   if (mType==='income') arr = state.income;
@@ -1010,6 +1034,16 @@ document.addEventListener('click', function(e) {
     el('m-amount').value = '';
     el('mbg').classList.add('on');
     setTimeout(function(){ el('m-name').focus(); }, 280);
+    return;
+  }
+
+  // Fixed item confirm toggle
+  if (target.dataset.type === 'fixed-toggle') {
+    if (isHist) return;
+    var idx = parseInt(target.dataset.idx);
+    if (!state.fixed[idx]) return;
+    state.fixed[idx].confirmed = !state.fixed[idx].confirmed;
+    persist(); render();
     return;
   }
 });
