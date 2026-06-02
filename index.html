@@ -507,7 +507,14 @@ function persist() {
 }
 
 // ── HELPERS ───────────────────────────────────────────────────
-function fmt(n) { return '₪' + Math.round(Math.abs(n)).toLocaleString('he-IL'); }
+function fmt(n) {
+  var abs = Math.abs(n);
+  var rounded = Math.round(abs * 100) / 100;
+  if (rounded === Math.floor(rounded)) {
+    return '₪' + Math.floor(rounded).toLocaleString('he-IL');
+  }
+  return '₪' + rounded.toLocaleString('he-IL', {minimumFractionDigits:0, maximumFractionDigits:2});
+}
 function sumArr(arr, key) { key = key||'amount'; return arr.reduce(function(s,i){ return s+(Number(i[key])||0); }, 0); }
 function monthLabel(m) {
   if (!m) return '';
