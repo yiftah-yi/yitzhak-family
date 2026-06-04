@@ -38,7 +38,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .tab:first-child{border-left:none;}
 .tab.on{background:var(--blue);color:#fff;font-weight:700;}
 .tab-content{display:none;}.tab-content.on{display:block;}
-.hero{margin:10px 12px 0;background:var(--blue);border-radius:var(--r);padding:18px 16px 14px;color:#fff;}
+.hero{margin:10px 12px 0;background:var(--blue);border-radius:var(--r);padding:18px 16px 14px;color:#fff;transition:background .4s ease;}
 .hero-lbl{font-size:11px;font-weight:500;opacity:.7;margin-bottom:1px;}
 .hero-val{font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px;}
 .hero-val.neg{color:#FF8A80;}
@@ -124,7 +124,11 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .nm-sub{font-size:11px;font-weight:400;color:var(--text-m);margin-top:2px;}
 .toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
 .toast.on{opacity:1;}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.hero-val.pop-anim{animation:pop .3s ease;}
 .pb{padding-bottom:10px;}
+.month-prog-bar{height:3px;background:var(--border);position:sticky;top:58px;z-index:49;}
+.month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
 </style>
 </head>
 <body>
@@ -317,7 +321,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <input type="text" id="m-name" placeholder="" autocomplete="new-password" autocorrect="off" autocapitalize="off">
     <div id="m-amount-wrap">
       <label>סכום (₪)</label>
-      <input type="number" id="m-amount" placeholder="0" inputmode="decimal">
+      <input type="number" id="m-amount" placeholder="0" inputmode="decimal" step="0.01">
     </div>
     <div id="m-exp-wrap" style="display:none;">
       <label>צפי חודשי (₪)</label>
@@ -585,6 +589,13 @@ function render() {
   ['b-dash','b-inc','b-exp','b-cum','b-un','b-bnk'].forEach(function(id){
     var e = el(id); if(e) e.textContent = ml;
   });
+  // Month progress bars
+  var totalD2 = daysInMonth(curMonth);
+  var passedD = totalD2 - daysLeft();
+  var monthPct = totalD2 > 0 ? Math.round(passedD / totalD2 * 100) : 0;
+  ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
+    var pb = el('mpb-'+s); if(pb) pb.style.width = monthPct + '%';
+  });
   // Month picker on dashboard
   var mpd = el('month-picker-dash'); if(mpd) mpd.value = curMonth;
 
@@ -607,6 +618,11 @@ function render() {
   var wEl = el('d-weekly');
   wEl.textContent = fmt(cc.weeklyLeft);
   wEl.className = 'hero-val' + (cc.weeklyLeft < 0 ? ' neg' : '');
+  // Dynamic hero color
+  var heroEls = document.querySelectorAll('.hero');
+  var weeklyPct = cc.alloc > 0 ? cc.weeklyLeft / cc.alloc : 1;
+  var heroBg = weeklyPct < 0 ? '#922B21' : weeklyPct < 0.1 ? '#C0392B' : weeklyPct < 0.3 ? '#D35400' : 'var(--blue)';
+  heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
   el('d-spent').textContent = fmt(cc.splurged);
   el('d-pct').textContent = cc.pct + '%';
@@ -815,7 +831,7 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
             '<div class="dot" style="background:'+dotColor+'"></div>' +
             '<span class="rn'+est+'">'+item.name+chip+'</span>' +
             confirmBtn +
-            '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmt(item.amount)+'</span>' +
+            '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
             del + '</div>';
   });
   container.innerHTML = html;
