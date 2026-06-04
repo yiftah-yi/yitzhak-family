@@ -124,10 +124,9 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .nm-sub{font-size:11px;font-weight:400;color:var(--text-m);margin-top:2px;}
 .toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
 .toast.on{opacity:1;}
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-.hero-val.pop-anim{animation:pop .3s ease;}
+
 .pb{padding-bottom:10px;}
-.month-prog-bar{height:3px;background:var(--border);position:sticky;top:58px;z-index:49;}
+.month-prog-bar{height:4px;background:var(--border);}
 .month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
 </style>
 </head>
@@ -620,8 +619,9 @@ function render() {
   wEl.className = 'hero-val' + (cc.weeklyLeft < 0 ? ' neg' : '');
   // Dynamic hero color
   var heroEls = document.querySelectorAll('.hero');
-  var weeklyPct = cc.alloc > 0 ? cc.weeklyLeft / cc.alloc : 1;
-  var heroBg = weeklyPct < 0 ? '#922B21' : weeklyPct < 0.1 ? '#C0392B' : weeklyPct < 0.3 ? '#D35400' : 'var(--blue)';
+  // Color based on monthly: how much of alloc is spent
+  var monthlyPct = cc.alloc > 0 ? cc.splurged / cc.alloc : 0;
+  var heroBg = cc.weeklyLeft < 0 ? '#922B21' : monthlyPct > 0.9 ? '#C0392B' : monthlyPct > 0.7 ? '#D35400' : 'var(--blue)';
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
   el('d-spent').textContent = fmt(cc.splurged);
