@@ -662,7 +662,7 @@ function render() {
     recent.forEach(function(s) {
       html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
               '<span class="rn">'+s.name+'</span>' +
-              '<span class="rv c-purple">'+fmt(s.amount)+'</span></div>';
+              '<span class="rv c-purple">'+fmtExact(s.amount)+'</span></div>';
     });
     drc.innerHTML = html;
   }
@@ -702,7 +702,7 @@ function render() {
     rev.forEach(function(e, i) {
       var realIdx = entries.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="food-entry" data-idx="'+realIdx+'">×</span>' : '';
-      html += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmt(e.amount)+'</span>'+del+'</div>';
+      html += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
     });
     fEntries.innerHTML = html;
   }
@@ -727,7 +727,7 @@ function render() {
         rev.forEach(function(e, ei) {
           var realIdx = ch.entries.length - 1 - ei;
           var del = !isHist ? '<span class="del-btn" data-type="chug-entry" data-chug-idx="'+i+'" data-idx="'+realIdx+'">×</span>' : '';
-          entriesHtml += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmt(e.amount)+'</span>'+del+'</div>';
+          entriesHtml += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
         });
       }
       var addBtn = !isHist ? '<button class="cum-add" data-type="chug-add" data-idx="'+i+'">＋ הוסף תשלום</button>' : '';
@@ -777,7 +777,7 @@ function render() {
       var realIdx = state.splurges.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="splurge-del" data-idx="'+realIdx+'">×</span>' : '';
       html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
-              '<span class="rn">'+s.name+'</span><span class="rv c-purple">'+fmt(s.amount)+'</span>'+del+'</div>';
+              '<span class="rn">'+s.name+'</span><span class="rv c-purple">'+fmtExact(s.amount)+'</span>'+del+'</div>';
     });
     unList.innerHTML = html;
   }
