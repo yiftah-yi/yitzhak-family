@@ -142,6 +142,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
         style="border:none;background:var(--blue-l);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;">
     </div>
   </div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-dash" style="width:0%"></div></div>
   <div id="hb-dash"></div>
   <div class="hero">
     <div class="hero-lbl">נשאר להוציא השבוע</div>
@@ -168,6 +169,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <!-- S2: INCOME -->
 <div class="sc" id="s-income">
   <div class="ph"><div class="ph-row"><h1>הכנסות 💰</h1><span class="mbadge" id="b-inc">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-inc" style="width:0%"></div></div>
   <div id="hb-inc"></div>
   <div class="datebar"><label>📅 חודש:</label><input type="month" id="month-picker" onchange="onMonthPick(this.value)"></div>
   <div class="sec"><div class="sec-t">מקורות הכנסה</div><div class="lcard" id="inc-list"></div>
@@ -186,6 +188,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <!-- S3: FIXED -->
 <div class="sc" id="s-expenses">
   <div class="ph"><div class="ph-row"><h1>הוצ' ידועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-exp" style="width:0%"></div></div>
   <div id="hb-exp"></div>
   <div class="sec"><div class="lcard" id="fixed-list"></div>
     <button class="add-btn" onclick="openModal('fixed')">＋ הוסף</button>
@@ -197,6 +200,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <!-- S4: CUMULATIVE -->
 <div class="sc" id="s-cumul">
   <div class="ph"><div class="ph-row"><h1>הוצ' מצטברות 📊</h1><span class="mbadge" id="b-cum">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-cum" style="width:0%"></div></div>
   <div id="hb-cum"></div>
   <div class="tabs">
     <button class="tab on" onclick="switchTab('food',this)">🛒 אוכל ופארם</button>
@@ -244,6 +248,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <!-- S5: UNEXPECTED -->
 <div class="sc" id="s-unexp">
   <div class="ph"><div class="ph-row"><h1>הוצ' לא צפויות 🛍️</h1><span class="mbadge" id="b-un">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-un" style="width:0%"></div></div>
   <div id="hb-un"></div>
   <div class="hero">
     <div class="hero-lbl">נשאר להוציא השבוע</div>
@@ -265,6 +270,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <!-- S6: BANK -->
 <div class="sc" id="s-bank">
   <div class="ph"><div class="ph-row"><h1>עו"ש 🏦</h1><span class="mbadge" id="b-bnk">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-bnk" style="width:0%"></div></div>
   <div id="hb-bnk"></div>
   <div class="sec"><div class="bank-inp-wrap"><label>עו"ש קודם (₪)</label>
     <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()">
@@ -274,11 +280,17 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <div class="transfer-card">
       <div class="transfer-row">
         <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
-        <input type="number" class="transfer-input" id="transfer-to" inputmode="numeric" placeholder="0" oninput="onTransferTo()" style="color:var(--blue);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="transfer-to-display" style="font-weight:700;color:var(--blue);font-size:15px;">₪0</span>
+          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+        </div>
       </div>
       <div class="transfer-row">
         <div><div class="transfer-label">העברה מעו"ש ↓</div><div class="transfer-sub">משיכה מעו"ש לתזרים</div></div>
-        <input type="number" class="transfer-input" id="transfer-from" inputmode="numeric" placeholder="0" oninput="onTransferFrom()" style="color:var(--green);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="transfer-from-display" style="font-weight:700;color:var(--green);font-size:15px;">₪0</span>
+          <button onclick="openTransferModal('from')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+        </div>
       </div>
     </div>
   </div>
@@ -772,8 +784,8 @@ function render() {
 
   // ── BANK ──
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
-  var tti = el('transfer-to'); if(tti && document.activeElement!==tti) tti.value = state.transferTo||'';
-  var tfi = el('transfer-from'); if(tfi && document.activeElement!==tfi) tfi.value = state.transferFrom||'';
+  var ttd = el('transfer-to-display'); if(ttd) ttd.textContent = fmtExact(state.transferTo||0);
+  var tfd = el('transfer-from-display'); if(tfd) tfd.textContent = fmtExact(state.transferFrom||0);
   el('bnk-prev').textContent = fmt(cc.bankPrev);
   el('bnk-to').textContent = fmt(cc.tTo);
   el('bnk-from').textContent = fmt(cc.tFrom);
@@ -930,6 +942,18 @@ function saveModal() {
   var amount = parseFloat(el('m-amount').value)||0;
   var exp = parseFloat(el('m-exp').value)||0;
   var est = el('m-est').checked;
+
+  // Handle transfer
+  if (mType === 'transfer') {
+    if (!amount) return;
+    if (_transferDir === 'to') {
+      state.transferTo = (state.transferTo||0) + amount;
+    } else {
+      state.transferFrom = (state.transferFrom||0) + amount;
+    }
+    closeModal(); persist(); render(); return;
+  }
+
   if (!state.chugim) state.chugim = [];
   if (!state.income) state.income = [];
   if (!state.nextMonth) state.nextMonth = [];
@@ -1106,8 +1130,21 @@ function newMonthEmpty() {
 
 // ── BANK INPUTS ───────────────────────────────────────────────
 function onBankIn() { if(isHist) return; state.bankPrev=parseFloat(el('bank-in').value)||0; persist(); render(); }
-function onTransferTo() { if(isHist) return; state.transferTo=parseFloat(el('transfer-to').value)||0; persist(); render(); }
-function onTransferFrom() { if(isHist) return; state.transferFrom=parseFloat(el('transfer-from').value)||0; persist(); render(); }
+
+var _transferDir = 'to';
+function openTransferModal(dir) {
+  if (isHist) return;
+  _transferDir = dir;
+  mType = 'transfer';
+  el('m-title').textContent = dir === 'to' ? 'הוסף העברה לעו"ש ↑' : 'הוסף העברה מעו"ש ↓';
+  el('m-amount-wrap').style.display = 'block';
+  el('m-exp-wrap').style.display = 'none';
+  el('m-est-wrap').style.display = 'none';
+  el('m-name').value = '';
+  el('m-amount').value = '';
+  el('mbg').classList.add('on');
+  setTimeout(function(){ el('m-amount').focus(); }, 280);
+}
 
 // ── INIT ──────────────────────────────────────────────────────
 initState();
