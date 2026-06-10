@@ -580,7 +580,7 @@ function calc() {
   var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
   var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
   var bankPrev  = Number(state.bankPrev)||0;
-  var bankCurr  = bankPrev + tTo - tFrom;
+  var bankCurr  = bankPrev; // user enters current balance directly
   var allocTot  = sumArr(state.allocations||[]);
   var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
@@ -786,9 +786,6 @@ function render() {
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var ttd = el('transfer-to-display'); if(ttd) ttd.textContent = fmtExact(state.transferTo||0);
   var tfd = el('transfer-from-display'); if(tfd) tfd.textContent = fmtExact(state.transferFrom||0);
-  el('bnk-prev').textContent = fmt(cc.bankPrev);
-  el('bnk-to').textContent = fmt(cc.tTo);
-  el('bnk-from').textContent = fmt(cc.tFrom);
   el('bnk-curr').textContent = fmt(cc.bankCurr);
   var bfEl = el('bnk-free');
   bfEl.textContent = fmt(cc.bankFree);
