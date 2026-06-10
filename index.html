@@ -503,6 +503,10 @@ function initState() {
   curMonth = meta.current || todayMonth();
   var saved = lsLoad(curMonth);
   state = saved ? saved : JSON.parse(JSON.stringify(DEFAULTS));
+  // Migrate bankPrev -> bankCurr
+  if (state.bankPrev !== undefined && state.bankCurr === undefined) {
+    state.bankCurr = state.bankPrev;
+  }
   if (!saved) { regMonth(curMonth); lsSave(curMonth, state); }
   isHist = (curMonth !== todayMonth());
 }
@@ -583,7 +587,7 @@ function calc() {
   var daily     = totalD>0 ? alloc/totalD : 0;
   var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
   var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
-  var bankCurr  = Number(state.bankCurr)||0;
+  var bankCurr  = Number(state.bankCurr||state.bankPrev)||0;
   var allocTot  = sumArr(state.allocations||[]);
   var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
@@ -1160,6 +1164,10 @@ if (_db) {
     var remote = snap.val();
     if (remote) {
       state = remote;
+      // Migrate bankPrev -> bankCurr
+      if (state.bankPrev !== undefined && state.bankCurr === undefined) {
+        state.bankCurr = state.bankPrev;
+      }
       lsSave(curMonth, state);
       render();
     } else {
