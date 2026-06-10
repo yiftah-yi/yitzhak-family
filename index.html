@@ -272,12 +272,16 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="ph"><div class="ph-row"><h1>עו"ש 🏦</h1><span class="mbadge" id="b-bnk">—</span></div></div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-bnk" style="width:0%"></div></div>
   <div id="hb-bnk"></div>
+
+  <!-- עו"ש פנוי - hero card -->
   <div class="sec">
-    <div style="background:var(--dark);border-radius:var(--rs);padding:18px 16px;color:#fff;text-align:center;">
+    <div id="bnk-free-card" style="background:var(--dark);border-radius:var(--rs);padding:18px 16px;color:#fff;text-align:center;">
       <div style="font-size:11px;font-weight:600;opacity:.7;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">עו"ש פנוי</div>
-      <div id="bnk-free-top" style="font-size:40px;font-weight:900;letter-spacing:-1px;">₪0</div>
+      <div id="bnk-free" style="font-size:40px;font-weight:900;letter-spacing:-1px;">₪0</div>
     </div>
   </div>
+
+  <!-- העברות -->
   <div class="sec">
     <div class="sec-t">העברות חודשיות</div>
     <div class="transfer-card">
@@ -297,24 +301,30 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       </div>
     </div>
   </div>
+
+  <!-- יתרת עו"ש -->
   <div class="sec">
     <div class="bank-hdr">יתרת עו"ש</div>
     <div class="bank-body">
       <div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div>
       <div class="brow"><span>− העברה מעו"ש</span><span id="bnk-from" style="font-weight:700;color:var(--green)">₪0</span></div>
-      <div class="brow hi">
-        <span>עו"ש עדכני</span>
-        <input type="number" id="bnk-curr-input" inputmode="numeric" placeholder="0" oninput="onBankCurrInput()"
-          style="width:120px;border:none;background:transparent;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:left;outline:none;">
+      <div class="brow hi" style="padding:10px 12px;">
+        <span>עו"ש קודם</span>
+        <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
+          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
+                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
+                 text-align:center;padding:5px 8px;outline:none;">
       </div>
     </div>
   </div>
+
+  <!-- הקצאות עתידיות -->
   <div class="sec">
     <div class="bank-hdr">הקצאות עתידיות</div>
     <div class="bank-body" id="alloc-list"></div>
     <button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button>
   </div>
-<div class="pb"></div>
+  <div class="pb"></div>
 </div>
 
 </div><!-- /screens -->
@@ -468,7 +478,7 @@ var DEFAULTS = {
     {name:'אביגיל', expected:200, entries:[{desc:'מאי', amount:200}]}
   ],
   splurges: [],
-  bankCurr: 19535,
+  bankPrev: 9850,
   transferTo: 9685,
   transferFrom: 0,
   allocations: [
@@ -503,10 +513,6 @@ function initState() {
   curMonth = meta.current || todayMonth();
   var saved = lsLoad(curMonth);
   state = saved ? saved : JSON.parse(JSON.stringify(DEFAULTS));
-  // Migrate bankPrev -> bankCurr
-  if (state.bankPrev !== undefined && state.bankCurr === undefined) {
-    state.bankCurr = state.bankPrev;
-  }
   if (!saved) { regMonth(curMonth); lsSave(curMonth, state); }
   isHist = (curMonth !== todayMonth());
 }
@@ -587,7 +593,8 @@ function calc() {
   var daily     = totalD>0 ? alloc/totalD : 0;
   var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
   var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
-  var bankCurr  = Number(state.bankCurr||state.bankPrev)||0;
+  var bankPrev  = Number(state.bankPrev)||0;
+  var bankCurr  = bankPrev + tTo - tFrom;
   var allocTot  = sumArr(state.allocations||[]);
   var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
@@ -790,15 +797,16 @@ function render() {
   }
 
   // ── BANK ──
+  var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var ttd = el('transfer-to-display'); if(ttd) ttd.textContent = fmtExact(state.transferTo||0);
   var tfd = el('transfer-from-display'); if(tfd) tfd.textContent = fmtExact(state.transferFrom||0);
   el('bnk-to').textContent = fmt(cc.tTo);
   el('bnk-from').textContent = fmt(cc.tFrom);
-  var bci = el('bnk-curr-input'); if(bci && document.activeElement!==bci) bci.value = state.bankCurr||'';
-  var bfTop = el('bnk-free-top');
-  if (bfTop) {
-    bfTop.textContent = fmt(cc.bankFree);
-    bfTop.parentElement.style.background = cc.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
+  var bfEl = el('bnk-free');
+  if (bfEl) {
+    bfEl.textContent = fmt(cc.bankFree);
+    var card = el('bnk-free-card');
+    if (card) card.style.background = cc.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
   }
 
   var allocList = el('alloc-list');
@@ -1112,7 +1120,7 @@ function newMonthCopy() {
     fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
     food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
     chugim: (prev.chugim||[]).map(function(ch){ return {name:ch.name, expected:ch.expected, entries:[]}; }),
-    splurges: [], bankCurr:0, transferTo:0, transferFrom:0,
+    splurges: [], bankPrev:0, transferTo:0, transferFrom:0,
     allocations: JSON.parse(JSON.stringify(prev.allocations||[]))
   };
   lsSave(curMonth, state);
@@ -1127,7 +1135,7 @@ function newMonthEmpty() {
   lsSave(curMonth, state);
   curMonth = pendingNewMonth;
   state = {income:[], nextMonth:[], fixed:[], food:{expected:0,entries:[]},
-           chugim:[], splurges:[], bankCurr:0, transferTo:0, transferFrom:0, allocations:[]};
+           chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
   isHist = false; regMonth(curMonth); lsSave(curMonth, state);
   el('month-picker').value = curMonth;
   el('nm-mbg').classList.remove('on');
@@ -1136,7 +1144,7 @@ function newMonthEmpty() {
 }
 
 // ── BANK INPUTS ───────────────────────────────────────────────
-function onBankCurrInput() { if(isHist) return; state.bankCurr=parseFloat(el('bnk-curr-input').value)||0; persist(); render(); }
+function onBankIn() { if(isHist) return; state.bankPrev=parseFloat(el('bank-in').value)||0; persist(); render(); }
 
 var _transferDir = 'to';
 function openTransferModal(dir) {
@@ -1164,10 +1172,6 @@ if (_db) {
     var remote = snap.val();
     if (remote) {
       state = remote;
-      // Migrate bankPrev -> bankCurr
-      if (state.bankPrev !== undefined && state.bankCurr === undefined) {
-        state.bankCurr = state.bankPrev;
-      }
       lsSave(curMonth, state);
       render();
     } else {
