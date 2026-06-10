@@ -163,6 +163,11 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <div class="sec-t">הוצאות לא צפויות אחרונות</div>
     <div class="lcard" id="d-recent"><div class="empty">אין עדיין</div></div>
   </div>
+  <div class="sec" style="margin-bottom:8px;">
+    <button onclick="exportToExcel()" style="width:100%;padding:13px;border-radius:var(--rs);border:none;background:var(--green);color:#fff;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">
+      📊 ייצא לאקסל
+    </button>
+  </div>
   <div class="pb"></div>
 </div>
 
@@ -273,7 +278,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-bnk" style="width:0%"></div></div>
   <div id="hb-bnk"></div>
 
-  <!-- עו"ש פנוי - hero card -->
   <div class="sec">
     <div id="bnk-free-card" style="background:var(--dark);border-radius:var(--rs);padding:18px 16px;color:#fff;text-align:center;">
       <div style="font-size:11px;font-weight:600;opacity:.7;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">עו"ש פנוי</div>
@@ -281,7 +285,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     </div>
   </div>
 
-  <!-- העברות -->
   <div class="sec">
     <div class="sec-t">העברות חודשיות</div>
     <div class="transfer-card">
@@ -302,7 +305,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     </div>
   </div>
 
-  <!-- יתרת עו"ש -->
   <div class="sec">
     <div class="bank-hdr">יתרת עו"ש</div>
     <div class="bank-body">
@@ -311,14 +313,11 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="brow hi" style="padding:10px 12px;">
         <span>עו"ש קודם</span>
         <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
-          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
-                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
-                 text-align:center;padding:5px 8px;outline:none;">
+          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;padding:5px 8px;outline:none;">
       </div>
     </div>
   </div>
 
-  <!-- הקצאות עתידיות -->
   <div class="sec">
     <div class="bank-hdr">הקצאות עתידיות</div>
     <div class="bank-body" id="alloc-list"></div>
@@ -384,6 +383,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <div class="toast" id="toast">נשמר ✓</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
@@ -1159,6 +1159,86 @@ function openTransferModal(dir) {
   el('m-amount').value = '';
   el('mbg').classList.add('on');
   setTimeout(function(){ el('m-amount').focus(); }, 280);
+}
+
+// ── EXPORT TO EXCEL ──────────────────────────────────────────
+function exportToExcel() {
+  if (typeof XLSX === 'undefined') { showToast('טוען ספריה...'); return; }
+  var wb = XLSX.utils.book_new();
+  var meta = lsMeta();
+  var months = (meta.months || [curMonth]).sort();
+  var summaryRows = [['חודש','הכנסות','הוצ' ידועות','אוכל ופארם','חוגים','הוצ' לא צפויות','נשאר להוציא','עו"ש פנוי']];
+
+  months.forEach(function(m) {
+    var st = lsLoad(m); if (!st) return;
+    var ml = monthLabel(m);
+    var rows = [];
+
+    rows.push([ml]); rows.push([]);
+
+    rows.push(['הכנסות','סכום']);
+    (st.income||[]).forEach(function(i){ rows.push([i.name, i.amount]); });
+    var incTotal = sumArr(st.income||[]);
+    rows.push(['סה"כ הכנסות', incTotal]); rows.push([]);
+
+    rows.push(['הוצאות ידועות','סכום','סטטוס']);
+    (st.fixed||[]).forEach(function(i){ rows.push([i.name, i.amount, i.confirmed?'סופי':'הערכה']); });
+    var fixedTotal = sumArr(st.fixed||[]);
+    rows.push(['סה"כ הוצאות ידועות', fixedTotal]); rows.push([]);
+
+    rows.push(['אוכל ופארם - צפי', (st.food&&st.food.expected)||0]);
+    ((st.food&&st.food.entries)||[]).forEach(function(e){ rows.push([e.desc, e.amount]); });
+    var foodTotal = sumArr((st.food&&st.food.entries)||[]);
+    rows.push(['סה"כ אוכל ופארם', foodTotal]); rows.push([]);
+
+    rows.push(['חוגים','צפי','בפועל']);
+    var chugsTotal = 0;
+    (st.chugim||[]).forEach(function(ch){
+      var act = sumArr(ch.entries||[]);
+      chugsTotal += act;
+      rows.push([ch.name, ch.expected, act]);
+    });
+    rows.push(['סה"כ חוגים', sumArr(st.chugim||[],'expected'), chugsTotal]); rows.push([]);
+
+    rows.push(['הוצאות לא צפויות','סכום']);
+    (st.splurges||[]).forEach(function(s){ rows.push([s.name, s.amount]); });
+    var splurgeTotal = sumArr(st.splurges||[]);
+    rows.push(['סה"כ הוצאות לא צפויות', splurgeTotal]); rows.push([]);
+
+    var tTo = Number(st.transferTo)||0;
+    var tFrom = Number(st.transferFrom)||0;
+    var cumul = ((st.food&&st.food.expected)||0) + sumArr(st.chugim||[],'expected');
+    var alloc = incTotal + tFrom - fixedTotal - cumul - tTo;
+    var bankPrev = Number(st.bankPrev)||0;
+    var bankCurr = bankPrev + tTo - tFrom;
+    var bankFree = bankCurr - sumArr(st.allocations||[]);
+
+    rows.push(['סיכום חודשי','']);
+    rows.push(['הכנסות', incTotal]);
+    rows.push(['הוצ' ידועות', fixedTotal]);
+    rows.push(['הוצ' מצטברות (צפי)', cumul]);
+    rows.push(['העברה לעו"ש', tTo]);
+    rows.push(['העברה מעו"ש', tFrom]);
+    rows.push(['נשאר להוציא (לא צפויות)', alloc]);
+    rows.push(['הוצ' לא צפויות בפועל', splurgeTotal]);
+    rows.push(['עו"ש קודם', bankPrev]);
+    rows.push(['עו"ש פנוי', bankFree]);
+
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:28},{wch:14},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws, ml.substring(0,31));
+    summaryRows.push([ml, incTotal, fixedTotal, foodTotal, chugsTotal, splurgeTotal, alloc, bankFree]);
+  });
+
+  var wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{wch:14},{wch:12},{wch:14},{wch:13},{wch:10},{wch:16},{wch:14},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'סיכום');
+  wb.SheetNames = ['סיכום'].concat(wb.SheetNames.filter(function(n){ return n!=='סיכום'; }));
+
+  var d = new Date();
+  var fname = 'כלכלת_בית_'+d.getFullYear()+'_'+String(d.getMonth()+1).padStart(2,'0')+'.xlsx';
+  XLSX.writeFile(wb, fname);
+  showToast('📊 מיוצא בהצלחה!');
 }
 
 // ── INIT ──────────────────────────────────────────────────────
