@@ -903,7 +903,7 @@ function openModal(type, idx, chugIdx) {
   el('m-name').value = '';
   el('m-amount').value = '';
   el('m-exp').value = '';
-  el('m-est').checked = false;
+  var mEst = el('m-est'); if(mEst) mEst.checked = false;
 
   // Show/hide fields
   el('m-amount-wrap').style.display = (type==='chug') ? 'none' : 'block';
@@ -948,7 +948,7 @@ function saveModal() {
   var name = (el('m-name').value||'').trim();
   var amount = parseFloat(el('m-amount').value)||0;
   var exp = parseFloat(el('m-exp').value)||0;
-  var est = el('m-est').checked;
+  var mEstEl = el('m-est'); var est = mEstEl ? mEstEl.checked : false;
 
   // Handle transfer
   if (mType === 'transfer') {
