@@ -309,7 +309,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div>
       <div class="brow"><span>− העברה מעו"ש</span><span id="bnk-from" style="font-weight:700;color:var(--green)">₪0</span></div>
       <div class="brow hi" style="padding:10px 12px;">
-        <span>מצב עו"ש תחילת חודש</span>
+        <span>עו"ש קודם</span>
         <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
           style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
                  font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
@@ -342,8 +342,10 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h3 id="m-title">הוסף</h3>
-    <label>שם / תיאור</label>
-    <input type="text" id="m-name" placeholder="" autocomplete="new-password" autocorrect="off" autocapitalize="off">
+    <div id="m-name-wrap">
+      <label>שם / תיאור</label>
+      <input type="text" id="m-name" placeholder="" autocomplete="new-password" autocorrect="off" autocapitalize="off">
+    </div>
     <div id="m-amount-wrap">
       <label>סכום (₪)</label>
       <input type="number" id="m-amount" placeholder="0" inputmode="decimal" step="0.01">
@@ -353,10 +355,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <input type="number" id="m-exp" placeholder="0" inputmode="decimal">
     </div>
     <div id="m-est-wrap" style="display:none;">
-      <label class="est-row">
-        <input type="checkbox" id="m-est">
-        <span>הערכה — טרם נכנסה המשכורת</span>
-      </label>
     </div>
     <div class="mbtns">
       <button class="btn-save" onclick="saveModal()">שמור</button>
@@ -434,15 +432,15 @@ function fbStop() {
 // ── DEFAULTS ──────────────────────────────────────────────────
 var DEFAULTS = {
   income: [
-    {name:'יפתח', amount:22803, estimate:false},
-    {name:'נעה', amount:7525, estimate:false},
-    {name:'ביטוח לאומי', amount:598, estimate:false},
-    {name:'עודף מחודש קודם', amount:590, estimate:false},
-    {name:'הכנסות עסק נעה', amount:4778, estimate:false},
-    {name:'החזרים', amount:1063, estimate:false},
-    {name:'מילואים', amount:12311, estimate:false}
+    {name:'יפתח', amount:22803, confirmed:false},
+    {name:'נעה', amount:7525, confirmed:false},
+    {name:'ביטוח לאומי', amount:598, confirmed:false},
+    {name:'עודף מחודש קודם', amount:590, confirmed:false},
+    {name:'הכנסות עסק נעה', amount:4778, confirmed:false},
+    {name:'החזרים', amount:1063, confirmed:false},
+    {name:'מילואים', amount:12311, confirmed:false}
   ],
-  nextMonth: [{name:'הכנסות חודש הבא', amount:5958}],
+  nextMonth: [{name:'הכנסות חודש הבא', amount:5958, confirmed:false}],
   fixed: [
     {name:'גני ילדים', amount:3023, confirmed:true}, {name:'מסי קהילה', amount:409, confirmed:true},
     {name:'חסכונות', amount:4000, confirmed:true}, {name:'בית ספר', amount:1229, confirmed:true},
@@ -837,26 +835,20 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
     return;
   }
   var html = '';
+  var useConfirmed = (type === 'fixed' || type === 'income' || type === 'nextMonth');
   arr.forEach(function(item, i) {
-    var est = showEst && item.estimate ? ' est' : '';
-    var chip = showEst && item.estimate ? '<span class="chip">הערכה</span>' : '';
     var del = !isHist ? '<span class="del-btn" data-type="list-del" data-list="'+type+'" data-idx="'+i+'">×</span>' : '';
-    // For fixed items: show confirmed status
     var rowStyle = '';
     var confirmBtn = '';
-    if (type === 'fixed' && item.confirmed !== undefined) {
-      rowStyle = item.confirmed
-        ? 'background:#E8F5EE;'   // green = confirmed
-        : 'background:#FFFDE7;';  // yellow = estimate
+    if (useConfirmed && item.confirmed !== undefined) {
+      rowStyle = item.confirmed ? 'background:#E8F5EE;' : 'background:#FFFDE7;';
       if (!isHist) {
-        var btnLabel = item.confirmed ? '✓' : '?';
-        var btnColor = item.confirmed ? '#1B5E42' : '#F9A825';
-        confirmBtn = '<span data-type="fixed-toggle" data-idx="'+i+'" style="cursor:pointer;font-weight:700;font-size:14px;color:'+btnColor+';padding:0 4px;">'+btnLabel+'</span>';
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:'+(item.confirmed?'#1B5E42':'#F9A825')+';display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
       }
     }
     html += '<div class="lrow" style="'+rowStyle+'">' +
             '<div class="dot" style="background:'+dotColor+'"></div>' +
-            '<span class="rn'+est+'">'+item.name+chip+'</span>' +
+            '<span class="rn">'+item.name+'</span>' +
             confirmBtn +
             '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
             del + '</div>';
@@ -864,7 +856,6 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
   container.innerHTML = html;
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────
 function goScreen(name, btn) {
   document.querySelectorAll('.sc').forEach(function(s){ s.classList.remove('on'); });
   document.querySelectorAll('.nb').forEach(function(b){ b.classList.remove('on'); });
@@ -908,6 +899,7 @@ function openModal(type, idx, chugIdx) {
   mChugIdx = chugIdx !== undefined ? chugIdx : -1;
 
   el('m-title').textContent = (mIdx >= 0 ? 'ערוך ' : 'הוסף ') + (TITLES[type]||'');
+  el('m-name-wrap').style.display = 'block';
   el('m-name').value = '';
   el('m-amount').value = '';
   el('m-exp').value = '';
@@ -1005,7 +997,7 @@ function saveModal() {
   // All other types require name + amount
   if (!name || !amount) return;
   var newItem = {name: name, amount: amount};
-  if (mType==='income'||mType==='nextMonth') newItem.estimate = est;
+  if (mType==='income' || mType==='nextMonth') newItem.confirmed = false;
   if (mType==='fixed') newItem.confirmed = false; // new fixed items start as estimate
 
   var arr = null;
@@ -1088,22 +1080,25 @@ document.addEventListener('click', function(e) {
     mIdx = -1;
     mChugIdx = idx;
     el('m-title').textContent = 'הוסף תשלום — ' + state.chugim[idx].name;
+    el('m-name-wrap').style.display = 'none';
     el('m-amount-wrap').style.display = 'block';
     el('m-exp-wrap').style.display = 'none';
     el('m-est-wrap').style.display = 'none';
-    el('m-name').value = '';
+    el('m-name').value = state.chugim[idx].name;
     el('m-amount').value = '';
     el('mbg').classList.add('on');
-    setTimeout(function(){ el('m-name').focus(); }, 280);
+    setTimeout(function(){ el('m-amount').focus(); }, 280);
     return;
   }
 
-  // Fixed item confirm toggle
-  if (target.dataset.type === 'fixed-toggle') {
+  // Confirmed toggle for income, nextMonth, fixed
+  if (target.dataset.type === 'confirmed-toggle') {
     if (isHist) return;
     var idx = parseInt(target.dataset.idx);
-    if (!state.fixed[idx]) return;
-    state.fixed[idx].confirmed = !state.fixed[idx].confirmed;
+    var list = target.dataset.list;
+    var arr2 = list==='income' ? state.income : list==='nextMonth' ? state.nextMonth : state.fixed;
+    if (!arr2 || !arr2[idx]) return;
+    arr2[idx].confirmed = !arr2[idx].confirmed;
     persist(); render();
     return;
   }
