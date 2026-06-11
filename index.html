@@ -842,8 +842,10 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
     var confirmBtn = '';
     if (useConfirmed && item.confirmed !== undefined) {
       rowStyle = item.confirmed ? 'background:#E8F5EE;' : 'background:#FFFDE7;';
-      if (!isHist) {
-        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:'+(item.confirmed?'#1B5E42':'#F9A825')+';display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
+      if (!isHist && !item.confirmed) {
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:#F9A825;display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
+      } else if (!isHist && item.confirmed) {
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:transparent;display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
       }
     }
     html += '<div class="lrow" style="'+rowStyle+'">' +
