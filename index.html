@@ -908,7 +908,7 @@ function openModal(type, idx, chugIdx) {
   // Show/hide fields
   el('m-amount-wrap').style.display = (type==='chug') ? 'none' : 'block';
   el('m-exp-wrap').style.display = (type==='chug') ? 'block' : 'none';
-  el('m-est-wrap').style.display = (type==='income'||type==='nextMonth') ? 'block' : 'none';
+  el('m-est-wrap').style.display = 'none';
 
   // Set title for chug entry
   if (type === 'chug-entry' && mChugIdx >= 0) {
@@ -979,7 +979,7 @@ function saveModal() {
   if (mType === 'chug-entry') {
     if (!amount || mChugIdx < 0) return;
     if (!state.chugim[mChugIdx].entries) state.chugim[mChugIdx].entries = [];
-    state.chugim[mChugIdx].entries.push({desc: name||'—', amount: amount});
+    state.chugim[mChugIdx].entries.push({desc: state.chugim[mChugIdx].name, amount: amount});
     closeModal(); persist(); render(); return;
   }
   if (mType === 'chug') {
