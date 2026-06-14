@@ -291,7 +291,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
             oninput="onTransferToEdit(this.value)"
-            style="width:100px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
+            style="width:90px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
+          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
         </div>
       </div>
       <div class="transfer-row">
@@ -299,7 +300,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="number" id="transfer-from-display" inputmode="numeric" placeholder="0"
             oninput="onTransferFromEdit(this.value)"
-            style="width:100px;border:1.5px solid var(--green);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;background:#fff;outline:none;">
+            style="width:90px;border:1.5px solid var(--green);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;background:#fff;outline:none;">
+          <button onclick="openTransferModal('from')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
         </div>
       </div>
     </div>
@@ -969,6 +971,15 @@ function saveModal() {
   if (!state.food) state.food = {expected:0, entries:[]};
   if (!state.food.entries) state.food.entries = [];
 
+  if (mType === 'transfer') {
+    if (!amount) return;
+    if (_transferDir === 'to') {
+      state.transferTo = (state.transferTo||0) + amount;
+    } else {
+      state.transferFrom = (state.transferFrom||0) + amount;
+    }
+    closeModal(); persist(); render(); return;
+  }
   if (mType === 'food-entry') {
     if (!amount) return;
     if (!state.food) state.food = {expected:0, entries:[]};
@@ -1149,6 +1160,24 @@ function onTransferFromEdit(val) {
   if (isHist) return;
   state.transferFrom = parseFloat(val)||0;
   persist(); render();
+}
+var _transferDir = 'to';
+function openTransferModal(dir) {
+  if (isHist) return;
+  _transferDir = dir;
+  mType = 'transfer';
+  el('m-title').textContent = dir === 'to' ? 'הוסף העברה לעו"ש ↑' : 'הוסף העברה מעו"ש ↓';
+  el('m-name-wrap').style.display = 'none';
+  el('m-amount-wrap').style.display = 'block';
+  el('m-exp-wrap').style.display = 'none';
+  el('m-est-wrap').style.display = 'none';
+  el('m-name').value = '';
+  el('m-amount').value = '';
+  el('m-amount').style.fontSize = '32px';
+  el('m-amount').style.textAlign = 'center';
+  el('m-amount').style.padding = '16px';
+  el('mbg').classList.add('on');
+  setTimeout(function(){ el('m-amount').focus(); }, 280);
 }
 
 // ── INIT ──────────────────────────────────────────────────────
