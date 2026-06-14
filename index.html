@@ -289,15 +289,17 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="transfer-row">
         <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span id="transfer-to-display" style="font-weight:700;color:var(--blue);font-size:15px;">₪0</span>
-          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+          <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
+            oninput="onTransferToEdit(this.value)"
+            style="width:100px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
         </div>
       </div>
       <div class="transfer-row">
         <div><div class="transfer-label">העברה מעו"ש ↓</div><div class="transfer-sub">משיכה מעו"ש לתזרים</div></div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <span id="transfer-from-display" style="font-weight:700;color:var(--green);font-size:15px;">₪0</span>
-          <button onclick="openTransferModal('from')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+          <input type="number" id="transfer-from-display" inputmode="numeric" placeholder="0"
+            oninput="onTransferFromEdit(this.value)"
+            style="width:100px;border:1.5px solid var(--green);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;background:#fff;outline:none;">
         </div>
       </div>
     </div>
@@ -797,8 +799,8 @@ function render() {
 
   // ── BANK ──
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
-  var ttd = el('transfer-to-display'); if(ttd) ttd.textContent = fmtExact(state.transferTo||0);
-  var tfd = el('transfer-from-display'); if(tfd) tfd.textContent = fmtExact(state.transferFrom||0);
+  var ttd = el('transfer-to-display'); if(ttd && document.activeElement!==ttd) ttd.value = state.transferTo||'';
+  var tfd = el('transfer-from-display'); if(tfd && document.activeElement!==tfd) tfd.value = state.transferFrom||'';
   el('bnk-to').textContent = fmt(cc.tTo);
   el('bnk-from').textContent = fmt(cc.tFrom);
   var bfEl = el('bnk-free');
@@ -956,16 +958,7 @@ function saveModal() {
   var exp = parseFloat(el('m-exp').value)||0;
   var mEstEl = el('m-est'); var est = mEstEl ? mEstEl.checked : false;
 
-  // Handle transfer
-  if (mType === 'transfer') {
-    if (!amount) return;
-    if (_transferDir === 'to') {
-      state.transferTo = (state.transferTo||0) + amount;
-    } else {
-      state.transferFrom = (state.transferFrom||0) + amount;
-    }
-    closeModal(); persist(); render(); return;
-  }
+
 
   if (!state.chugim) state.chugim = [];
   if (!state.income) state.income = [];
@@ -1147,24 +1140,15 @@ function newMonthEmpty() {
 // ── BANK INPUTS ───────────────────────────────────────────────
 function onBankIn() { if(isHist) return; state.bankPrev=parseFloat(el('bank-in').value)||0; persist(); render(); }
 
-var _transferDir = 'to';
-function openTransferModal(dir) {
+function onTransferToEdit(val) {
   if (isHist) return;
-  _transferDir = dir;
-  mType = 'transfer';
-  el('m-title').textContent = dir === 'to' ? 'העברה לעו"ש ↑' : 'העברה מעו"ש ↓';
-  el('m-name-wrap').style.display = 'none';
-  el('m-amount-wrap').style.display = 'block';
-  el('m-exp-wrap').style.display = 'none';
-  el('m-est-wrap').style.display = 'none';
-  el('m-name').value = '';
-  el('m-amount').value = '';
-  // Make amount input bigger for transfer
-  el('m-amount').style.fontSize = '32px';
-  el('m-amount').style.textAlign = 'center';
-  el('m-amount').style.padding = '16px';
-  el('mbg').classList.add('on');
-  setTimeout(function(){ el('m-amount').focus(); }, 280);
+  state.transferTo = parseFloat(val)||0;
+  persist(); render();
+}
+function onTransferFromEdit(val) {
+  if (isHist) return;
+  state.transferFrom = parseFloat(val)||0;
+  persist(); render();
 }
 
 // ── INIT ──────────────────────────────────────────────────────
