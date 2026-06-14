@@ -190,8 +190,9 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="ph"><div class="ph-row"><h1>הוצ' ידועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-exp" style="width:0%"></div></div>
   <div id="hb-exp"></div>
-  <div class="sec"><div class="lcard" id="fixed-list"></div>
-    <button class="add-btn" onclick="openModal('fixed')">＋ הוסף</button>
+  <div class="sec">
+    <button class="add-btn" onclick="openModal('fixed')">＋ הוסף הוצאה ידועה</button>
+    <div class="lcard" style="margin-top:7px;" id="fixed-list"></div>
     <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ</span><span id="fixed-tot" class="c-blue">₪0</span></div></div>
   </div>
   <div class="pb"></div>
@@ -261,8 +262,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   </div>
   <div class="sec">
     <div class="sec-t">הוצאות החודש</div>
-    <div class="lcard" id="un-list"><div class="empty">אין עדיין</div></div>
     <button class="add-btn" onclick="openModal('unexp')">＋ הוסף הוצאה</button>
+    <div class="lcard" style="margin-top:7px;" id="un-list"><div class="empty">אין עדיין</div></div>
   </div>
   <div class="pb"></div>
 </div>
@@ -904,6 +905,9 @@ function openModal(type, idx, chugIdx) {
   el('m-name-wrap').style.display = 'block';
   el('m-name').value = '';
   el('m-amount').value = '';
+  el('m-amount').style.fontSize = '';
+  el('m-amount').style.textAlign = '';
+  el('m-amount').style.padding = '';
   el('m-exp').value = '';
   var mEst = el('m-est'); if(mEst) mEst.checked = false;
 
@@ -1148,12 +1152,17 @@ function openTransferModal(dir) {
   if (isHist) return;
   _transferDir = dir;
   mType = 'transfer';
-  el('m-title').textContent = dir === 'to' ? 'הוסף העברה לעו"ש ↑' : 'הוסף העברה מעו"ש ↓';
+  el('m-title').textContent = dir === 'to' ? 'העברה לעו"ש ↑' : 'העברה מעו"ש ↓';
+  el('m-name-wrap').style.display = 'none';
   el('m-amount-wrap').style.display = 'block';
   el('m-exp-wrap').style.display = 'none';
   el('m-est-wrap').style.display = 'none';
   el('m-name').value = '';
   el('m-amount').value = '';
+  // Make amount input bigger for transfer
+  el('m-amount').style.fontSize = '32px';
+  el('m-amount').style.textAlign = 'center';
+  el('m-amount').style.padding = '16px';
   el('mbg').classList.add('on');
   setTimeout(function(){ el('m-amount').focus(); }, 280);
 }
