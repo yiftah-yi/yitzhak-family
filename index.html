@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>כלכלת בית</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -105,7 +105,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .hist-back{background:rgba(255,255,255,.25);border:none;color:#fff;padding:4px 10px;border-radius:20px;font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
 .mbg{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
 .mbg.on{opacity:1;pointer-events:all;}
-.modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
+.modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;max-height:85vh;overflow-y:auto;}
 .mbg.on .modal{transform:translateY(0);}
 .modal h3{font-size:16px;font-weight:900;margin-bottom:12px;}
 .modal label{font-size:11px;font-weight:700;color:var(--text-m);display:block;margin:10px 0 3px;text-transform:uppercase;letter-spacing:.4px;}
@@ -944,7 +944,13 @@ function openModal(type, idx, chugIdx) {
   }
 
   el('mbg').classList.add('on');
-  setTimeout(function(){ el('m-name').focus(); }, 280);
+  setTimeout(function(){
+    var inp = el('m-name-wrap') && el('m-name-wrap').style.display !== 'none' ? el('m-name') : el('m-amount');
+    if (inp) {
+      inp.focus();
+      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
+    }
+  }, 300);
 }
 
 function openFoodModal() {
@@ -1097,7 +1103,13 @@ document.addEventListener('click', function(e) {
     el('m-name').value = state.chugim[idx].name;
     el('m-amount').value = '';
     el('mbg').classList.add('on');
-    setTimeout(function(){ el('m-amount').focus(); }, 280);
+    setTimeout(function(){
+    var inp = el('m-amount');
+    if (inp) {
+      inp.focus();
+      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
+    }
+  }, 300);
     return;
   }
 
@@ -1177,7 +1189,13 @@ function openTransferModal(dir) {
   el('m-amount').style.textAlign = 'center';
   el('m-amount').style.padding = '16px';
   el('mbg').classList.add('on');
-  setTimeout(function(){ el('m-amount').focus(); }, 280);
+  setTimeout(function(){
+    var inp = el('m-amount');
+    if (inp) {
+      inp.focus();
+      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
+    }
+  }, 300);
 }
 
 // ── INIT ──────────────────────────────────────────────────────
