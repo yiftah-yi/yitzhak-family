@@ -946,10 +946,7 @@ function openModal(type, idx, chugIdx) {
   el('mbg').classList.add('on');
   setTimeout(function(){
     var inp = el('m-name-wrap') && el('m-name-wrap').style.display !== 'none' ? el('m-name') : el('m-amount');
-    if (inp) {
-      inp.focus();
-      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
-    }
+    if (inp) inp.focus();
   }, 300);
 }
 
@@ -957,7 +954,11 @@ function openFoodModal() {
   openModal('food-entry');
 }
 
-function closeModal() { el('mbg').classList.remove('on'); }
+function closeModal() {
+  el('mbg').classList.remove('on');
+  window.scrollTo({top:0, behavior:'instant'});
+  document.querySelector('.screens').scrollTop = 0;
+}
 function newMonthCancelModal() { el('nm-mbg').classList.remove('on'); }
 
 function saveModal() {
@@ -1103,13 +1104,7 @@ document.addEventListener('click', function(e) {
     el('m-name').value = state.chugim[idx].name;
     el('m-amount').value = '';
     el('mbg').classList.add('on');
-    setTimeout(function(){
-    var inp = el('m-amount');
-    if (inp) {
-      inp.focus();
-      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
-    }
-  }, 300);
+    setTimeout(function(){ el('m-amount').focus(); }, 300);
     return;
   }
 
@@ -1189,13 +1184,7 @@ function openTransferModal(dir) {
   el('m-amount').style.textAlign = 'center';
   el('m-amount').style.padding = '16px';
   el('mbg').classList.add('on');
-  setTimeout(function(){
-    var inp = el('m-amount');
-    if (inp) {
-      inp.focus();
-      setTimeout(function(){ inp.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
-    }
-  }, 300);
+  setTimeout(function(){ el('m-amount').focus(); }, 300);
 }
 
 // ── INIT ──────────────────────────────────────────────────────
