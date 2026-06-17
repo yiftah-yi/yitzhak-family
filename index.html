@@ -848,9 +848,9 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
     if (useConfirmed && item.confirmed !== undefined) {
       rowStyle = item.confirmed ? 'background:#E8F5EE;' : 'background:#FFFDE7;';
       if (!isHist && !item.confirmed) {
-        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:#F9A825;display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin:-9px;"><span style="width:10px;height:10px;border-radius:50%;background:#F9A825;display:block;"></span></span>';
       } else if (!isHist && item.confirmed) {
-        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:10px;height:10px;border-radius:50%;background:transparent;display:inline-block;cursor:pointer;flex-shrink:0;"></span>';
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin:-9px;"><span style="width:10px;height:10px;border-radius:50%;background:transparent;display:block;"></span></span>';
       }
     }
     html += '<div class="lrow" style="'+rowStyle+'">' +
