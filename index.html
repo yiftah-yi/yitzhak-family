@@ -794,7 +794,7 @@ function render() {
       var realIdx = state.splurges.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="splurge-del" data-idx="'+realIdx+'">×</span>' : '';
       html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
-              '<span class="rn">'+s.name+'</span><span class="rv c-purple">'+fmtExact(s.amount)+'</span>'+del+'</div>';
+              '<span class="rn">'+s.name+'</span><span class="rv c-purple" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
     });
     unList.innerHTML = html;
   }
@@ -825,7 +825,7 @@ function render() {
       var del = !isHist ? '<span class="del-btn" data-type="alloc-del" data-idx="'+i+'">×</span>' : '';
       html += '<div class="brow'+cls+'"><span>'+a.name+'</span>' +
               '<div style="display:flex;align-items:center;gap:7px;">' +
-              '<span style="font-weight:700;color:'+col+'">'+sign+fmt(a.amount)+'</span>'+del+
+              '<span style="font-weight:700;color:'+col+';cursor:pointer;" data-type="list-edit" data-list="alloc" data-idx="'+i+'">'+sign+fmt(a.amount)+'</span>'+del+
               '</div></div>';
     });
     allocList.innerHTML = html;
