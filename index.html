@@ -1196,6 +1196,15 @@ initState();
 el('month-picker').value = curMonth;
 render();
 
+// Re-render when returning to the tab/app (e.g. after days away)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    render();
+  }
+});
+// Also re-check periodically while app stays open (every 30 min)
+setInterval(function(){ render(); }, 30*60*1000);
+
 fbInit();
 if (_db) {
   _db.ref('kb/months/'+curMonth).once('value').then(function(snap) {
