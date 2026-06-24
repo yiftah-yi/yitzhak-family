@@ -646,11 +646,15 @@ function render() {
   var wEl = el('d-weekly');
   wEl.textContent = fmt(cc.weeklyLeft);
   wEl.className = 'hero-val' + (cc.weeklyLeft < 0 ? ' neg' : '');
-  // Dynamic hero color
+  // Dynamic hero color - based on whether spending pace allows reaching month-end
   var heroEls = document.querySelectorAll('.hero');
-  // Color based on monthly: how much of alloc is spent
-  var monthlyPct = cc.alloc > 0 ? cc.splurged / cc.alloc : 0;
-  var heroBg = cc.weeklyLeft < 0 ? '#922B21' : monthlyPct > 0.9 ? '#C0392B' : monthlyPct > 0.7 ? '#D35400' : 'var(--blue)';
+  var totalDaysHero = daysInMonth(curMonth);
+  var leftDaysHero = daysLeft();
+  var dailyAllocHero = totalDaysHero > 0 ? cc.alloc / totalDaysHero : 0;
+  var expectedRemaining = dailyAllocHero * leftDaysHero; // what SHOULD be left if on pace
+  var actualRemaining = cc.alloc - cc.splurged; // what IS actually left
+  var paceRatio = expectedRemaining > 0 ? actualRemaining / expectedRemaining : 1;
+  var heroBg = actualRemaining < 0 ? '#922B21' : paceRatio < 0.5 ? '#C0392B' : paceRatio < 0.85 ? '#D35400' : 'var(--blue)';
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
   el('d-spent').textContent = fmt(cc.splurged);
