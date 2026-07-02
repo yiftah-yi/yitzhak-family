@@ -657,14 +657,7 @@ function render() {
   var expectedRemaining = dailyAllocHero * leftDaysHero; // what SHOULD be left if on pace
   var actualRemaining = cc.alloc - cc.splurged; // what IS actually left
   var paceRatio = expectedRemaining > 0 ? actualRemaining / expectedRemaining : 1;
-  var heroBg;
-  if (heroVal < 0) {
-    heroBg = '#E74C3C'; // bright red when negative
-  } else if (isHist) {
-    heroBg = 'var(--blue)'; // always blue for past months (no pace warning)
-  } else {
-    heroBg = paceRatio < 0.5 ? '#C0392B' : paceRatio < 0.85 ? '#D35400' : 'var(--blue)';
-  }
+  var heroBg = heroVal < 0 ? '#E74C3C' : isHist ? 'var(--blue)' : paceRatio < 0.5 ? '#C0392B' : paceRatio < 0.85 ? '#D35400' : 'var(--blue)';
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
   el('d-spent').textContent = fmt(cc.splurged);
