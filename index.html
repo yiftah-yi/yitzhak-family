@@ -653,11 +653,11 @@ function render() {
   // Dynamic hero color - based on whether spending pace allows reaching month-end
   var heroEls = document.querySelectorAll('.hero');
   var totalDaysHero = daysInMonth(curMonth);
-  var leftDaysHero = daysLeft();
   var dailyAllocHero = totalDaysHero > 0 ? cc.alloc / totalDaysHero : 0;
-  var expectedRemaining = dailyAllocHero * leftDaysHero; // what SHOULD be left if on pace
-  var actualRemaining = cc.alloc - cc.splurged; // what IS actually left
-  var paceRatio = expectedRemaining > 0 ? actualRemaining / expectedRemaining : 1;
+  var leftDaysWeekHero = daysLeftWeek(); // ימים שנשארו בשבוע הנוכחי
+  var expectedWeekly = dailyAllocHero * leftDaysWeekHero; // כמה צריך שיהיה נשאר לשבוע אם בקצב תקין
+  var actualWeekly = cc.weeklyLeft; // כמה באמת נשאר לשבוע
+  var paceRatio = expectedWeekly > 0 ? actualWeekly / expectedWeekly : 1;
   var heroBg;
   if (isHist) {
     heroBg = 'var(--blue)'; // historical: always blue, no pace warning
