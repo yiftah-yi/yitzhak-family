@@ -644,11 +644,11 @@ function render() {
 
   // ── DASHBOARD ──
   var wEl = el('d-weekly');
-  var heroVal = isHist ? cc.alloc - cc.splurged : cc.weeklyLeft;
-  wEl.textContent = fmt(heroVal);
+  var heroVal = isHist ? (cc.alloc - cc.splurged) : cc.weeklyLeft;
+  wEl.textContent = (heroVal < 0 ? '-' : '') + fmt(heroVal);
   wEl.className = 'hero-val' + (heroVal < 0 ? ' neg' : '');
   var heroLbl = el('d-hero-lbl');
-  if (heroLbl) heroLbl.textContent = isHist ? 'נשאר להוציא (סה"כ)' : 'נשאר להוציא השבוע';
+  if (heroLbl) heroLbl.textContent = isHist ? 'נשאר להוציא (סיכום חודש)' : 'נשאר להוציא השבוע';
   // Dynamic hero color - based on whether spending pace allows reaching month-end
   var heroEls = document.querySelectorAll('.hero');
   var totalDaysHero = daysInMonth(curMonth);
@@ -657,7 +657,14 @@ function render() {
   var expectedRemaining = dailyAllocHero * leftDaysHero; // what SHOULD be left if on pace
   var actualRemaining = cc.alloc - cc.splurged; // what IS actually left
   var paceRatio = expectedRemaining > 0 ? actualRemaining / expectedRemaining : 1;
-  var heroBg = isHist ? (actualRemaining < 0 ? '#C0392B' : 'var(--blue)') : (actualRemaining < 0 ? '#922B21' : paceRatio < 0.5 ? '#C0392B' : paceRatio < 0.85 ? '#D35400' : 'var(--blue)');
+  var heroBg;
+  if (heroVal < 0) {
+    heroBg = '#E74C3C'; // bright red when negative
+  } else if (isHist) {
+    heroBg = 'var(--blue)'; // always blue for past months (no pace warning)
+  } else {
+    heroBg = paceRatio < 0.5 ? '#C0392B' : paceRatio < 0.85 ? '#D35400' : 'var(--blue)';
+  }
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
   el('d-spent').textContent = fmt(cc.splurged);
@@ -784,10 +791,9 @@ function render() {
 
   // ── UNEXPECTED ──
   var uwEl = el('un-weekly');
-  var unHeroVal = isHist ? cc.alloc - cc.splurged : cc.weeklyLeft;
-  var unNeg = unHeroVal < 0;
-  uwEl.textContent = (unNeg ? '-' : '') + fmt(unHeroVal);
-  uwEl.className = 'hero-val' + (unNeg ? ' neg' : '');
+  var unVal = isHist ? (cc.alloc - cc.splurged) : cc.weeklyLeft;
+  uwEl.textContent = (unVal < 0 ? '-' : '') + fmt(unVal);
+  uwEl.className = 'hero-val' + (unVal < 0 ? ' neg' : '');
   el('un-alloc').textContent = fmt(cc.alloc);
   el('un-spent').textContent = fmt(cc.splurged);
   el('un-pct').textContent = cc.pct + '%';
