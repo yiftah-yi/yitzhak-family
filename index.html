@@ -539,13 +539,12 @@ function persist() {
 }
 
 // ── HELPERS ───────────────────────────────────────────────────
-function fmt(n) { return (n < 0 ? '-' : '') + '₪' + Math.round(Math.abs(n)).toLocaleString('he-IL'); }
+function fmt(n) { return '₪' + Math.round(Math.abs(n)).toLocaleString('he-IL'); }
 function fmtExact(n) {
-  var sign = n < 0 ? '-' : '';
   var abs = Math.abs(n);
   var rounded = Math.round(abs * 100) / 100;
-  if (rounded === Math.floor(rounded)) return sign + '₪' + Math.floor(rounded).toLocaleString('he-IL');
-  return sign + '₪' + rounded.toLocaleString('he-IL', {minimumFractionDigits:0, maximumFractionDigits:2});
+  if (rounded === Math.floor(rounded)) return '₪' + Math.floor(rounded).toLocaleString('he-IL');
+  return '₪' + rounded.toLocaleString('he-IL', {minimumFractionDigits:0, maximumFractionDigits:2});
 }
 function sumArr(arr, key) { key = key||'amount'; return arr.reduce(function(s,i){ return s+(Number(i[key])||0); }, 0); }
 function monthLabel(m) {
@@ -786,8 +785,9 @@ function render() {
   // ── UNEXPECTED ──
   var uwEl = el('un-weekly');
   var unHeroVal = isHist ? cc.alloc - cc.splurged : cc.weeklyLeft;
-  uwEl.textContent = fmt(unHeroVal);
-  uwEl.className = 'hero-val' + (unHeroVal < 0 ? ' neg' : '');
+  var unNeg = unHeroVal < 0;
+  uwEl.textContent = (unNeg ? '-' : '') + fmt(unHeroVal);
+  uwEl.className = 'hero-val' + (unNeg ? ' neg' : '');
   el('un-alloc').textContent = fmt(cc.alloc);
   el('un-spent').textContent = fmt(cc.splurged);
   el('un-pct').textContent = cc.pct + '%';
