@@ -126,8 +126,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .toast.on{opacity:1;}
 
 .pb{padding-bottom:10px;}
-.user-y{color:#1A3A6B;font-weight:700;font-size:10px;margin-right:3px;} /* יפתח - כחול */
-.user-n{color:#6B1A3A;font-weight:700;font-size:10px;margin-right:3px;} /* נעה - סגול-אדום */
+
 .month-prog-bar{height:4px;background:var(--border);}
 .month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
 </style>
@@ -752,7 +751,9 @@ function render() {
     rev.forEach(function(e, i) {
       var realIdx = entries.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="food-entry" data-idx="'+realIdx+'">×</span>' : '';
-      html += '<div class="cum-entry">'+userTag(e.user)+'<span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+      var fCol = userColor(e.user);
+      var fStyle = fCol ? 'color:'+fCol+';' : '';
+      html += '<div class="cum-entry"><span class="en" style="'+fStyle+'">'+e.desc+'</span><span class="ev" style="'+fStyle+'">'+fmtExact(e.amount)+'</span>'+del+'</div>';
     });
     fEntries.innerHTML = html;
   }
@@ -777,7 +778,9 @@ function render() {
         rev.forEach(function(e, ei) {
           var realIdx = ch.entries.length - 1 - ei;
           var del = !isHist ? '<span class="del-btn" data-type="chug-entry" data-chug-idx="'+i+'" data-idx="'+realIdx+'">×</span>' : '';
-          entriesHtml += '<div class="cum-entry">'+userTag(e.user)+'<span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+          var cCol = userColor(e.user);
+        var cStyle = cCol ? 'color:'+cCol+';' : '';
+        entriesHtml += '<div class="cum-entry"><span class="en" style="'+cStyle+'">'+e.desc+'</span><span class="ev" style="'+cStyle+'">'+fmtExact(e.amount)+'</span>'+del+'</div>';
         });
       }
       var addBtn = !isHist ? '<button class="cum-add" data-type="chug-add" data-idx="'+i+'">＋ הוסף תשלום</button>' : '';
@@ -827,8 +830,10 @@ function render() {
     state.splurges.slice().reverse().forEach(function(s, i) {
       var realIdx = state.splurges.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="splurge-del" data-idx="'+realIdx+'">×</span>' : '';
+      var sCol = userColor(s.user);
+      var sStyle = sCol ? 'color:'+sCol+';' : '';
       html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
-              userTag(s.user)+'<span class="rn">'+s.name+'</span><span class="rv c-purple" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
+              '<span class="rn" style="'+sStyle+'">'+s.name+'</span><span class="rv" style="font-weight:700;'+sStyle+'" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
     });
     unList.innerHTML = html;
   }
@@ -887,12 +892,13 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
         confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin:-9px;"><span style="width:10px;height:10px;border-radius:50%;background:transparent;display:block;"></span></span>';
       }
     }
+    var uCol = userColor(item.user);
+    var uStyle = uCol ? 'color:'+uCol+';' : '';
     html += '<div class="lrow" style="'+rowStyle+'">' +
             '<div class="dot" style="background:'+dotColor+'"></div>' +
-            userTag(item.user) +
-            '<span class="rn">'+item.name+'</span>' +
+            '<span class="rn" style="'+uStyle+'">'+item.name+'</span>' +
             confirmBtn +
-            '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
+            '<span class="rv '+valClass+'" style="'+uStyle+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
             del + '</div>';
   });
   container.innerHTML = html;
@@ -1236,10 +1242,9 @@ function setUser(name) {
   localStorage.setItem('kb_user', name);
   document.getElementById('user-mbg').classList.remove('on');
 }
-function userTag(user) {
+function userColor(user) {
   if (!user) return '';
-  var cls = user === 'יפתח' ? 'user-y' : 'user-n';
-  return '<span class="'+cls+'">'+user+'</span>';
+  return user === 'יפתח' ? '#1A3A6B' : '#7B1A4B';
 }
 
 // ── INIT ──────────────────────────────────────────────────────
