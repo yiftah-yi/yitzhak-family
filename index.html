@@ -126,6 +126,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .toast.on{opacity:1;}
 
 .pb{padding-bottom:10px;}
+.user-y{color:#1A3A6B;font-weight:700;font-size:10px;margin-right:3px;} /* יפתח - כחול */
+.user-n{color:#6B1A3A;font-weight:700;font-size:10px;margin-right:3px;} /* נעה - סגול-אדום */
 .month-prog-bar{height:4px;background:var(--border);}
 .month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
 </style>
@@ -155,12 +157,12 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   </div>
   <div class="metrics">
     <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
-    <div class="met"><div class="met-l">הוצ' ידועות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
+    <div class="met"><div class="met-l">הוצ' חודשיות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
     <div class="met"><div class="met-l">נשאר להוציא החודש</div><div class="met-v c-blue" id="d-rem">₪0</div></div>
     <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
   </div>
   <div class="sec">
-    <div class="sec-t">הוצאות לא צפויות אחרונות</div>
+    <div class="sec-t">הוצאות שבועיות אחרונות</div>
     <div class="lcard" id="d-recent"><div class="empty">אין עדיין</div></div>
   </div>
   <div class="pb"></div>
@@ -187,11 +189,11 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <!-- S3: FIXED -->
 <div class="sc" id="s-expenses">
-  <div class="ph"><div class="ph-row"><h1>הוצ' ידועות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
+  <div class="ph"><div class="ph-row"><h1>הוצ' חודשיות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-exp" style="width:0%"></div></div>
   <div id="hb-exp"></div>
   <div class="sec">
-    <button class="add-btn" onclick="openModal('fixed')">＋ הוסף הוצאה ידועה</button>
+    <button class="add-btn" onclick="openModal('fixed')">＋ הוסף הוצאה חודשית</button>
     <div class="lcard" style="margin-top:7px;" id="fixed-list"></div>
     <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ</span><span id="fixed-tot" class="c-blue">₪0</span></div></div>
   </div>
@@ -248,7 +250,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <!-- S5: UNEXPECTED -->
 <div class="sc" id="s-unexp">
-  <div class="ph"><div class="ph-row"><h1>הוצ' לא צפויות 🛍️</h1><span class="mbadge" id="b-un">—</span></div></div>
+  <div class="ph"><div class="ph-row"><h1>הוצ' שבועיות 🛍️</h1><span class="mbadge" id="b-un">—</span></div></div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-un" style="width:0%"></div></div>
   <div id="hb-un"></div>
   <div class="hero">
@@ -337,13 +339,25 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <nav class="nav">
   <button class="nb on" onclick="goScreen('dashboard',this)"><span class="ni">🏠</span><span class="nl">ראשי</span></button>
   <button class="nb" onclick="goScreen('income',this)"><span class="ni">💰</span><span class="nl">הכנסות</span></button>
-  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' ידועות</span></button>
+  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' חודשיות</span></button>
   <button class="nb" onclick="goScreen('cumul',this)"><span class="ni">📊</span><span class="nl">הוצ' מצטברות</span></button>
-  <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' לא צפויות</span></button>
+  <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' שבועיות</span></button>
   <button class="nb" onclick="goScreen('bank',this)"><span class="ni">🏦</span><span class="nl">עו"ש</span></button>
 </nav>
 
 <!-- MODAL -->
+<!-- USER SELECT MODAL -->
+<div class="mbg" id="user-mbg" style="z-index:500;">
+  <div class="modal" style="text-align:center;">
+    <h3>👋 מי אתה?</h3>
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;">הבחירה תישמר בטלפון זה</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <button onclick="setUser('יפתח')" style="padding:18px;border-radius:var(--rs);border:2px solid var(--blue);background:var(--blue-l);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:var(--blue);cursor:pointer;">יפתח</button>
+      <button onclick="setUser('נעה')" style="padding:18px;border-radius:var(--rs);border:2px solid #6B1A3A;background:#F9EDF2;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:#6B1A3A;cursor:pointer;">נעה</button>
+    </div>
+  </div>
+</div>
+
 <div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h3 id="m-title">הוסף</h3>
@@ -374,7 +388,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <h3>חודש חדש 🎉</h3>
     <div class="nm-option" onclick="newMonthCopy()">
       <div>העתק מהחודש הקודם</div>
-      <div class="nm-sub">הוצאות ידועות וחוגים מועתקים — הוצאות לא צפויות מתאפסות</div>
+      <div class="nm-sub">הוצאות חודשיות וחוגים מועתקים — הוצאות שבועיות מתאפסות</div>
     </div>
     <div class="nm-option" onclick="newMonthEmpty()">
       <div>התחל ריק</div>
@@ -738,7 +752,7 @@ function render() {
     rev.forEach(function(e, i) {
       var realIdx = entries.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="food-entry" data-idx="'+realIdx+'">×</span>' : '';
-      html += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+      html += '<div class="cum-entry">'+userTag(e.user)+'<span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
     });
     fEntries.innerHTML = html;
   }
@@ -763,7 +777,7 @@ function render() {
         rev.forEach(function(e, ei) {
           var realIdx = ch.entries.length - 1 - ei;
           var del = !isHist ? '<span class="del-btn" data-type="chug-entry" data-chug-idx="'+i+'" data-idx="'+realIdx+'">×</span>' : '';
-          entriesHtml += '<div class="cum-entry"><span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+          entriesHtml += '<div class="cum-entry">'+userTag(e.user)+'<span class="en">'+e.desc+'</span><span class="ev">'+fmtExact(e.amount)+'</span>'+del+'</div>';
         });
       }
       var addBtn = !isHist ? '<button class="cum-add" data-type="chug-add" data-idx="'+i+'">＋ הוסף תשלום</button>' : '';
@@ -814,7 +828,7 @@ function render() {
       var realIdx = state.splurges.length - 1 - i;
       var del = !isHist ? '<span class="del-btn" data-type="splurge-del" data-idx="'+realIdx+'">×</span>' : '';
       html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
-              '<span class="rn">'+s.name+'</span><span class="rv c-purple" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
+              userTag(s.user)+'<span class="rn">'+s.name+'</span><span class="rv c-purple" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
     });
     unList.innerHTML = html;
   }
@@ -875,6 +889,7 @@ function renderList(containerId, arr, type, dotColor, valClass, showEst, showEst
     }
     html += '<div class="lrow" style="'+rowStyle+'">' +
             '<div class="dot" style="background:'+dotColor+'"></div>' +
+            userTag(item.user) +
             '<span class="rn">'+item.name+'</span>' +
             confirmBtn +
             '<span class="rv '+valClass+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
@@ -914,8 +929,8 @@ function onMonthPick(val) {
 var mType = '', mIdx = -1, mChugIdx = -1;
 
 var TITLES = {
-  income:'הכנסה', nextMonth:'הכנסה לחודש הבא', fixed:'הוצאה ידועה',
-  chug:'חוג (שם + צפי)', unexp:'הוצאה לא צפויה', alloc:'הקצאה',
+  income:'הכנסה', nextMonth:'הכנסה לחודש הבא', fixed:'הוצאה חודשית',
+  chug:'חוג (שם + צפי)', unexp:'הוצאה שבועית', alloc:'הקצאה',
   'food-entry':'קנייה', 'chug-entry':'תשלום לחוג'
 };
 
@@ -1010,13 +1025,13 @@ function saveModal() {
   if (mType === 'food-entry') {
     if (!amount) return;
     if (!state.food) state.food = {expected:0, entries:[]};
-    state.food.entries.push({desc: name||'—', amount: amount});
+    state.food.entries.push({desc: name||'—', amount: amount, user: currentUser});
     closeModal(); persist(); render(); return;
   }
   if (mType === 'chug-entry') {
     if (!amount || mChugIdx < 0) return;
     if (!state.chugim[mChugIdx].entries) state.chugim[mChugIdx].entries = [];
-    state.chugim[mChugIdx].entries.push({desc: state.chugim[mChugIdx].name, amount: amount});
+    state.chugim[mChugIdx].entries.push({desc: state.chugim[mChugIdx].name, amount: amount, user: currentUser});
     closeModal(); persist(); render(); return;
   }
   if (mType === 'chug') {
@@ -1045,6 +1060,7 @@ function saveModal() {
   else if (mType==='unexp') arr = state.splurges;
   if (!arr) return;
 
+  newItem.user = currentUser;
   if (mIdx >= 0) arr[mIdx] = newItem;
   else arr.push(newItem);
   closeModal(); persist(); render();
@@ -1207,8 +1223,28 @@ function openTransferModal(dir) {
   setTimeout(function(){ el('m-amount').focus(); }, 300);
 }
 
+// ── USER ─────────────────────────────────────────────────────
+var currentUser = '';
+function initUser() {
+  currentUser = localStorage.getItem('kb_user') || '';
+  if (!currentUser) {
+    document.getElementById('user-mbg').classList.add('on');
+  }
+}
+function setUser(name) {
+  currentUser = name;
+  localStorage.setItem('kb_user', name);
+  document.getElementById('user-mbg').classList.remove('on');
+}
+function userTag(user) {
+  if (!user) return '';
+  var cls = user === 'יפתח' ? 'user-y' : 'user-n';
+  return '<span class="'+cls+'">'+user+'</span>';
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 initState();
+initUser();
 el('month-picker').value = curMonth;
 render();
 
