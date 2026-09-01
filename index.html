@@ -139,8 +139,12 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 <div class="sc on" id="s-dashboard">
   <div class="ph">
     <div class="ph-row"><h1>כלכלת בית 🏡</h1>
-      <input type="month" id="month-picker-dash" onchange="onMonthPick(this.value)"
-        style="border:none;background:var(--blue-l);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;">
+      <div style="position:relative;display:inline-block;">
+        <button id="month-picker-dash-btn" onclick="document.getElementById('month-picker-dash').showPicker()"
+          style="border:none;background:var(--blue-l);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;cursor:pointer;">—</button>
+        <input type="month" id="month-picker-dash" onchange="onMonthPick(this.value)"
+          style="position:absolute;opacity:0;pointer-events:none;top:0;right:0;width:1px;height:1px;">
+      </div>
     </div>
   </div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-dash" style="width:0%"></div></div>
@@ -567,6 +571,13 @@ function monthLabel(m) {
   var N = ['','ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   return (N[mo]||'') + ' ' + y;
 }
+function monthLabelShort(m) {
+  if (!m) return '';
+  var parts = m.split('-');
+  var y = parts[0].slice(2), mo = parseInt(parts[1]);
+  var N = ['','ינו'','פבר'','מרץ','אפר'','מאי','יוני','יולי','אוג'','ספט'','אוק'','נוב'','דצמ''];
+  return (N[mo]||'') + ' ' + y;
+}
 function daysInMonth(m) {
   if (!m) return 30;
   var parts = m.split('-');
@@ -639,6 +650,7 @@ function render() {
   });
   // Month picker on dashboard
   var mpd = el('month-picker-dash'); if(mpd) mpd.value = curMonth;
+  var mpdb = el('month-picker-dash-btn'); if(mpdb) mpdb.textContent = monthLabelShort(curMonth) + ' ▾';
 
   // History banners
   ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
