@@ -450,61 +450,10 @@ function fbStop() {
   }
 }
 
-// ── DEFAULTS ──────────────────────────────────────────────────
-var DEFAULTS = {
-  income: [
-    {name:'יפתח', amount:22803, confirmed:false},
-    {name:'נעה', amount:7525, confirmed:false},
-    {name:'ביטוח לאומי', amount:598, confirmed:false},
-    {name:'עודף מחודש קודם', amount:590, confirmed:false},
-    {name:'הכנסות עסק נעה', amount:4778, confirmed:false},
-    {name:'החזרים', amount:1063, confirmed:false},
-    {name:'מילואים', amount:12311, confirmed:false}
-  ],
-  nextMonth: [{name:'הכנסות חודש הבא', amount:5958, confirmed:false}],
-  fixed: [
-    {name:'גני ילדים', amount:3023, confirmed:true}, {name:'מסי קהילה', amount:409, confirmed:true},
-    {name:'חסכונות', amount:4000, confirmed:true}, {name:'בית ספר', amount:1229, confirmed:true},
-    {name:'ביטוח רכב', amount:424, confirmed:true}, {name:'ביטוח דירה', amount:353, confirmed:true},
-    {name:'בזק', amount:25, confirmed:true}, {name:'פלאפון', amount:59, confirmed:true},
-    {name:'ספוטיפיי', amount:34, confirmed:true}, {name:'ארנונה וביוב', amount:1404, confirmed:false},
-    {name:'חשמל', amount:1200, confirmed:false}, {name:'מים', amount:462, confirmed:false},
-    {name:'ביטוח חיים', amount:143, confirmed:true}, {name:'קופת חולים', amount:181, confirmed:true},
-    {name:'דלק', amount:368, confirmed:false}, {name:'אוכל חיות', amount:440, confirmed:true},
-    {name:'גבות/ספר', amount:80, confirmed:true}, {name:'דיקור', amount:200, confirmed:true},
-    {name:'אינטרנט', amount:95, confirmed:true}, {name:'רואה חשבון', amount:413, confirmed:true}
-  ],
-  food: {
-    expected: 2665,
-    entries: [
-      {desc:'קאסם 1/5', amount:95}, {desc:'רמי לוי 3/5', amount:35},
-      {desc:'ויקטורי 5/5', amount:118}, {desc:'קאסם 8/5', amount:77},
-      {desc:'פארם 10/5', amount:27}, {desc:'רמי לוי 12/5', amount:230},
-      {desc:'קאסם 15/5', amount:733}, {desc:'ויקטורי 18/5', amount:427},
-      {desc:'קאסם 22/5', amount:153}, {desc:'פארם 25/5', amount:55},
-      {desc:'קאסם 28/5', amount:80}
-    ]
-  },
-  chugim: [
-    {name:'מיקו', expected:520, entries:[{desc:'מאי', amount:520}]},
-    {name:'קיאקים', expected:90, entries:[{desc:'מאי', amount:90}]},
-    {name:'אפרת', expected:300, entries:[{desc:'מאי', amount:300}]},
-    {name:"ג'ודו", expected:254, entries:[{desc:'מאי', amount:254}]},
-    {name:'תיאטרון', expected:300, entries:[{desc:'מאי', amount:300}]},
-    {name:'שומרי הגן', expected:420, entries:[{desc:'מאי', amount:420}]},
-    {name:'כפר מוזיקלי', expected:437, entries:[{desc:'מאי', amount:437}]},
-    {name:'ריקוד', expected:0, entries:[]},
-    {name:'אביגיל', expected:200, entries:[{desc:'מאי', amount:200}]}
-  ],
-  splurges: [],
-  bankPrev: 9850,
-  transferTo: 9685,
-  transferFrom: 0,
-  allocations: [
-    {name:'פיקדון', amount:-5000}, {name:'יוון', amount:12000},
-    {name:'ספייר פנוי', amount:10000}, {name:'גילי', amount:2535}
-  ]
-};
+// NOTE: a hardcoded DEFAULTS sample-data block used to live here and served as the
+// fallback whenever a device had no local copy of the current month. That's exactly
+// what caused real data to get silently overwritten with fake numbers on 2026-09-01 —
+// removed for good; see emptyState() above for the (harmless, empty) fallback now used.
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────
 var SK = 'kb_v2';
@@ -527,12 +476,27 @@ function todayMonth() {
   var d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
+function prevMonthKey(m) {
+  var parts = m.split('-');
+  var y = parseInt(parts[0]), mo = parseInt(parts[1]) - 1;
+  if (mo < 1) { mo = 12; y -= 1; }
+  return y + '-' + String(mo).padStart(2,'0');
+}
+function emptyState() {
+  return {income:[], nextMonth:[], fixed:[], food:{expected:0, entries:[]},
+          chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
+}
 function initState() {
   var meta = lsMeta();
   curMonth = meta.current || todayMonth();
   var saved = lsLoad(curMonth);
-  state = saved ? saved : JSON.parse(JSON.stringify(DEFAULTS));
-  if (!saved) { regMonth(curMonth); lsSave(curMonth, state); }
+  // If this device has no local copy of curMonth, do NOT silently fall back to the
+  // hardcoded sample data (DEFAULTS) and do NOT save/register it as if it were real —
+  // that used to cause a fresh device to invent fake numbers and push them to Firebase,
+  // clobbering real shared data. Start from a genuinely empty state instead; the
+  // Firebase check right after init() will overwrite it with real remote data if this
+  // month already exists there, and will never push this placeholder up on its own.
+  state = saved ? saved : emptyState();
   isHist = (curMonth !== todayMonth());
 }
 function switchMonth(m) {
@@ -540,7 +504,7 @@ function switchMonth(m) {
   lsSave(curMonth, state);
   curMonth = m;
   var saved = lsLoad(m);
-  state = saved ? saved : JSON.parse(JSON.stringify(DEFAULTS));
+  state = saved ? saved : emptyState();
   isHist = (m !== todayMonth());
   regMonth(m);
   document.getElementById('month-picker').value = m;
@@ -929,6 +893,26 @@ function onMonthPick(val) {
   lsSave(curMonth, state);
   if (lsLoad(val)) {
     switchMonth(val);
+    return;
+  }
+  // No local copy of this month on THIS device. That does NOT mean the month is new —
+  // it may already exist in Firebase (added from another device/phone). Check before
+  // offering "copy previous / start empty", so we never treat a real, existing month
+  // as brand new just because this particular browser hasn't cached it yet.
+  if (_db) {
+    _db.ref('kb/months/' + val).once('value').then(function(snap) {
+      var remote = snap.val();
+      if (remote) {
+        lsSave(val, remote);
+        switchMonth(val);
+      } else {
+        pendingNewMonth = val;
+        el('nm-mbg').classList.add('on');
+      }
+    }).catch(function() {
+      pendingNewMonth = val;
+      el('nm-mbg').classList.add('on');
+    });
   } else {
     pendingNewMonth = val;
     el('nm-mbg').classList.add('on');
@@ -1171,9 +1155,28 @@ document.addEventListener('click', function(e) {
 
 // ── NEW MONTH ─────────────────────────────────────────────────
 function newMonthCopy() {
-  var prev = JSON.parse(JSON.stringify(state));
+  // "Copy from previous month" means the actual calendar-previous month of the one
+  // being created — NOT necessarily whatever month happens to be loaded in `state`
+  // right now (e.g. if you'd been browsing an older historical month). Look up the
+  // real previous month's data: this device's local copy first, then Firebase.
+  var srcKey = prevMonthKey(pendingNewMonth);
+  var localSrc = lsLoad(srcKey);
+  if (localSrc) {
+    finishNewMonthCopy(localSrc);
+  } else if (_db) {
+    _db.ref('kb/months/' + srcKey).once('value').then(function(snap) {
+      finishNewMonthCopy(snap.val() || state);
+    }).catch(function() {
+      finishNewMonthCopy(state);
+    });
+  } else {
+    finishNewMonthCopy(state);
+  }
+}
+function finishNewMonthCopy(srcState) {
+  var prev = JSON.parse(JSON.stringify(srcState));
   var ns = {
-    income: prev.nextMonth.length>0 ? [{name:'הכנסות עסק נעה (מחודש קודם)', amount:sumArr(prev.nextMonth), estimate:false}] : [],
+    income: (prev.nextMonth||[]).length>0 ? [{name:'הכנסות עסק נעה (מחודש קודם)', amount:sumArr(prev.nextMonth), estimate:false}] : [],
     nextMonth: [],
     fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
     food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
@@ -1271,12 +1274,18 @@ if (_db) {
   _db.ref('kb/months/'+curMonth).once('value').then(function(snap) {
     var remote = snap.val();
     if (remote) {
+      // Real data already exists in Firebase for this month — that's the source of truth.
       state = remote;
       lsSave(curMonth, state);
       render();
-    } else {
+    } else if (lsLoad(curMonth)) {
+      // Firebase has nothing yet, but THIS device genuinely has real local data for this
+      // month (created via the "new month" flow or real edits) — publish it.
       fbPush(curMonth, state);
     }
+    // else: neither Firebase nor this device has real data for this month — do nothing.
+    // Leave the empty placeholder in memory only; it will never get saved/pushed until
+    // the user actually adds something (persist()) or explicitly picks copy/empty.
     fbListen(curMonth);
   }).catch(function(){ fbListen(curMonth); });
 }
