@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>כלכלת בית</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1B5E42;--green-l:#E8F5EE;--green-m:#2A7A58;
+  --blue:#1A3A6B;--blue-l:#EAF0FB;
+  --orange:#7B3000;--orange-l:#FDF0E6;
+  --purple:#4A1A7A;--red:#C0392B;--amber:#E67E22;
+  --dark:#111827;--bg:#F5F7FA;--card:#FFF;--border:#E5E7EB;
+  --text:#111827;--text-m:#6B7280;--text-l:#9CA3AF;
+  --r:14px;--rs:10px;--sh:0 1px 3px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{height:100%;-webkit-text-size-adjust:100%;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;display:flex;flex-direction:column;}
+.app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;width:100%;position:relative;}
+.nav{background:var(--card);border-top:1px solid var(--border);display:flex;flex-shrink:0;box-shadow:0 -1px 0 var(--border),0 -4px 12px rgba(0,0,0,0.05);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 7px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;gap:2px;}
+.nb .ni{font-size:20px;line-height:1;transition:transform .15s;}
+.nb .nl{font-size:9px;font-weight:600;color:var(--text-l);}
+.nb.on .ni{transform:scale(1.15);}
+.nb.on .nl{color:var(--blue);font-weight:700;}
+.screens{flex:1;overflow:hidden;position:relative;}
+.sc{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sc.on{display:block;}
+.ph{background:var(--card);padding:14px 14px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+.ph-row{display:flex;justify-content:space-between;align-items:center;}
+.ph h1{font-size:18px;font-weight:900;}
+.mbadge{background:var(--blue-l);color:var(--blue);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.tabs{display:flex;margin:10px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);}
+.tab{flex:1;padding:10px 6px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-left:1px solid var(--border);}
+.tab:first-child{border-left:none;}
+.tab.on{background:var(--blue);color:#fff;font-weight:700;}
+.tab-content{display:none;}.tab-content.on{display:block;}
+.hero{margin:10px 12px 0;background:var(--blue);border-radius:var(--r);padding:18px 16px 14px;color:#fff;transition:background .4s ease;}
+.hero-lbl{font-size:11px;font-weight:500;opacity:.7;margin-bottom:1px;}
+.hero-val{font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px;}
+.hero-val.neg{color:#FF8A80;}
+.hero-sub{font-size:11px;opacity:.65;margin-top:4px;}
+.prog-wrap{margin-top:10px;}
+.prog-row{display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-bottom:4px;}
+.prog-track{height:5px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;background:#fff;transition:width .5s ease;}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 12px 0;}
+.met{background:var(--card);border-radius:var(--rs);padding:11px 12px;border:1px solid var(--border);box-shadow:var(--sh);}
+.met-l{font-size:10px;font-weight:700;color:var(--text-m);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
+.met-v{font-size:19px;font-weight:900;letter-spacing:-.5px;}
+.c-green{color:var(--green);}.c-blue{color:var(--blue);}.c-orange{color:var(--orange);}.c-purple{color:var(--purple);}.c-red{color:var(--red);}
+.sec{margin:10px 12px 0;}
+.sec-t{font-size:10px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.lcard{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
+.lrow{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid var(--border);}
+.lrow:last-child{border-bottom:none;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rn{font-size:13px;flex:1;min-width:0;line-height:1.3;}
+.rn.est{color:var(--text-m);font-style:italic;}
+.rv{font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;}
+.del-btn{font-size:17px;color:var(--text-l);cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;}
+.empty{padding:14px;text-align:center;font-size:12px;color:var(--text-l);}
+.ltotal{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-top:2px solid var(--border);font-weight:700;font-size:13px;}
+.chip{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;margin-right:3px;background:#FFF3E0;color:#E65100;}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:var(--rs);border:1.5px dashed var(--border);background:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;color:var(--text-m);margin-top:7px;}
+.add-btn:active{background:var(--bg);}
+.datebar{margin:10px 12px 0;background:var(--orange-l);border:1px solid #EAC08A;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;gap:8px;}
+.datebar label{font-size:11px;font-weight:700;color:var(--orange);white-space:nowrap;}
+.datebar input{flex:1;border:1px solid #EAC08A;border-radius:6px;padding:5px 8px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:#fff;}
+.cum-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;margin-bottom:10px;}
+.cum-header{padding:12px 14px;border-bottom:1px solid var(--border);}
+.cum-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.cum-name{font-size:14px;font-weight:700;}
+.cum-amounts{display:flex;gap:12px;font-size:11px;color:var(--text-m);margin-bottom:6px;}
+.over{color:var(--red)!important;}
+.cum-prog-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.cum-prog-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.cum-entry{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
+.cum-entry:last-child{border-bottom:none;}
+.cum-entry .en{flex:1;color:var(--text-m);}
+.cum-entry .ev{font-weight:700;}
+.cum-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:none;background:var(--bg);cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-top:1px solid var(--border);}
+.transfer-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
+.transfer-row{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--border);}
+.transfer-row:last-child{border-bottom:none;}
+.transfer-label{font-size:13px;font-weight:600;}
+.transfer-sub{font-size:11px;color:var(--text-m);margin-top:2px;}
+.transfer-input{width:110px;border:1.5px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;text-align:center;background:var(--bg);}
+.transfer-input:focus{outline:none;border-color:var(--blue);}
+.bank-hdr{background:var(--dark);color:#fff;padding:9px 12px;font-size:12px;font-weight:700;border-radius:var(--rs) var(--rs) 0 0;}
+.bank-body{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);overflow:hidden;}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+.brow:last-child{border-bottom:none;}
+.brow.hi{background:var(--green-l);font-weight:700;color:var(--green);}
+.brow.dim{color:var(--text-m);font-size:12px;}
+.brow.total-row{background:var(--dark);color:#fff;font-weight:700;font-size:14px;}
+.bank-inp-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;box-shadow:var(--sh);}
+.bank-inp-wrap label{font-size:10px;font-weight:700;color:var(--text-m);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.bank-inp-wrap input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:18px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);background:var(--bg);}
+.bank-inp-wrap input:focus{border-color:var(--green);outline:none;}
+.hist-banner{margin:8px 12px 0;background:var(--amber);color:#fff;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;}
+.hist-back{background:rgba(255,255,255,.25);border:none;color:#fff;padding:4px 10px;border-radius:20px;font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.mbg{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mbg.on{opacity:1;pointer-events:all;}
+.modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;max-height:85vh;overflow-y:auto;}
+.mbg.on .modal{transform:translateY(0);}
+.modal h3{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal label{font-size:11px;font-weight:700;color:var(--text-m);display:block;margin:10px 0 3px;text-transform:uppercase;letter-spacing:.4px;}
+.modal input{width:100%;padding:10px 11px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);}
+.modal input:focus{border-color:var(--blue);outline:none;}
+.est-row{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;}
+.est-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);}
+.est-row span{font-size:13px;color:var(--text-m);}
+.mbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
+.btn-save{padding:12px;border-radius:var(--rs);border:none;background:var(--dark);color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-cancel{padding:12px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;color:var(--text-m);}
+.nm-modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
+.mbg.on .nm-modal{transform:translateY(0);}
+.nm-option{padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:9px;cursor:pointer;font-size:14px;font-weight:600;}
+.nm-option:active{background:var(--bg);}
+.nm-sub{font-size:11px;font-weight:400;color:var(--text-m);margin-top:2px;}
+.toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
+.toast.on{opacity:1;}
+
+.pb{padding-bottom:10px;}
+
+.month-prog-bar{height:4px;background:var(--border);}
+.month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="screens">
+
+<!-- S1: DASHBOARD -->
+<div class="sc on" id="s-dashboard">
+  <div class="ph">
+    <div class="ph-row"><h1>כלכלת בית 🏡</h1>
+      <div style="position:relative;display:inline-block;">
+        <span id="month-picker-dash-label" style="pointer-events:none;display:inline-block;white-space:nowrap;background:var(--blue-l);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;">חודש</span>
+        <input type="month" id="month-picker-dash" onchange="onMonthPick(this.value)"
+          style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;margin:0;padding:0;cursor:pointer;">
+      </div>
+    </div>
+  </div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-dash" style="width:0%"></div></div>
+  <div id="hb-dash"></div>
+  <div class="hero">
+    <div class="hero-lbl" id="d-hero-lbl">נשאר להוציא השבוע</div>
+    <div class="hero-val" id="d-weekly">₪0</div>
+    <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה (<span id="d-daily">₪0</span> ליום)</div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>הוצא עד כה: <span id="d-spent">₪0</span></span><span id="d-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
+    <div class="met"><div class="met-l">הוצ' חודשיות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
+    <div class="met"><div class="met-l">נשאר להוציא החודש</div><div class="met-v c-blue" id="d-rem">₪0</div></div>
+    <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">הוצאות שבועיות אחרונות</div>
+    <div class="lcard" id="d-recent"><div class="empty">אין עדיין</div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S2: INCOME -->
+<div class="sc" id="s-income">
+  <div class="ph"><div class="ph-row"><h1>הכנסות 💰</h1><span class="mbadge" id="b-inc">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-inc" style="width:0%"></div></div>
+  <div id="hb-inc"></div>
+  <div class="datebar"><label>📅 חודש:</label><input type="month" id="month-picker" onchange="onMonthPick(this.value)"></div>
+  <div class="sec"><div class="sec-t">מקורות הכנסה</div><div class="lcard" id="inc-list"></div>
+    <button class="add-btn" onclick="openModal('income')">＋ הוסף הכנסה</button>
+  </div>
+  <div class="sec"><div class="lcard"><div class="ltotal"><span>סה"כ הכנסות</span><span id="inc-tot" class="c-green">₪0</span></div></div></div>
+  <div class="sec">
+    <div class="sec-t">הכנסות עסק נעה — חודש הבא</div>
+    <div class="lcard" id="nm-list"></div>
+    <button class="add-btn" onclick="openModal('nextMonth')">＋ הוסף</button>
+    <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ לחודש הבא</span><span id="nm-tot" class="c-green">₪0</span></div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S3: FIXED -->
+<div class="sc" id="s-expenses">
+  <div class="ph"><div class="ph-row"><h1>הוצ' חודשיות 📋</h1><span class="mbadge" id="b-exp">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-exp" style="width:0%"></div></div>
+  <div id="hb-exp"></div>
+  <div class="sec">
+    <button class="add-btn" onclick="openModal('fixed')">＋ הוסף הוצאה חודשית</button>
+    <div class="lcard" style="margin-top:7px;" id="fixed-list"></div>
+    <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ</span><span id="fixed-tot" class="c-blue">₪0</span></div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S4: CUMULATIVE -->
+<div class="sc" id="s-cumul">
+  <div class="ph"><div class="ph-row"><h1>הוצ' מצטברות 📊</h1><span class="mbadge" id="b-cum">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-cum" style="width:0%"></div></div>
+  <div id="hb-cum"></div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('food',this)">🛒 אוכל ופארם</button>
+    <button class="tab" onclick="switchTab('chugim',this)">🎨 חוגים</button>
+  </div>
+  <div class="tab-content on" id="tc-food">
+    <div class="sec">
+      <div class="cum-card">
+        <div class="cum-header">
+          <div class="cum-title-row">
+            <span class="cum-name">אוכל ופארם</span>
+            <span style="font-size:11px;color:var(--text-m)">צפי: <strong id="food-exp-lbl">₪0</strong></span>
+          </div>
+          <div class="cum-amounts">
+            <span>בפועל: <strong id="food-actual">₪0</strong></span>
+            <span>נשאר: <strong id="food-left">₪0</strong></span>
+          </div>
+          <div class="cum-prog-track"><div class="cum-prog-fill" id="food-prog" style="width:0%;background:var(--green)"></div></div>
+        </div>
+        <div id="food-entries"></div>
+        <button class="cum-add" onclick="openFoodModal()">＋ הוסף קנייה</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-radius:var(--rs);border:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--text-m);flex:1;">עדכן צפי חודשי:</span>
+        <input type="number" id="food-exp-input" inputmode="numeric" placeholder="0" oninput="updateFoodExp(this.value)"
+          style="width:100px;border:1.5px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:var(--bg);text-align:center;">
+        <span style="font-size:13px;font-weight:700;color:var(--orange);">₪</span>
+      </div>
+    </div>
+    <div class="pb"></div>
+  </div>
+  <div class="tab-content" id="tc-chugim">
+    <div class="sec">
+      <div id="chugim-cards"></div>
+      <button class="add-btn" onclick="openModal('chug')">＋ הוסף חוג</button>
+      <div class="lcard" style="margin-top:6px;">
+        <div class="ltotal"><span>סה"כ צפי</span><span id="chugim-exp-tot" class="c-orange">₪0</span></div>
+        <div class="ltotal" style="border-top:1px solid var(--border);"><span>סה"כ בפועל</span><span id="chugim-act-tot" class="c-blue">₪0</span></div>
+      </div>
+    </div>
+    <div class="pb"></div>
+  </div>
+</div>
+
+<!-- S5: UNEXPECTED -->
+<div class="sc" id="s-unexp">
+  <div class="ph"><div class="ph-row"><h1>הוצ' שבועיות 🛍️</h1><span class="mbadge" id="b-un">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-un" style="width:0%"></div></div>
+  <div id="hb-un"></div>
+  <div class="hero">
+    <div class="hero-lbl">נשאר להוציא השבוע</div>
+    <div class="hero-val" id="un-weekly">₪0</div>
+    <div class="hero-sub">מתוך <span id="un-alloc">₪0</span> שהוקצו לחודש זה</div>
+    <div class="prog-wrap">
+      <div class="prog-row"><span>הוצא עד כה: <span id="un-spent">₪0</span></span><span id="un-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="un-prog" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">הוצאות החודש</div>
+    <button class="add-btn" onclick="openModal('unexp')">＋ הוסף הוצאה</button>
+    <div class="lcard" style="margin-top:7px;" id="un-list"><div class="empty">אין עדיין</div></div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- S6: BANK -->
+<div class="sc" id="s-bank">
+  <div class="ph"><div class="ph-row"><h1>עו"ש 🏦</h1><span class="mbadge" id="b-bnk">—</span></div></div>
+  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-bnk" style="width:0%"></div></div>
+  <div id="hb-bnk"></div>
+
+  <!-- עו"ש פנוי - hero card -->
+  <div class="sec">
+    <div id="bnk-free-card" style="background:var(--dark);border-radius:var(--rs);padding:18px 16px;color:#fff;text-align:center;">
+      <div style="font-size:11px;font-weight:600;opacity:.7;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">עו"ש פנוי</div>
+      <div id="bnk-free" style="font-size:40px;font-weight:900;letter-spacing:-1px;">₪0</div>
+    </div>
+  </div>
+
+  <!-- העברות -->
+  <div class="sec">
+    <div class="sec-t">העברות חודשיות</div>
+    <div class="transfer-card">
+      <div class="transfer-row">
+        <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
+            oninput="onTransferToEdit(this.value)"
+            style="width:90px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
+          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+        </div>
+      </div>
+      <div class="transfer-row">
+        <div><div class="transfer-label">העברה מעו"ש ↓</div><div class="transfer-sub">משיכה מעו"ש לתזרים</div></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="transfer-from-display" inputmode="numeric" placeholder="0"
+            oninput="onTransferFromEdit(this.value)"
+            style="width:90px;border:1.5px solid var(--green);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;background:#fff;outline:none;">
+          <button onclick="openTransferModal('from')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- יתרת עו"ש -->
+  <div class="sec">
+    <div class="bank-hdr">יתרת עו"ש</div>
+    <div class="bank-body">
+      <div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div>
+      <div class="brow"><span>− העברה מעו"ש</span><span id="bnk-from" style="font-weight:700;color:var(--green)">₪0</span></div>
+      <div class="brow hi" style="padding:10px 12px;">
+        <span>עו"ש קודם</span>
+        <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
+          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
+                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
+                 text-align:center;padding:5px 8px;outline:none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- הקצאות עתידיות -->
+  <div class="sec">
+    <div class="bank-hdr">הקצאות עתידיות</div>
+    <div class="bank-body" id="alloc-list"></div>
+    <button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button>
+  </div>
+  <div class="pb"></div>
+</div>
+
+</div><!-- /screens -->
+
+<nav class="nav">
+  <button class="nb on" onclick="goScreen('dashboard',this)"><span class="ni">🏠</span><span class="nl">ראשי</span></button>
+  <button class="nb" onclick="goScreen('income',this)"><span class="ni">💰</span><span class="nl">הכנסות</span></button>
+  <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' חודשיות</span></button>
+  <button class="nb" onclick="goScreen('cumul',this)"><span class="ni">📊</span><span class="nl">הוצ' מצטברות</span></button>
+  <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' שבועיות</span></button>
+  <button class="nb" onclick="goScreen('bank',this)"><span class="ni">🏦</span><span class="nl">עו"ש</span></button>
+</nav>
+
+<!-- MODAL -->
+<!-- USER SELECT MODAL -->
+<div class="mbg" id="user-mbg" style="z-index:500;">
+  <div class="modal" style="text-align:center;">
+    <h3>👋 מי אתה?</h3>
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;">הבחירה תישמר בטלפון זה</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <button onclick="setUser('יפתח')" style="padding:18px;border-radius:var(--rs);border:2px solid var(--blue);background:var(--blue-l);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:var(--blue);cursor:pointer;">יפתח</button>
+      <button onclick="setUser('נעה')" style="padding:18px;border-radius:var(--rs);border:2px solid #6B1A3A;background:#F9EDF2;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:#6B1A3A;cursor:pointer;">נעה</button>
+    </div>
+  </div>
+</div>
+
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="m-title">הוסף</h3>
+    <div id="m-name-wrap">
+      <label>שם / תיאור</label>
+      <input type="text" id="m-name" placeholder="" autocomplete="new-password" autocorrect="off" autocapitalize="off">
+    </div>
+    <div id="m-amount-wrap">
+      <label>סכום (₪)</label>
+      <input type="number" id="m-amount" placeholder="0" inputmode="decimal" step="0.01">
+    </div>
+    <div id="m-exp-wrap" style="display:none;">
+      <label>צפי חודשי (₪)</label>
+      <input type="number" id="m-exp" placeholder="0" inputmode="decimal">
+    </div>
+    <div id="m-est-wrap" style="display:none;">
+    </div>
+    <div class="mbtns">
+      <button class="btn-save" onclick="saveModal()">שמור</button>
+      <button class="btn-cancel" onclick="closeModal()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW MONTH MODAL -->
+<div class="mbg" id="nm-mbg" onclick="if(event.target===this)newMonthCancelModal()">
+  <div class="nm-modal">
+    <h3>חודש חדש 🎉</h3>
+    <div class="nm-option" onclick="newMonthCopy()">
+      <div>העתק מהחודש הקודם</div>
+      <div class="nm-sub">הוצאות חודשיות וחוגים מועתקים — הוצאות שבועיות מתאפסות</div>
+    </div>
+    <div class="nm-option" onclick="newMonthEmpty()">
+      <div>התחל ריק</div>
+      <div class="nm-sub">כל הנתונים נקיים</div>
+    </div>
+    <button class="btn-cancel" onclick="el('nm-mbg').classList.remove('on')" style="width:100%;margin-top:4px;">ביטול</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">נשמר ✓</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+// ── FIREBASE ──────────────────────────────────────────────────
+const FB_CONFIG = {
+  apiKey: "AIzaSyD2ntvEivlXuNo_ts76Ix4c35H_XoiOHfI",
+  authDomain: "yitzhak-family-finance.firebaseapp.com",
+  databaseURL: "https://yitzhak-family-finance-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "yitzhak-family-finance",
+  storageBucket: "yitzhak-family-finance.firebasestorage.app",
+  messagingSenderId: "350747913659",
+  appId: "1:350747913659:web:6ed3dd343a026242f3e89e"
+};
+let _db = null, _unsubRef = null, _unsubCb = null;
+
+function fbInit() {
+  try {
+    const app = firebase.initializeApp(FB_CONFIG);
+    _db = firebase.database(app);
+  } catch(e) { console.warn('FB init:', e); }
+}
+function fbPush(month, data) {
+  if (!_db) return;
+  _db.ref('kb/months/' + month).set(data).catch(function(e) { console.warn('fbPush:', e); });
+}
+function fbListen(month) {
+  fbStop();
+  if (!_db) return;
+  _unsubRef = _db.ref('kb/months/' + month);
+  _unsubCb = _unsubRef.on('value', function(snap) {
+    var remote = snap.val();
+    if (!remote) return;
+    if (JSON.stringify(state) !== JSON.stringify(remote)) {
+      state = remote;
+      lsSave(curMonth, state);
+      render();
+      showToast('🔄 מסונכרן');
+    }
+  });
+}
+function fbStop() {
+  if (_unsubRef && _unsubCb) {
+    _unsubRef.off('value', _unsubCb);
+    _unsubRef = null; _unsubCb = null;
+  }
+}
+
+// NOTE: a hardcoded DEFAULTS sample-data block used to live here and served as the
+// fallback whenever a device had no local copy of the current month. That's exactly
+// what caused real data to get silently overwritten with fake numbers on 2026-09-01 —
+// removed for good; see emptyState() above for the (harmless, empty) fallback now used.
+
+// ── LOCAL STORAGE ─────────────────────────────────────────────
+var SK = 'kb_v2';
+function lsMeta() { try { return JSON.parse(localStorage.getItem(SK+'_meta')) || {}; } catch(e) { return {}; } }
+function ssMeta(m) { try { localStorage.setItem(SK+'_meta', JSON.stringify(m)); } catch(e) {} }
+function lsLoad(m) { try { var r=localStorage.getItem(SK+'_'+m); return r?JSON.parse(r):null; } catch(e) { return null; } }
+function lsSave(m,d) { try { localStorage.setItem(SK+'_'+m, JSON.stringify(d)); } catch(e) {} }
+function regMonth(m) {
+  var meta = lsMeta();
+  if (!meta.months) meta.months = [];
+  if (meta.months.indexOf(m) === -1) meta.months.push(m);
+  meta.current = m;
+  ssMeta(meta);
+}
+
+// ── STATE ─────────────────────────────────────────────────────
+var curMonth = '', state = {}, isHist = false;
+
+function todayMonth() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+function prevMonthKey(m) {
+  var parts = m.split('-');
+  var y = parseInt(parts[0]), mo = parseInt(parts[1]) - 1;
+  if (mo < 1) { mo = 12; y -= 1; }
+  return y + '-' + String(mo).padStart(2,'0');
+}
+function emptyState() {
+  return {income:[], nextMonth:[], fixed:[], food:{expected:0, entries:[]},
+          chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
+}
+function initState() {
+  var meta = lsMeta();
+  curMonth = meta.current || todayMonth();
+  var saved = lsLoad(curMonth);
+  // If this device has no local copy of curMonth, do NOT silently fall back to the
+  // hardcoded sample data (DEFAULTS) and do NOT save/register it as if it were real —
+  // that used to cause a fresh device to invent fake numbers and push them to Firebase,
+  // clobbering real shared data. Start from a genuinely empty state instead; the
+  // Firebase check right after init() will overwrite it with real remote data if this
+  // month already exists there, and will never push this placeholder up on its own.
+  state = saved ? saved : emptyState();
+  isHist = (curMonth !== todayMonth());
+}
+function switchMonth(m) {
+  fbStop();
+  lsSave(curMonth, state);
+  curMonth = m;
+  var saved = lsLoad(m);
+  state = saved ? saved : emptyState();
+  isHist = (m !== todayMonth());
+  regMonth(m);
+  document.getElementById('month-picker').value = m;
+  render();
+  fbListen(m);
+}
+function persist() {
+  lsSave(curMonth, state);
+  regMonth(curMonth);
+  fbPush(curMonth, state);
+  showToast('נשמר ✓');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function fmt(n) { return '₪' + Math.round(Math.abs(n)).toLocaleString('he-IL'); }
+function fmtExact(n) {
+  var abs = Math.abs(n);
+  var rounded = Math.round(abs * 100) / 100;
+  if (rounded === Math.floor(rounded)) return '₪' + Math.floor(rounded).toLocaleString('he-IL');
+  return '₪' + rounded.toLocaleString('he-IL', {minimumFractionDigits:0, maximumFractionDigits:2});
+}
+function sumArr(arr, key) { key = key||'amount'; return arr.reduce(function(s,i){ return s+(Number(i[key])||0); }, 0); }
+function monthLabel(m) {
+  if (!m) return '';
+  var parts = m.split('-');
+  var y = parts[0], mo = parseInt(parts[1]);
+  var N = ['','ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי',"אוג'","ספט'","אוק'","נוב'","דצמ'"];
+  return (N[mo]||'') + ' ' + y;
+}
+function daysInMonth(m) {
+  if (!m) return 30;
+  var parts = m.split('-');
+  return new Date(parseInt(parts[0]), parseInt(parts[1]), 0).getDate();
+}
+function daysLeft() {
+  var now = new Date();
+  var parts = (curMonth||'').split('-');
+  if (!parts[0]||!parts[1]) return 15;
+  var y=parseInt(parts[0]), mo=parseInt(parts[1]);
+  if (now.getFullYear()===y && now.getMonth()+1===mo)
+    return Math.max(new Date(y,mo,0).getDate()-now.getDate()+1,0);
+  return daysInMonth(curMonth);
+}
+function daysLeftWeek() { return Math.max(7-new Date().getDay(), 1); }
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg || 'נשמר ✓';
+  t.classList.add('on');
+  setTimeout(function(){ t.classList.remove('on'); }, 1500);
+}
+function el(id) { return document.getElementById(id); }
+
+// ── CALC ──────────────────────────────────────────────────────
+function calc() {
+  var income    = sumArr(state.income||[]);
+  var fixed     = sumArr(state.fixed||[]);
+  var foodAmt   = sumArr((state.food&&state.food.entries)||[]);
+  var foodExp   = (state.food&&state.food.expected)||0;
+  var chugsExp  = sumArr(state.chugim||[], 'expected');
+  var chugsAct  = (state.chugim||[]).reduce(function(s,ch){ return s+sumArr(ch.entries||[]); }, 0);
+  var splurged  = sumArr(state.splurges||[]);
+  var tTo       = Number(state.transferTo)||0;
+  var tFrom     = Number(state.transferFrom)||0;
+  var cumul     = foodExp + chugsExp;
+  var alloc     = income + tFrom - fixed - cumul - tTo;
+  var totalD    = daysInMonth(curMonth);
+  var leftD     = daysLeft();
+  var leftW     = daysLeftWeek();
+  var daily     = totalD>0 ? alloc/totalD : 0;
+  var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
+  var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
+  var bankPrev  = Number(state.bankPrev)||0;
+  var bankCurr  = bankPrev + tTo - tFrom;
+  var allocTot  = sumArr(state.allocations||[]);
+  var bankFree  = bankCurr - allocTot;
+  var remLeft   = alloc - splurged;
+  return {income:income, fixed:fixed, foodAmt:foodAmt, foodExp:foodExp,
+          chugsExp:chugsExp, chugsAct:chugsAct, splurged:splurged,
+          alloc:alloc, weeklyLeft:weeklyLeft, pct:pct,
+          bankPrev:bankPrev, bankCurr:bankCurr, bankFree:bankFree,
+          remLeft:remLeft, tTo:tTo, tFrom:tFrom};
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  var cc = calc();
+  var ml = monthLabel(curMonth);
+
+  // Badges
+  ['b-dash','b-inc','b-exp','b-cum','b-un','b-bnk'].forEach(function(id){
+    var e = el(id); if(e) e.textContent = ml;
+  });
+  // Month progress bars
+  var totalD2 = daysInMonth(curMonth);
+  var passedD = totalD2 - daysLeft();
+  var monthPct = totalD2 > 0 ? Math.round(passedD / totalD2 * 100) : 0;
+  ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
+    var pb = el('mpb-'+s); if(pb) pb.style.width = monthPct + '%';
+  });
+  // Month picker on dashboard
+  var mpd = el('month-picker-dash'); if(mpd) mpd.value = curMonth;
+  var mpdLbl = el('month-picker-dash-label'); if(mpdLbl) mpdLbl.textContent = monthLabel(curMonth);
+
+  // History banners
+  ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
+    var e = el('hb-'+s); if(!e) return;
+    if (isHist) {
+      e.innerHTML = '<div class="hist-banner">📅 צופה ב: '+ml+
+        '<button class="hist-back" id="hb-back-'+s+'">חזור לחודש הנוכחי</button></div>';
+      var btn = el('hb-back-'+s);
+      if (btn) btn.addEventListener('click', function(){ switchMonth(todayMonth()); });
+    } else {
+      e.innerHTML = '';
+    }
+  });
+
+  var mp = el('month-picker'); if(mp) mp.value = curMonth;
+
+  // ── DASHBOARD ──
+  var wEl = el('d-weekly');
+  var heroVal = isHist ? (cc.alloc - cc.splurged) : cc.weeklyLeft;
+  wEl.textContent = (heroVal < 0 ? '-' : '') + fmt(heroVal);
+  wEl.className = 'hero-val' + (heroVal < 0 ? ' neg' : '');
+  // Update label
+  var heroLbl = el('d-hero-lbl');
+  if (heroLbl) heroLbl.textContent = isHist ? 'נשאר להוציא (סיכום חודש)' : 'נשאר להוציא השבוע';
+  // Dynamic hero color - based on whether spending pace allows reaching month-end
+  var heroEls = document.querySelectorAll('.hero');
+  var totalDaysHero = daysInMonth(curMonth);
+  var dailyAllocHero = totalDaysHero > 0 ? cc.alloc / totalDaysHero : 0;
+  var leftDaysWeekHero = daysLeftWeek(); // ימים שנשארו בשבוע הנוכחי
+  var expectedWeekly = dailyAllocHero * leftDaysWeekHero; // כמה צריך שיהיה נשאר לשבוע אם בקצב תקין
+  var actualWeekly = cc.weeklyLeft; // כמה באמת נשאר לשבוע
+  var paceRatio = expectedWeekly > 0 ? actualWeekly / expectedWeekly : 1;
+  var heroBg;
+  if (isHist) {
+    heroBg = 'var(--blue)'; // historical: always blue, no pace warning
+  } else if (heroVal < 0) {
+    heroBg = '#E74C3C'; // אדום בוהק — חריגה מהתקציב
+  } else if (paceRatio < 0.5) {
+    heroBg = '#C0392B'; // אדום — קצב גבוה משמעותית
+  } else if (paceRatio < 0.85) {
+    heroBg = '#D35400'; // כתום — קצב גבוה מהמתוכנן
+  } else {
+    heroBg = 'var(--blue)'; // כחול — קצב תקין
+  }
+  heroEls.forEach(function(h){ h.style.background = heroBg; });
+  el('d-alloc').textContent = fmt(cc.alloc);
+  el('d-spent').textContent = fmt(cc.splurged);
+  el('d-pct').textContent = cc.pct + '%';
+  var dp = el('d-prog');
+  dp.style.width = cc.pct + '%';
+  dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
+  el('d-inc').textContent = fmt(cc.income);
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp);
+  var dr = el('d-rem');
+  dr.textContent = fmt(cc.remLeft);
+  dr.className = 'met-v ' + (cc.remLeft >= 0 ? 'c-blue' : 'c-red');
+  var dbf = el('d-bf');
+  if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red'); }
+  var totalDays = daysInMonth(curMonth);
+  var dailyAlloc = totalDays > 0 ? cc.alloc / totalDays : 0;
+  var ddaily = el('d-daily'); if (ddaily) ddaily.textContent = fmt(dailyAlloc);
+
+  // Recent unexpected
+  var drc = el('d-recent');
+  if (!state.splurges || state.splurges.length === 0) {
+    drc.innerHTML = '<div class="empty">אין עדיין</div>';
+  } else {
+    var html = '';
+    var recent = state.splurges.slice().reverse().slice(0,5);
+    recent.forEach(function(s) {
+      html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
+              '<span class="rn">'+s.name+'</span>' +
+              '<span class="rv c-purple">'+fmtExact(s.amount)+'</span></div>';
+    });
+    drc.innerHTML = html;
+  }
+
+  // ── INCOME ──
+  renderList('inc-list', state.income||[], 'income', 'var(--green)', 'c-green', true, true);
+  el('inc-tot').textContent = fmt(cc.income);
+  renderList('nm-list', state.nextMonth||[], 'nextMonth', 'var(--green-m)', 'c-green', true, false);
+  el('nm-tot').textContent = fmt(sumArr(state.nextMonth||[]));
+
+  // ── FIXED ──
+  renderList('fixed-list', state.fixed||[], 'fixed', 'var(--blue)', 'c-blue', false, false);
+  el('fixed-tot').textContent = fmt(cc.fixed);
+
+  // ── FOOD ──
+  var foodExp = (state.food&&state.food.expected)||0;
+  var foodAmt = sumArr((state.food&&state.food.entries)||[]);
+  var foodLeft = foodExp - foodAmt;
+  var foodPct = foodExp>0 ? Math.min(Math.round(foodAmt/foodExp*100),100) : 0;
+  el('food-exp-lbl').textContent = fmt(foodExp);
+  el('food-actual').textContent = fmt(foodAmt);
+  var flEl = el('food-left');
+  flEl.textContent = fmt(foodLeft);
+  flEl.className = foodLeft < 0 ? 'over' : '';
+  var fp = el('food-prog');
+  fp.style.width = foodPct + '%';
+  fp.style.background = foodPct>90 ? 'var(--red)' : foodPct>70 ? 'var(--amber)' : 'var(--green)';
+  var fei = el('food-exp-input');
+  if (fei && document.activeElement !== fei) fei.value = foodExp || '';
+  var fEntries = el('food-entries');
+  var entries = (state.food&&state.food.entries)||[];
+  if (entries.length === 0) {
+    fEntries.innerHTML = '<div class="empty">אין קניות עדיין</div>';
+  } else {
+    var html = '';
+    var rev = entries.slice().reverse();
+    rev.forEach(function(e, i) {
+      var realIdx = entries.length - 1 - i;
+      var del = !isHist ? '<span class="del-btn" data-type="food-entry" data-idx="'+realIdx+'">×</span>' : '';
+      var fCol = userColor(e.user);
+      var fStyle = fCol ? 'color:'+fCol+';' : '';
+      html += '<div class="cum-entry"><span class="en" style="'+fStyle+'">'+e.desc+'</span><span class="ev" style="'+fStyle+'">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+    });
+    fEntries.innerHTML = html;
+  }
+
+  // ── CHUGIM ──
+  var chugContainer = el('chugim-cards');
+  var chugItems = state.chugim || [];
+  if (chugItems.length === 0) {
+    chugContainer.innerHTML = '<div class="lcard"><div class="empty">אין חוגים</div></div>';
+  } else {
+    var html = '';
+    chugItems.forEach(function(ch, i) {
+      var actual = sumArr(ch.entries||[]);
+      var pct = ch.expected>0 ? Math.min(Math.round(actual/ch.expected*100),100) : 0;
+      var color = pct>90 ? 'var(--red)' : pct>70 ? 'var(--amber)' : 'var(--green)';
+      var left = ch.expected - actual;
+      var entriesHtml = '';
+      if (!ch.entries || ch.entries.length === 0) {
+        entriesHtml = '<div class="cum-entry"><span class="en" style="color:var(--text-l)">אין תשלומים עדיין</span></div>';
+      } else {
+        var rev = ch.entries.slice().reverse();
+        rev.forEach(function(e, ei) {
+          var realIdx = ch.entries.length - 1 - ei;
+          var del = !isHist ? '<span class="del-btn" data-type="chug-entry" data-chug-idx="'+i+'" data-idx="'+realIdx+'">×</span>' : '';
+          var cCol = userColor(e.user);
+        var cStyle = cCol ? 'color:'+cCol+';' : '';
+        entriesHtml += '<div class="cum-entry"><span class="en" style="'+cStyle+'">'+e.desc+'</span><span class="ev" style="'+cStyle+'">'+fmtExact(e.amount)+'</span>'+del+'</div>';
+        });
+      }
+      var addBtn = !isHist ? '<button class="cum-add" data-type="chug-add" data-idx="'+i+'">＋ הוסף תשלום</button>' : '';
+      var delChugBtn = !isHist ? '<span class="del-btn" data-type="chug-del" data-idx="'+i+'" style="font-size:15px;">×</span>' : '';
+      var editExpBtn = !isHist ? '<span data-type="chug-edit" data-idx="'+i+'" style="cursor:pointer;color:var(--orange);font-weight:700;">'+fmt(ch.expected)+'</span>' : '<strong>'+fmt(ch.expected)+'</strong>';
+
+      html += '<div class="cum-card">' +
+        '<div class="cum-header">' +
+          '<div class="cum-title-row">' +
+            '<span class="cum-name">'+ch.name+'</span>' +
+            '<div style="display:flex;gap:8px;align-items:center;">' +
+              '<span style="font-size:11px;color:var(--text-m)">צפי: '+editExpBtn+'</span>' +
+              delChugBtn +
+            '</div>' +
+          '</div>' +
+          '<div class="cum-amounts">' +
+            '<span>בפועל: <strong>'+fmt(actual)+'</strong></span>' +
+            '<span>נשאר: <strong class="'+(left<0?'over':'')+'">'+fmt(left)+'</strong></span>' +
+          '</div>' +
+          '<div class="cum-prog-track"><div class="cum-prog-fill" style="width:'+pct+'%;background:'+color+'"></div></div>' +
+        '</div>' +
+        '<div class="cum-entries">'+entriesHtml+'</div>' +
+        addBtn +
+      '</div>';
+    });
+    chugContainer.innerHTML = html;
+  }
+  el('chugim-exp-tot').textContent = fmt(cc.chugsExp);
+  el('chugim-act-tot').textContent = fmt(cc.chugsAct);
+
+  // ── UNEXPECTED ──
+  var uwEl = el('un-weekly');
+  var unVal = isHist ? (cc.alloc - cc.splurged) : cc.weeklyLeft;
+  uwEl.textContent = (unVal < 0 ? '-' : '') + fmt(unVal);
+  uwEl.className = 'hero-val' + (unVal < 0 ? ' neg' : '');
+  el('un-alloc').textContent = fmt(cc.alloc);
+  el('un-spent').textContent = fmt(cc.splurged);
+  el('un-pct').textContent = cc.pct + '%';
+  var upp = el('un-prog');
+  upp.style.width = cc.pct + '%';
+  upp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
+  var unList = el('un-list');
+  if (!state.splurges || state.splurges.length === 0) {
+    unList.innerHTML = '<div class="empty">אין עדיין</div>';
+  } else {
+    var html = '';
+    state.splurges.slice().reverse().forEach(function(s, i) {
+      var realIdx = state.splurges.length - 1 - i;
+      var del = !isHist ? '<span class="del-btn" data-type="splurge-del" data-idx="'+realIdx+'">×</span>' : '';
+      var sCol = userColor(s.user);
+      var sStyle = sCol ? 'color:'+sCol+';' : '';
+      html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
+              '<span class="rn" style="'+sStyle+'">'+s.name+'</span><span class="rv" style="font-weight:700;'+sStyle+'" data-type="list-edit" data-list="unexp" data-idx="'+realIdx+'">'+fmtExact(s.amount)+'</span>'+del+'</div>';
+    });
+    unList.innerHTML = html;
+  }
+
+  // ── BANK ──
+  var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
+  var ttd = el('transfer-to-display'); if(ttd && document.activeElement!==ttd) ttd.value = state.transferTo||'';
+  var tfd = el('transfer-from-display'); if(tfd && document.activeElement!==tfd) tfd.value = state.transferFrom||'';
+  el('bnk-to').textContent = fmt(cc.tTo);
+  el('bnk-from').textContent = fmt(cc.tFrom);
+  var bfEl = el('bnk-free');
+  if (bfEl) {
+    bfEl.textContent = fmt(cc.bankFree);
+    var card = el('bnk-free-card');
+    if (card) card.style.background = cc.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
+  }
+
+  var allocList = el('alloc-list');
+  var allocs = state.allocations||[];
+  if (allocs.length === 0) {
+    allocList.innerHTML = '<div class="brow" style="color:var(--text-l)">—</div>';
+  } else {
+    var html = '';
+    allocs.forEach(function(a, i) {
+      var sign = a.amount < 0 ? '−' : '+';
+      var col = a.amount < 0 ? 'var(--text-m)' : 'var(--blue)';
+      var cls = a.amount < 0 ? ' dim' : '';
+      var del = !isHist ? '<span class="del-btn" data-type="alloc-del" data-idx="'+i+'">×</span>' : '';
+      html += '<div class="brow'+cls+'"><span>'+a.name+'</span>' +
+              '<div style="display:flex;align-items:center;gap:7px;">' +
+              '<span style="font-weight:700;color:'+col+';cursor:pointer;" data-type="list-edit" data-list="alloc" data-idx="'+i+'">'+sign+fmt(a.amount)+'</span>'+del+
+              '</div></div>';
+    });
+    allocList.innerHTML = html;
+  }
+}
+
+// renderList helper
+function renderList(containerId, arr, type, dotColor, valClass, showEst, showEstCheck) {
+  var container = el(containerId);
+  if (!arr || arr.length === 0) {
+    container.innerHTML = '<div class="empty">—</div>';
+    return;
+  }
+  var html = '';
+  var useConfirmed = (type === 'fixed' || type === 'income' || type === 'nextMonth');
+  arr.forEach(function(item, i) {
+    var del = !isHist ? '<span class="del-btn" data-type="list-del" data-list="'+type+'" data-idx="'+i+'">×</span>' : '';
+    var rowStyle = '';
+    var confirmBtn = '';
+    if (useConfirmed && item.confirmed !== undefined) {
+      rowStyle = item.confirmed ? 'background:#E8F5EE;' : 'background:#FFFDE7;';
+      if (!isHist && !item.confirmed) {
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin:-9px;"><span style="width:10px;height:10px;border-radius:50%;background:#F9A825;display:block;"></span></span>';
+      } else if (!isHist && item.confirmed) {
+        confirmBtn = '<span data-type="confirmed-toggle" data-list="'+type+'" data-idx="'+i+'" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin:-9px;"><span style="width:10px;height:10px;border-radius:50%;background:transparent;display:block;"></span></span>';
+      }
+    }
+    var uCol = userColor(item.user);
+    var uStyle = uCol ? 'color:'+uCol+';' : '';
+    html += '<div class="lrow" style="'+rowStyle+'">' +
+            '<div class="dot" style="background:'+dotColor+'"></div>' +
+            '<span class="rn" style="'+uStyle+'">'+item.name+'</span>' +
+            confirmBtn +
+            '<span class="rv '+valClass+'" style="'+uStyle+'" data-type="list-edit" data-list="'+type+'" data-idx="'+i+'">'+fmtExact(item.amount)+'</span>' +
+            del + '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function goScreen(name, btn) {
+  document.querySelectorAll('.sc').forEach(function(s){ s.classList.remove('on'); });
+  document.querySelectorAll('.nb').forEach(function(b){ b.classList.remove('on'); });
+  el('s-'+name).classList.add('on');
+  btn.classList.add('on');
+  document.querySelector('.screens').scrollTop = 0;
+}
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('on'); });
+  btn.classList.add('on');
+  el('tc-'+tab).classList.add('on');
+}
+
+// ── MONTH ─────────────────────────────────────────────────────
+var pendingNewMonth = '';
+function onMonthPick(val) {
+  if (!val || val === curMonth) return;
+  lsSave(curMonth, state);
+  if (lsLoad(val)) {
+    switchMonth(val);
+    return;
+  }
+  // No local copy of this month on THIS device. That does NOT mean the month is new —
+  // it may already exist in Firebase (added from another device/phone). Check before
+  // offering "copy previous / start empty", so we never treat a real, existing month
+  // as brand new just because this particular browser hasn't cached it yet.
+  if (_db) {
+    _db.ref('kb/months/' + val).once('value').then(function(snap) {
+      var remote = snap.val();
+      if (remote) {
+        lsSave(val, remote);
+        switchMonth(val);
+      } else {
+        pendingNewMonth = val;
+        el('nm-mbg').classList.add('on');
+      }
+    }).catch(function() {
+      pendingNewMonth = val;
+      el('nm-mbg').classList.add('on');
+    });
+  } else {
+    pendingNewMonth = val;
+    el('nm-mbg').classList.add('on');
+  }
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+var mType = '', mIdx = -1, mChugIdx = -1;
+
+var TITLES = {
+  income:'הכנסה', nextMonth:'הכנסה לחודש הבא', fixed:'הוצאה חודשית',
+  chug:'חוג (שם + צפי)', unexp:'הוצאה שבועית', alloc:'הקצאה',
+  'food-entry':'קנייה', 'chug-entry':'תשלום לחוג'
+};
+
+function openModal(type, idx, chugIdx) {
+  if (isHist) return;
+  mType = type;
+  mIdx = idx !== undefined ? idx : -1;
+  mChugIdx = chugIdx !== undefined ? chugIdx : -1;
+
+  el('m-title').textContent = (mIdx >= 0 ? 'ערוך ' : 'הוסף ') + (TITLES[type]||'');
+  el('m-name-wrap').style.display = 'block';
+  el('m-name').value = '';
+  el('m-amount').value = '';
+  el('m-amount').style.fontSize = '';
+  el('m-amount').style.textAlign = '';
+  el('m-amount').style.padding = '';
+  el('m-exp').value = '';
+  var mEst = el('m-est'); if(mEst) mEst.checked = false;
+
+  // Show/hide fields
+  el('m-amount-wrap').style.display = (type==='chug') ? 'none' : 'block';
+  el('m-exp-wrap').style.display = (type==='chug') ? 'block' : 'none';
+  el('m-est-wrap').style.display = 'none';
+
+  // Set title for chug entry
+  if (type === 'chug-entry' && mChugIdx >= 0) {
+    el('m-title').textContent = 'הוסף תשלום — ' + state.chugim[mChugIdx].name;
+    el('m-amount-wrap').style.display = 'block';
+  }
+
+  // Prefill for edit
+  if (mIdx >= 0) {
+    var item = null;
+    if (type==='income') item = state.income[mIdx];
+    else if (type==='nextMonth') item = state.nextMonth[mIdx];
+    else if (type==='fixed') item = state.fixed[mIdx];
+    else if (type==='alloc') item = state.allocations[mIdx];
+    else if (type==='unexp') item = state.splurges[mIdx];
+    else if (type==='chug') item = state.chugim[mIdx];
+    if (item) {
+      el('m-name').value = item.name || '';
+      if (item.amount !== undefined) el('m-amount').value = Math.abs(item.amount);
+      if (item.expected !== undefined) el('m-exp').value = item.expected;
+      if (item.estimate !== undefined) el('m-est').checked = item.estimate;
+    }
+  }
+
+  el('mbg').classList.add('on');
+  setTimeout(function(){
+    var inp = el('m-name-wrap') && el('m-name-wrap').style.display !== 'none' ? el('m-name') : el('m-amount');
+    if (inp) inp.focus();
+  }, 300);
+}
+
+function openFoodModal() {
+  openModal('food-entry');
+}
+
+function closeModal() {
+  el('mbg').classList.remove('on');
+  window.scrollTo({top:0, behavior:'instant'});
+  document.querySelector('.screens').scrollTop = 0;
+}
+function newMonthCancelModal() { el('nm-mbg').classList.remove('on'); }
+
+function saveModal() {
+  var name = (el('m-name').value||'').trim();
+  var amount = parseFloat(el('m-amount').value)||0;
+  var exp = parseFloat(el('m-exp').value)||0;
+  var mEstEl = el('m-est'); var est = mEstEl ? mEstEl.checked : false;
+
+
+
+  if (!state.chugim) state.chugim = [];
+  if (!state.income) state.income = [];
+  if (!state.nextMonth) state.nextMonth = [];
+  if (!state.fixed) state.fixed = [];
+  if (!state.splurges) state.splurges = [];
+  if (!state.allocations) state.allocations = [];
+  if (!state.food) state.food = {expected:0, entries:[]};
+  if (!state.food.entries) state.food.entries = [];
+
+  if (mType === 'transfer') {
+    if (!amount) return;
+    if (_transferDir === 'to') {
+      state.transferTo = (state.transferTo||0) + amount;
+    } else {
+      state.transferFrom = (state.transferFrom||0) + amount;
+    }
+    closeModal(); persist(); render(); return;
+  }
+  if (mType === 'food-entry') {
+    if (!amount) return;
+    if (!state.food) state.food = {expected:0, entries:[]};
+    state.food.entries.push({desc: name||'—', amount: amount, user: currentUser});
+    closeModal(); persist(); render(); return;
+  }
+  if (mType === 'chug-entry') {
+    if (!amount || mChugIdx < 0) return;
+    if (!state.chugim[mChugIdx].entries) state.chugim[mChugIdx].entries = [];
+    state.chugim[mChugIdx].entries.push({desc: state.chugim[mChugIdx].name, amount: amount, user: currentUser});
+    closeModal(); persist(); render(); return;
+  }
+  if (mType === 'chug') {
+    if (!name) return;
+    if (!state.chugim) state.chugim = [];
+    var item = {name: name, expected: exp, entries: []};
+    if (mIdx >= 0) {
+      state.chugim[mIdx].name = name;
+      state.chugim[mIdx].expected = exp;
+    } else {
+      state.chugim.push(item);
+    }
+    closeModal(); persist(); render(); return;
+  }
+  // All other types require name + amount
+  if (!name || !amount) return;
+  var newItem = {name: name, amount: amount};
+  if (mType==='income' || mType==='nextMonth') newItem.confirmed = false;
+  if (mType==='fixed') newItem.confirmed = false; // new fixed items start as estimate
+
+  var arr = null;
+  if (mType==='income') arr = state.income;
+  else if (mType==='nextMonth') arr = state.nextMonth;
+  else if (mType==='fixed') arr = state.fixed;
+  else if (mType==='alloc') arr = state.allocations;
+  else if (mType==='unexp') arr = state.splurges;
+  if (!arr) return;
+
+  newItem.user = currentUser;
+  if (mIdx >= 0) arr[mIdx] = newItem;
+  else arr.push(newItem);
+  closeModal(); persist(); render();
+}
+
+function updateFoodExp(val) {
+  if (isHist) return;
+  if (!state.food) state.food = {expected:0, entries:[]};
+  state.food.expected = parseFloat(val)||0;
+  persist(); render();
+}
+
+// ── EVENT DELEGATION ──────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  var target = e.target;
+
+  // Del buttons
+  if (target.classList.contains('del-btn')) {
+    if (isHist) return;
+    var type = target.dataset.type;
+    var idx = parseInt(target.dataset.idx);
+    var chugIdx = parseInt(target.dataset.chugIdx);
+
+    if (type === 'food-entry') {
+      state.food.entries.splice(idx, 1);
+      persist(); render();
+    } else if (type === 'chug-entry') {
+      state.chugim[chugIdx].entries.splice(idx, 1);
+      persist(); render();
+    } else if (type === 'chug-del') {
+      state.chugim.splice(idx, 1);
+      persist(); render();
+    } else if (type === 'splurge-del') {
+      state.splurges.splice(idx, 1);
+      persist(); render();
+    } else if (type === 'alloc-del') {
+      state.allocations.splice(idx, 1);
+      persist(); render();
+    } else if (type === 'list-del') {
+      var list = target.dataset.list;
+      if (list==='income') state.income.splice(idx,1);
+      else if (list==='nextMonth') state.nextMonth.splice(idx,1);
+      else if (list==='fixed') state.fixed.splice(idx,1);
+      persist(); render();
+    }
+    return;
+  }
+
+  // Edit amount (rv class)
+  if (target.dataset.type === 'list-edit') {
+    var list = target.dataset.list;
+    var idx = parseInt(target.dataset.idx);
+    openModal(list, idx);
+    return;
+  }
+
+  // Chug edit expected
+  if (target.dataset.type === 'chug-edit') {
+    if (isHist) return;
+    var idx = parseInt(target.dataset.idx);
+    openModal('chug', idx);
+    return;
+  }
+
+  // Chug add entry
+  if (target.dataset.type === 'chug-add') {
+    if (isHist) return;
+    var idx = parseInt(target.dataset.idx);
+    mType = 'chug-entry';
+    mIdx = -1;
+    mChugIdx = idx;
+    el('m-title').textContent = 'הוסף תשלום — ' + state.chugim[idx].name;
+    el('m-name-wrap').style.display = 'none';
+    el('m-amount-wrap').style.display = 'block';
+    el('m-exp-wrap').style.display = 'none';
+    el('m-est-wrap').style.display = 'none';
+    el('m-name').value = state.chugim[idx].name;
+    el('m-amount').value = '';
+    el('mbg').classList.add('on');
+    setTimeout(function(){ el('m-amount').focus(); }, 300);
+    return;
+  }
+
+  // Confirmed toggle for income, nextMonth, fixed
+  if (target.dataset.type === 'confirmed-toggle') {
+    if (isHist) return;
+    var idx = parseInt(target.dataset.idx);
+    var list = target.dataset.list;
+    var arr2 = list==='income' ? state.income : list==='nextMonth' ? state.nextMonth : state.fixed;
+    if (!arr2 || !arr2[idx]) return;
+    arr2[idx].confirmed = !arr2[idx].confirmed;
+    persist(); render();
+    return;
+  }
+});
+
+// ── MODAL BUTTONS ─────────────────────────────────────────────
+
+// ── NEW MONTH ─────────────────────────────────────────────────
+function newMonthCopy() {
+  // "Copy from previous month" means the actual calendar-previous month of the one
+  // being created — NOT necessarily whatever month happens to be loaded in `state`
+  // right now (e.g. if you'd been browsing an older historical month). Look up the
+  // real previous month's data: this device's local copy first, then Firebase.
+  var srcKey = prevMonthKey(pendingNewMonth);
+  var localSrc = lsLoad(srcKey);
+  if (localSrc) {
+    finishNewMonthCopy(localSrc);
+  } else if (_db) {
+    _db.ref('kb/months/' + srcKey).once('value').then(function(snap) {
+      finishNewMonthCopy(snap.val() || state);
+    }).catch(function() {
+      finishNewMonthCopy(state);
+    });
+  } else {
+    finishNewMonthCopy(state);
+  }
+}
+function finishNewMonthCopy(srcState) {
+  var prev = JSON.parse(JSON.stringify(srcState));
+  var ns = {
+    income: (prev.nextMonth||[]).length>0 ? [{name:'הכנסות עסק נעה (מחודש קודם)', amount:sumArr(prev.nextMonth), estimate:false}] : [],
+    nextMonth: [],
+    fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
+    food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
+    chugim: (prev.chugim||[]).map(function(ch){ return {name:ch.name, expected:ch.expected, entries:[]}; }),
+    splurges: [], bankPrev:0, transferTo:0, transferFrom:0,
+    allocations: JSON.parse(JSON.stringify(prev.allocations||[]))
+  };
+  lsSave(curMonth, state);
+  curMonth = pendingNewMonth; state = ns; isHist = false;
+  regMonth(curMonth); lsSave(curMonth, state);
+  el('month-picker').value = curMonth;
+  el('nm-mbg').classList.remove('on');
+  fbPush(curMonth, state); fbListen(curMonth);
+  render(); showToast('חודש חדש נפתח ✓');
+}
+function newMonthEmpty() {
+  lsSave(curMonth, state);
+  curMonth = pendingNewMonth;
+  state = {income:[], nextMonth:[], fixed:[], food:{expected:0,entries:[]},
+           chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
+  isHist = false; regMonth(curMonth); lsSave(curMonth, state);
+  el('month-picker').value = curMonth;
+  el('nm-mbg').classList.remove('on');
+  fbPush(curMonth, state); fbListen(curMonth);
+  render(); showToast('חודש חדש ריק נפתח ✓');
+}
+
+// ── BANK INPUTS ───────────────────────────────────────────────
+function onBankIn() { if(isHist) return; state.bankPrev=parseFloat(el('bank-in').value)||0; persist(); render(); }
+
+function onTransferToEdit(val) {
+  if (isHist) return;
+  state.transferTo = parseFloat(val)||0;
+  persist(); render();
+}
+function onTransferFromEdit(val) {
+  if (isHist) return;
+  state.transferFrom = parseFloat(val)||0;
+  persist(); render();
+}
+var _transferDir = 'to';
+function openTransferModal(dir) {
+  if (isHist) return;
+  _transferDir = dir;
+  mType = 'transfer';
+  el('m-title').textContent = dir === 'to' ? 'הוסף העברה לעו"ש ↑' : 'הוסף העברה מעו"ש ↓';
+  el('m-name-wrap').style.display = 'none';
+  el('m-amount-wrap').style.display = 'block';
+  el('m-exp-wrap').style.display = 'none';
+  el('m-est-wrap').style.display = 'none';
+  el('m-name').value = '';
+  el('m-amount').value = '';
+  el('m-amount').style.fontSize = '32px';
+  el('m-amount').style.textAlign = 'center';
+  el('m-amount').style.padding = '16px';
+  el('mbg').classList.add('on');
+  setTimeout(function(){ el('m-amount').focus(); }, 300);
+}
+
+// ── USER ─────────────────────────────────────────────────────
+var currentUser = '';
+function initUser() {
+  currentUser = localStorage.getItem('kb_user') || '';
+  if (!currentUser) {
+    document.getElementById('user-mbg').classList.add('on');
+  }
+}
+function setUser(name) {
+  currentUser = name;
+  localStorage.setItem('kb_user', name);
+  document.getElementById('user-mbg').classList.remove('on');
+}
+function userColor(user) {
+  if (!user) return '';
+  return user === 'יפתח' ? '#1A3A6B' : '#7B1A4B';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+initState();
+initUser();
+el('month-picker').value = curMonth;
+render();
+
+// Re-render when returning to the tab/app (e.g. after days away)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    render();
+  }
+});
+// Also re-check periodically while app stays open (every 30 min)
+setInterval(function(){ render(); }, 30*60*1000);
+
+fbInit();
+if (_db) {
+  _db.ref('kb/months/'+curMonth).once('value').then(function(snap) {
+    var remote = snap.val();
+    if (remote) {
+      // Real data already exists in Firebase for this month — that's the source of truth.
+      state = remote;
+      lsSave(curMonth, state);
+      render();
+    } else if (lsLoad(curMonth)) {
+      // Firebase has nothing yet, but THIS device genuinely has real local data for this
+      // month (created via the "new month" flow or real edits) — publish it.
+      fbPush(curMonth, state);
+    } else {
+      // Neither Firebase nor this device has any data for this month — it's genuinely
+      // brand new (e.g. the calendar just rolled over to a month nobody has opened yet).
+      // Ask explicitly instead of silently leaving an empty month in place.
+      pendingNewMonth = curMonth;
+      el('nm-mbg').classList.add('on');
+    }
+    fbListen(curMonth);
+  }).catch(function(){ fbListen(curMonth); });
+}
+</script>
+</body>
+</html>
