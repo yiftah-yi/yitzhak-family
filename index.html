@@ -149,6 +149,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <input type="month" id="month-picker-dash" onchange="onMonthPick(this.value)"
         style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;margin:0;padding:0;cursor:pointer;">
     </div>
+    <button id="reset-month-btn" onclick="resetMonth()" title="איפוס חודש"
+      style="background:none;border:none;font-size:17px;line-height:1;cursor:pointer;padding:2px 4px;flex-shrink:0;color:var(--orange);">↺</button>
   </div>
   <div class="hero">
     <div class="hero-lbl" id="d-hero-lbl">נשאר להוציא השבוע</div>
@@ -609,6 +611,8 @@ function render() {
   // Month picker on dashboard
   var mpd = el('month-picker-dash'); if(mpd) mpd.value = curMonth;
   var mpdLbl = el('month-picker-dash-label'); if(mpdLbl) mpdLbl.textContent = monthLabel(curMonth);
+  // Reset-month button only makes sense for the current (non-historical) month
+  var rmBtn = el('reset-month-btn'); if(rmBtn) rmBtn.style.display = isHist ? 'none' : 'inline-block';
 
   // History banners
   ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
@@ -991,6 +995,25 @@ function closeModal() {
   document.querySelector('.screens').scrollTop = 0;
 }
 function newMonthCancelModal() { el('nm-mbg').classList.remove('on'); }
+
+// ── RESET MONTH ───────────────────────────────────────────────
+// Wipes the current month's data (local + Firebase) and re-opens the
+// "copy from previous month / start empty" question for it — the supported
+// way to redo a month that was created wrong (e.g. accidentally started empty),
+// instead of fixing Firebase by hand.
+function resetMonth() {
+  if (isHist) return; // only the current (non-historical) month can be reset
+  var m = curMonth;
+  var ok = confirm('לאפס את ' + monthLabel(m) + '?\nכל הנתונים שהוזנו בחודש זה יימחקו (גם ב-Firebase), ותתבקש לבחור מחדש להעתיק מהחודש הקודם או להתחיל ריק.');
+  if (!ok) return;
+  fbStop();
+  try { localStorage.removeItem(SK + '_' + m); } catch(e) {}
+  if (_db) { _db.ref('kb/months/' + m).remove().catch(function(e){ console.warn('resetMonth remove:', e); }); }
+  state = emptyState();
+  render();
+  pendingNewMonth = m;
+  el('nm-mbg').classList.add('on');
+}
 
 function saveModal() {
   var name = (el('m-name').value||'').trim();
