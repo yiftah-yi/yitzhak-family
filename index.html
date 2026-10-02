@@ -1282,10 +1282,13 @@ if (_db) {
       // Firebase has nothing yet, but THIS device genuinely has real local data for this
       // month (created via the "new month" flow or real edits) — publish it.
       fbPush(curMonth, state);
+    } else {
+      // Neither Firebase nor this device has any data for this month — it's genuinely
+      // brand new (e.g. the calendar just rolled over to a month nobody has opened yet).
+      // Ask explicitly instead of silently leaving an empty month in place.
+      pendingNewMonth = curMonth;
+      el('nm-mbg').classList.add('on');
     }
-    // else: neither Firebase nor this device has real data for this month — do nothing.
-    // Leave the empty placeholder in memory only; it will never get saved/pushed until
-    // the user actually adds something (persist()) or explicitly picks copy/empty.
     fbListen(curMonth);
   }).catch(function(){ fbListen(curMonth); });
 }
