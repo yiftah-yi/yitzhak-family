@@ -665,7 +665,7 @@ function render() {
   dp.style.width = cc.pct + '%';
   dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
   el('d-inc').textContent = fmt(cc.income);
-  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp);
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged);
   var dr = el('d-rem');
   dr.textContent = fmt(cc.remLeft);
   dr.className = 'met-v ' + (cc.remLeft >= 0 ? 'c-blue' : 'c-red');
