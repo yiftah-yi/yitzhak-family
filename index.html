@@ -65,6 +65,13 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .empty{padding:14px;text-align:center;font-size:12px;color:var(--text-l);}
 .ltotal{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-top:2px solid var(--border);font-weight:700;font-size:13px;}
 .chip{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;margin-right:3px;background:#FFF3E0;color:#E65100;}
+.frame-card{border-radius:var(--rs);padding:14px 14px;text-align:center;transition:background .3s ease,color .3s ease,padding .3s ease;}
+.frame-card.frame-ok{background:var(--card);border:1px solid var(--border);box-shadow:var(--sh);}
+.frame-card.frame-ok .frame-lbl{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.frame-card.frame-ok .frame-val{font-size:20px;font-weight:900;color:var(--blue);letter-spacing:-.5px;}
+.frame-card.frame-over{background:var(--red);border:1px solid var(--red);padding:18px 14px;}
+.frame-card.frame-over .frame-lbl{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.frame-card.frame-over .frame-val{font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;}
 .add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:var(--rs);border:1.5px dashed var(--border);background:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;color:var(--text-m);margin-top:7px;}
 .add-btn:active{background:var(--bg);}
 .datebar{margin:10px 12px 0;background:var(--orange-l);border:1px solid #EAC08A;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;gap:8px;}
@@ -168,8 +175,11 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
   </div>
   <div class="sec">
-    <div class="sec-t">הוצאות שבועיות אחרונות</div>
-    <div class="lcard" id="d-recent"><div class="empty">אין עדיין</div></div>
+    <div class="sec-t">מסגרת תקציב</div>
+    <div class="frame-card frame-ok" id="d-frame">
+      <div class="frame-lbl" id="d-frame-lbl">✓ בתוך התקציב</div>
+      <div class="frame-val" id="d-frame-val">₪0</div>
+    </div>
   </div>
   <div class="pb"></div>
 </div>
@@ -585,9 +595,13 @@ function calc() {
   var allocTot  = sumArr(state.allocations||[]);
   var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
+  // "מסגרת תקציב": הכנסות מול הוצאות החודש בפועל, ללא קשר להעברות מול העו"ש.
+  // מורידים tTo (כסף שהוקצה במכוון לחיסכון — לא זמין להוצאה החודש) אבל לא
+  // מוסיפים בחזרה tFrom (משיכה מהעו"ש לא צריכה "להלבין" חריגה בתקציב).
+  var frame     = income - tTo - fixed - cumul - splurged;
   return {income:income, fixed:fixed, foodAmt:foodAmt, foodExp:foodExp,
           chugsExp:chugsExp, chugsAct:chugsAct, splurged:splurged,
-          alloc:alloc, weeklyLeft:weeklyLeft, pct:pct,
+          alloc:alloc, weeklyLeft:weeklyLeft, pct:pct, frame:frame,
           bankPrev:bankPrev, bankCurr:bankCurr, bankFree:bankFree,
           remLeft:remLeft, tTo:tTo, tFrom:tFrom};
 }
@@ -675,19 +689,18 @@ function render() {
   var dailyAlloc = totalDays > 0 ? cc.alloc / totalDays : 0;
   var ddaily = el('d-daily'); if (ddaily) ddaily.textContent = fmt(dailyAlloc);
 
-  // Recent unexpected
-  var drc = el('d-recent');
-  if (!state.splurges || state.splurges.length === 0) {
-    drc.innerHTML = '<div class="empty">אין עדיין</div>';
-  } else {
-    var html = '';
-    var recent = state.splurges.slice().reverse().slice(0,5);
-    recent.forEach(function(s) {
-      html += '<div class="lrow"><div class="dot" style="background:var(--purple)"></div>' +
-              '<span class="rn">'+s.name+'</span>' +
-              '<span class="rv c-purple">'+fmtExact(s.amount)+'</span></div>';
-    });
-    drc.innerHTML = html;
+  // מסגרת תקציב — הכנסות מול הוצאות החודש בפועל (ללא "הלבנה" ע"י משיכה מהעו"ש)
+  var dFrame = el('d-frame'), dFrameLbl = el('d-frame-lbl'), dFrameVal = el('d-frame-val');
+  if (dFrame && dFrameLbl && dFrameVal) {
+    if (cc.frame >= 0) {
+      dFrame.className = 'frame-card frame-ok';
+      dFrameLbl.textContent = '✓ בתוך התקציב';
+      dFrameVal.textContent = '+' + fmt(cc.frame);
+    } else {
+      dFrame.className = 'frame-card frame-over';
+      dFrameLbl.textContent = '⚠️ חריגה מהתקציב';
+      dFrameVal.textContent = '-' + fmt(cc.frame);
+    }
   }
 
   // ── INCOME ──
