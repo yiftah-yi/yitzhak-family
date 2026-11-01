@@ -501,8 +501,11 @@ function emptyState() {
           chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
 }
 function initState() {
-  var meta = lsMeta();
-  curMonth = meta.current || todayMonth();
+  // curMonth בעליית האפליקציה הוא תמיד החודש הקלנדרי האמיתי של היום — לא החודש
+  // האחרון שהוצג במכשיר הזה (meta.current). אחרת, אם המכשיר נשאר "תקוע" על
+  // חודש קודם (למשל כי לא נפתחה האפליקציה מאז שהחודש התחלף), הבדיקה בהמשך
+  // מול Firebase בודקת את החודש הלא-נכון ולא מזהה שהתחיל חודש חדש.
+  curMonth = todayMonth();
   var saved = lsLoad(curMonth);
   // If this device has no local copy of curMonth, do NOT silently fall back to the
   // hardcoded sample data (DEFAULTS) and do NOT save/register it as if it were real —
@@ -1213,8 +1216,16 @@ function newMonthCopy() {
 }
 function finishNewMonthCopy(srcState) {
   var prev = JSON.parse(JSON.stringify(srcState));
+  // כל ההכנסות הקבועות (משכורות, ביטוח לאומי וכו') עוברות כמו שהן לחודש החדש —
+  // חוץ מהשורה "הכנסות עסק נעה (מחודש קודם)", שהיא תמיד ייחודית לחודש (הסכום
+  // תלוי ב-nextMonth של החודש שעבר) ונבנית מחדש למטה, לא מועתקת כמו שהיא.
+  var carriedIncome = (prev.income||[]).filter(function(inc) {
+    return inc.name !== 'הכנסות עסק נעה (מחודש קודם)';
+  });
   var ns = {
-    income: (prev.nextMonth||[]).length>0 ? [{name:'הכנסות עסק נעה (מחודש קודם)', amount:sumArr(prev.nextMonth), estimate:false}] : [],
+    income: carriedIncome.concat(
+      (prev.nextMonth||[]).length>0 ? [{name:'הכנסות עסק נעה (מחודש קודם)', amount:sumArr(prev.nextMonth), estimate:false}] : []
+    ),
     nextMonth: [],
     fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
     food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
