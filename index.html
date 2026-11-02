@@ -320,7 +320,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="sec">
     <div class="bank-hdr">יתרת עו"ש</div>
     <div class="bank-body">
-      <div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div>
       <div class="brow hi" style="padding:10px 12px;">
         <span>עו"ש תחילת חודש</span>
         <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
@@ -584,20 +583,42 @@ function calc() {
   var daily     = totalD>0 ? alloc/totalD : 0;
   var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
   var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
-  var bankPrev  = Number(state.bankPrev)||0;
-  var bankCurr  = bankPrev + tTo;
-  var allocTot  = sumArr(state.allocations||[]);
-  var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
   // "מסגרת תקציב": הכנסות מול הוצאות החודש בפועל. מורידים tTo (כסף שהוקצה
   // במכוון לחיסכון — לא זמין להוצאה החודש). אין תיקון בכיוון ההפוך כי אין
   // יותר "משיכה פיקטיבית" שצריך להתעלם ממנה.
   var frame     = income - tTo - fixed - cumul - splurged;
+  var bankPrev  = Number(state.bankPrev)||0;
+  var bankCurr  = bankPrev + tTo;
+  var allocTot  = sumArr(state.allocations||[]);
+  // עו"ש פנוי בזמן אמת: כל עוד אנחנו בתוך מסגרת התקציב (frame>=0) זה פשוט
+  // "מה שיש בעו"ש" פחות הקצאות עתידיות. ברגע שנפתחת חריגה (frame<0) אותו
+  // סכום בדיוק יורד ישירות מהעו"ש הפנוי — בלי לחכות לחודש הבא ובלי להזין
+  // אותו ידנית — כי חריגה אמיתית בהוצאות היא בהכרח כסף אמיתי שפחות זמין.
+  var bankFree  = bankCurr - allocTot + Math.min(frame, 0);
   return {income:income, fixed:fixed, foodAmt:foodAmt, foodExp:foodExp,
           chugsExp:chugsExp, chugsAct:chugsAct, splurged:splurged,
           alloc:alloc, weeklyLeft:weeklyLeft, pct:pct, frame:frame,
           bankPrev:bankPrev, bankCurr:bankCurr, bankFree:bankFree,
           remLeft:remLeft, tTo:tTo};
+}
+
+// עו"ש פנוי הסופי של חודש *אחר* (לא החודש הנוכחי שבעיבוד) — משמש כדי "לגלגל"
+// את העו"ש הפנוי (כולל הורדת חריגה, אם הייתה) כבסיס לעו"ש תחילת החודש הבא,
+// בלי לגעת ב-state/curMonth הגלובליים.
+function calcBankFreeFrom(s) {
+  if (!s) return 0;
+  var income2   = sumArr(s.income||[]);
+  var fixed2    = sumArr(s.fixed||[]);
+  var foodExp2  = (s.food&&s.food.expected)||0;
+  var chugsExp2 = sumArr(s.chugim||[], 'expected');
+  var splurged2 = sumArr(s.splurges||[]);
+  var tTo2      = Number(s.transferTo)||0;
+  var cumul2    = foodExp2 + chugsExp2;
+  var frame2    = income2 - tTo2 - fixed2 - cumul2 - splurged2;
+  var bankCurr2 = (Number(s.bankPrev)||0) + tTo2;
+  var allocTot2 = sumArr(s.allocations||[]);
+  return bankCurr2 - allocTot2 + Math.min(frame2, 0);
 }
 
 // ── RENDER ────────────────────────────────────────────────────
@@ -822,7 +843,6 @@ function render() {
   // ── BANK ──
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var ttd = el('transfer-to-display'); if(ttd && document.activeElement!==ttd) ttd.value = state.transferTo||'';
-  el('bnk-to').textContent = fmt(cc.tTo);
   var bfEl = el('bnk-free');
   if (bfEl) {
     bfEl.textContent = fmt(cc.bankFree);
@@ -1215,7 +1235,9 @@ function finishNewMonthCopy(srcState) {
     fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
     food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
     chugim: (prev.chugim||[]).map(function(ch){ return {name:ch.name, expected:ch.expected, entries:[]}; }),
-    splurges: [], bankPrev:0, transferTo:0,
+    // "עו"ש תחילת חודש" מתחיל מהעו"ש הפנוי הסופי של החודש שחלף (כולל הורדת
+    // חריגה אם הייתה) — לא מ-0. השדה נשאר פתוח לעריכה לתיקוני עיגול/הוצאות שנשכחו.
+    splurges: [], bankPrev: calcBankFreeFrom(prev), transferTo:0,
     allocations: JSON.parse(JSON.stringify(prev.allocations||[]))
   };
   lsSave(curMonth, state);
@@ -1227,10 +1249,28 @@ function finishNewMonthCopy(srcState) {
   render(); showToast('חודש חדש נפתח ✓');
 }
 function newMonthEmpty() {
+  // גם ב"התחל ריק" ממשיכים לגלגל את העו"ש הפנוי הסופי של החודש שחלף — זה לא
+  // קשור להעתקת הוצאות/חוגים, אלא רק להמשכיות הכסף האמיתי. אותה שיטת חיפוש
+  // כמו ב-newMonthCopy: מכשיר זה מקומית ואז Firebase.
+  var srcKey = prevMonthKey(pendingNewMonth);
+  var localSrc = lsLoad(srcKey);
+  if (localSrc) {
+    finishNewMonthEmpty(localSrc);
+  } else if (_db) {
+    _db.ref('kb/months/' + srcKey).once('value').then(function(snap) {
+      finishNewMonthEmpty(snap.val() || null);
+    }).catch(function() {
+      finishNewMonthEmpty(null);
+    });
+  } else {
+    finishNewMonthEmpty(null);
+  }
+}
+function finishNewMonthEmpty(prevState) {
   lsSave(curMonth, state);
-  curMonth = pendingNewMonth;
   state = {income:[], nextMonth:[], fixed:[], food:{expected:0,entries:[]},
-           chugim:[], splurges:[], bankPrev:0, transferTo:0, allocations:[]};
+           chugim:[], splurges:[], bankPrev: calcBankFreeFrom(prevState), transferTo:0, allocations:[]};
+  curMonth = pendingNewMonth;
   isHist = false; regMonth(curMonth); lsSave(curMonth, state);
   el('month-picker').value = curMonth;
   el('nm-mbg').classList.remove('on');
