@@ -313,15 +313,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
           <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
         </div>
       </div>
-      <div class="transfer-row">
-        <div><div class="transfer-label">העברה מעו"ש ↓</div><div class="transfer-sub">משיכה מעו"ש לתזרים</div></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="number" id="transfer-from-display" inputmode="numeric" placeholder="0"
-            oninput="onTransferFromEdit(this.value)"
-            style="width:90px;border:1.5px solid var(--green);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);text-align:center;background:#fff;outline:none;">
-          <button onclick="openTransferModal('from')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -330,9 +321,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <div class="bank-hdr">יתרת עו"ש</div>
     <div class="bank-body">
       <div class="brow"><span>+ העברה לעו"ש</span><span id="bnk-to" style="font-weight:700;color:var(--blue)">₪0</span></div>
-      <div class="brow"><span>− העברה מעו"ש</span><span id="bnk-from" style="font-weight:700;color:var(--green)">₪0</span></div>
       <div class="brow hi" style="padding:10px 12px;">
-        <span>עו"ש קודם</span>
+        <span>עו"ש תחילת חודש</span>
         <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
           style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
                  font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
@@ -498,7 +488,7 @@ function prevMonthKey(m) {
 }
 function emptyState() {
   return {income:[], nextMonth:[], fixed:[], food:{expected:0, entries:[]},
-          chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
+          chugim:[], splurges:[], bankPrev:0, transferTo:0, allocations:[]};
 }
 function initState() {
   // curMonth בעליית האפליקציה הוא תמיד החודש הקלנדרי האמיתי של היום — לא החודש
@@ -584,9 +574,10 @@ function calc() {
   var chugsAct  = (state.chugim||[]).reduce(function(s,ch){ return s+sumArr(ch.entries||[]); }, 0);
   var splurged  = sumArr(state.splurges||[]);
   var tTo       = Number(state.transferTo)||0;
-  var tFrom     = Number(state.transferFrom)||0;
   var cumul     = foodExp + chugsExp;
-  var alloc     = income + tFrom - fixed - cumul - tTo;
+  // אין יותר "משיכה מהעו"ש" פיקטיבית: משיכה אמיתית מהעו"ש (לטיול, לכל דבר) נרשמת
+  // כהוצאה לכל דבר (קבועה/שבועית) ומשפיעה על alloc/frame בדרך הרגילה.
+  var alloc     = income - fixed - cumul - tTo;
   var totalD    = daysInMonth(curMonth);
   var leftD     = daysLeft();
   var leftW     = daysLeftWeek();
@@ -594,19 +585,19 @@ function calc() {
   var weeklyLeft = alloc - splurged - daily*Math.max(leftD-leftW, 0);
   var pct       = alloc>0 ? Math.min(Math.round(splurged/alloc*100), 100) : 0;
   var bankPrev  = Number(state.bankPrev)||0;
-  var bankCurr  = bankPrev + tTo - tFrom;
+  var bankCurr  = bankPrev + tTo;
   var allocTot  = sumArr(state.allocations||[]);
   var bankFree  = bankCurr - allocTot;
   var remLeft   = alloc - splurged;
-  // "מסגרת תקציב": הכנסות מול הוצאות החודש בפועל, ללא קשר להעברות מול העו"ש.
-  // מורידים tTo (כסף שהוקצה במכוון לחיסכון — לא זמין להוצאה החודש) אבל לא
-  // מוסיפים בחזרה tFrom (משיכה מהעו"ש לא צריכה "להלבין" חריגה בתקציב).
+  // "מסגרת תקציב": הכנסות מול הוצאות החודש בפועל. מורידים tTo (כסף שהוקצה
+  // במכוון לחיסכון — לא זמין להוצאה החודש). אין תיקון בכיוון ההפוך כי אין
+  // יותר "משיכה פיקטיבית" שצריך להתעלם ממנה.
   var frame     = income - tTo - fixed - cumul - splurged;
   return {income:income, fixed:fixed, foodAmt:foodAmt, foodExp:foodExp,
           chugsExp:chugsExp, chugsAct:chugsAct, splurged:splurged,
           alloc:alloc, weeklyLeft:weeklyLeft, pct:pct, frame:frame,
           bankPrev:bankPrev, bankCurr:bankCurr, bankFree:bankFree,
-          remLeft:remLeft, tTo:tTo, tFrom:tFrom};
+          remLeft:remLeft, tTo:tTo};
 }
 
 // ── RENDER ────────────────────────────────────────────────────
@@ -831,9 +822,7 @@ function render() {
   // ── BANK ──
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var ttd = el('transfer-to-display'); if(ttd && document.activeElement!==ttd) ttd.value = state.transferTo||'';
-  var tfd = el('transfer-from-display'); if(tfd && document.activeElement!==tfd) tfd.value = state.transferFrom||'';
   el('bnk-to').textContent = fmt(cc.tTo);
-  el('bnk-from').textContent = fmt(cc.tFrom);
   var bfEl = el('bnk-free');
   if (bfEl) {
     bfEl.textContent = fmt(cc.bankFree);
@@ -1050,11 +1039,7 @@ function saveModal() {
 
   if (mType === 'transfer') {
     if (!amount) return;
-    if (_transferDir === 'to') {
-      state.transferTo = (state.transferTo||0) + amount;
-    } else {
-      state.transferFrom = (state.transferFrom||0) + amount;
-    }
+    state.transferTo = (state.transferTo||0) + amount;
     closeModal(); persist(); render(); return;
   }
   if (mType === 'food-entry') {
@@ -1230,7 +1215,7 @@ function finishNewMonthCopy(srcState) {
     fixed: JSON.parse(JSON.stringify(prev.fixed||[])),
     food: {expected: (prev.food&&prev.food.expected)||0, entries:[]},
     chugim: (prev.chugim||[]).map(function(ch){ return {name:ch.name, expected:ch.expected, entries:[]}; }),
-    splurges: [], bankPrev:0, transferTo:0, transferFrom:0,
+    splurges: [], bankPrev:0, transferTo:0,
     allocations: JSON.parse(JSON.stringify(prev.allocations||[]))
   };
   lsSave(curMonth, state);
@@ -1245,7 +1230,7 @@ function newMonthEmpty() {
   lsSave(curMonth, state);
   curMonth = pendingNewMonth;
   state = {income:[], nextMonth:[], fixed:[], food:{expected:0,entries:[]},
-           chugim:[], splurges:[], bankPrev:0, transferTo:0, transferFrom:0, allocations:[]};
+           chugim:[], splurges:[], bankPrev:0, transferTo:0, allocations:[]};
   isHist = false; regMonth(curMonth); lsSave(curMonth, state);
   el('month-picker').value = curMonth;
   el('nm-mbg').classList.remove('on');
@@ -1261,17 +1246,10 @@ function onTransferToEdit(val) {
   state.transferTo = parseFloat(val)||0;
   persist(); render();
 }
-function onTransferFromEdit(val) {
+function openTransferModal() {
   if (isHist) return;
-  state.transferFrom = parseFloat(val)||0;
-  persist(); render();
-}
-var _transferDir = 'to';
-function openTransferModal(dir) {
-  if (isHist) return;
-  _transferDir = dir;
   mType = 'transfer';
-  el('m-title').textContent = dir === 'to' ? 'הוסף העברה לעו"ש ↑' : 'הוסף העברה מעו"ש ↓';
+  el('m-title').textContent = 'הוסף העברה לעו"ש ↑';
   el('m-name-wrap').style.display = 'none';
   el('m-amount-wrap').style.display = 'block';
   el('m-exp-wrap').style.display = 'none';
