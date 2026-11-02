@@ -47,7 +47,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .prog-row{display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-bottom:4px;}
 .prog-track{height:5px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:3px;background:#fff;transition:width .5s ease;}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 12px 0;}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 12px 0;}
 .met{background:var(--card);border-radius:var(--rs);padding:11px 12px;border:1px solid var(--border);box-shadow:var(--sh);}
 .met-l{font-size:10px;font-weight:700;color:var(--text-m);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
 .met-v{font-size:19px;font-weight:900;letter-spacing:-.5px;}
@@ -171,7 +171,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="metrics">
     <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
     <div class="met"><div class="met-l">הוצ' חודשיות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
-    <div class="met"><div class="met-l">נשאר להוציא החודש</div><div class="met-v c-blue" id="d-rem">₪0</div></div>
     <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
   </div>
   <div class="sec">
@@ -181,6 +180,44 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="frame-val" id="d-frame-val">₪0</div>
     </div>
   </div>
+
+  <!-- העברות -->
+  <div class="sec">
+    <div class="sec-t">העברות חודשיות</div>
+    <div class="transfer-card">
+      <div class="transfer-row">
+        <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
+            oninput="onTransferToEdit(this.value)"
+            style="width:90px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
+          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- יתרת עו"ש -->
+  <div class="sec">
+    <div class="bank-hdr">יתרת עו"ש</div>
+    <div class="bank-body">
+      <div class="brow hi" style="padding:10px 12px;">
+        <span>עו"ש תחילת חודש</span>
+        <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
+          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
+                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
+                 text-align:center;padding:5px 8px;outline:none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- הקצאות עתידיות -->
+  <div class="sec">
+    <div class="bank-hdr">הקצאות עתידיות</div>
+    <div class="bank-body" id="alloc-list"></div>
+    <button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button>
+  </div>
+
   <div class="pb"></div>
 </div>
 
@@ -286,59 +323,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="pb"></div>
 </div>
 
-<!-- S6: BANK -->
-<div class="sc" id="s-bank">
-  <div class="ph"><div class="ph-row"><h1>עו"ש 🏦</h1><span class="mbadge" id="b-bnk">—</span></div></div>
-  <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-bnk" style="width:0%"></div></div>
-  <div id="hb-bnk"></div>
-
-  <!-- עו"ש פנוי - hero card -->
-  <div class="sec">
-    <div id="bnk-free-card" style="background:var(--dark);border-radius:var(--rs);padding:18px 16px;color:#fff;text-align:center;">
-      <div style="font-size:11px;font-weight:600;opacity:.7;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">עו"ש פנוי</div>
-      <div id="bnk-free" style="font-size:40px;font-weight:900;letter-spacing:-1px;">₪0</div>
-    </div>
-  </div>
-
-  <!-- העברות -->
-  <div class="sec">
-    <div class="sec-t">העברות חודשיות</div>
-    <div class="transfer-card">
-      <div class="transfer-row">
-        <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
-            oninput="onTransferToEdit(this.value)"
-            style="width:90px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
-          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- יתרת עו"ש -->
-  <div class="sec">
-    <div class="bank-hdr">יתרת עו"ש</div>
-    <div class="bank-body">
-      <div class="brow hi" style="padding:10px 12px;">
-        <span>עו"ש תחילת חודש</span>
-        <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
-          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
-                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
-                 text-align:center;padding:5px 8px;outline:none;">
-      </div>
-    </div>
-  </div>
-
-  <!-- הקצאות עתידיות -->
-  <div class="sec">
-    <div class="bank-hdr">הקצאות עתידיות</div>
-    <div class="bank-body" id="alloc-list"></div>
-    <button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button>
-  </div>
-  <div class="pb"></div>
-</div>
-
 </div><!-- /screens -->
 
 <nav class="nav">
@@ -347,7 +331,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <button class="nb" onclick="goScreen('expenses',this)"><span class="ni">📋</span><span class="nl">הוצ' חודשיות</span></button>
   <button class="nb" onclick="goScreen('cumul',this)"><span class="ni">📊</span><span class="nl">הוצ' מצטברות</span></button>
   <button class="nb" onclick="goScreen('unexp',this)"><span class="ni">🛍️</span><span class="nl">הוצ' שבועיות</span></button>
-  <button class="nb" onclick="goScreen('bank',this)"><span class="ni">🏦</span><span class="nl">עו"ש</span></button>
 </nav>
 
 <!-- MODAL -->
@@ -621,20 +604,30 @@ function calcBankFreeFrom(s) {
   return bankCurr2 - allocTot2 + Math.min(frame2, 0);
 }
 
+// הסכום שצריך להיכנס כ"עו"ש תחילת חודש" של החודש הבא: עו"ש פנוי + ההקצאות
+// העתידיות בחזרה. "עו"ש תחילת חודש" מתאר את סך הכסף האמיתי שיושב בעו"ש
+// (ברוטו) — לא את מה שכבר "פנוי" לאחר הפחתת הקצאות. אם היינו משתמשים ב-
+// עו"ש הפנוי כמו שהוא, ההקצאות (שממשיכות/מועתקות גם לחודש הבא) היו מופחתות
+// פעמיים: פעם כאן ופעם נוספת בחישוב של עו"ש פנוי של החודש הבא עצמו.
+function calcCarryForwardBank(s) {
+  if (!s) return 0;
+  return calcBankFreeFrom(s) + sumArr(s.allocations||[]);
+}
+
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
   var cc = calc();
   var ml = monthLabel(curMonth);
 
   // Badges
-  ['b-dash','b-inc','b-exp','b-cum','b-un','b-bnk'].forEach(function(id){
+  ['b-dash','b-inc','b-exp','b-cum','b-un'].forEach(function(id){
     var e = el(id); if(e) e.textContent = ml;
   });
   // Month progress bars
   var totalD2 = daysInMonth(curMonth);
   var passedD = totalD2 - daysLeft();
   var monthPct = totalD2 > 0 ? Math.round(passedD / totalD2 * 100) : 0;
-  ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
+  ['dash','inc','exp','cum','un'].forEach(function(s){
     var pb = el('mpb-'+s); if(pb) pb.style.width = monthPct + '%';
   });
   // Month picker on dashboard
@@ -644,7 +637,7 @@ function render() {
   var rmBtn = el('reset-month-btn'); if(rmBtn) rmBtn.style.display = isHist ? 'none' : 'inline-block';
 
   // History banners
-  ['dash','inc','exp','cum','un','bnk'].forEach(function(s){
+  ['dash','inc','exp','cum','un'].forEach(function(s){
     var e = el('hb-'+s); if(!e) return;
     if (isHist) {
       e.innerHTML = '<div class="hist-banner">📅 צופה ב: '+ml+
@@ -695,9 +688,6 @@ function render() {
   dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
   el('d-inc').textContent = fmt(cc.income);
   el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged);
-  var dr = el('d-rem');
-  dr.textContent = fmt(cc.remLeft);
-  dr.className = 'met-v ' + (cc.remLeft >= 0 ? 'c-blue' : 'c-red');
   var dbf = el('d-bf');
   if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red'); }
   var totalDays = daysInMonth(curMonth);
@@ -843,12 +833,6 @@ function render() {
   // ── BANK ──
   var bi = el('bank-in'); if(bi && document.activeElement!==bi) bi.value = state.bankPrev||'';
   var ttd = el('transfer-to-display'); if(ttd && document.activeElement!==ttd) ttd.value = state.transferTo||'';
-  var bfEl = el('bnk-free');
-  if (bfEl) {
-    bfEl.textContent = fmt(cc.bankFree);
-    var card = el('bnk-free-card');
-    if (card) card.style.background = cc.bankFree >= 0 ? 'var(--dark)' : 'var(--red)';
-  }
 
   var allocList = el('alloc-list');
   var allocs = state.allocations||[];
@@ -1237,7 +1221,7 @@ function finishNewMonthCopy(srcState) {
     chugim: (prev.chugim||[]).map(function(ch){ return {name:ch.name, expected:ch.expected, entries:[]}; }),
     // "עו"ש תחילת חודש" מתחיל מהעו"ש הפנוי הסופי של החודש שחלף (כולל הורדת
     // חריגה אם הייתה) — לא מ-0. השדה נשאר פתוח לעריכה לתיקוני עיגול/הוצאות שנשכחו.
-    splurges: [], bankPrev: calcBankFreeFrom(prev), transferTo:0,
+    splurges: [], bankPrev: calcCarryForwardBank(prev), transferTo:0,
     allocations: JSON.parse(JSON.stringify(prev.allocations||[]))
   };
   lsSave(curMonth, state);
@@ -1269,7 +1253,7 @@ function newMonthEmpty() {
 function finishNewMonthEmpty(prevState) {
   lsSave(curMonth, state);
   state = {income:[], nextMonth:[], fixed:[], food:{expected:0,entries:[]},
-           chugim:[], splurges:[], bankPrev: calcBankFreeFrom(prevState), transferTo:0, allocations:[]};
+           chugim:[], splurges:[], bankPrev: calcCarryForwardBank(prevState), transferTo:0, allocations:[]};
   curMonth = pendingNewMonth;
   isHist = false; regMonth(curMonth); lsSave(curMonth, state);
   el('month-picker').value = curMonth;
