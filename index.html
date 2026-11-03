@@ -47,10 +47,6 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 .prog-row{display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-bottom:4px;}
 .prog-track{height:5px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:3px;background:#fff;transition:width .5s ease;}
-.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 12px 0;}
-.met{background:var(--card);border-radius:var(--rs);padding:11px 12px;border:1px solid var(--border);box-shadow:var(--sh);}
-.met-l{font-size:10px;font-weight:700;color:var(--text-m);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
-.met-v{font-size:19px;font-weight:900;letter-spacing:-.5px;}
 .c-green{color:var(--green);}.c-blue{color:var(--blue);}.c-orange{color:var(--orange);}.c-purple{color:var(--purple);}.c-red{color:var(--red);}
 .sec{margin:10px 12px 0;}
 .sec-t{font-size:10px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
@@ -168,16 +164,29 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
     </div>
   </div>
-  <div class="metrics">
-    <div class="met"><div class="met-l">הכנסות</div><div class="met-v c-green" id="d-inc">₪0</div></div>
-    <div class="met"><div class="met-l">הוצ' חודשיות</div><div class="met-v c-orange" id="d-exp">₪0</div></div>
-    <div class="met"><div class="met-l">עו"ש פנוי</div><div class="met-v c-purple" id="d-bf">₪0</div></div>
+  <div class="sec">
+    <div class="sec-t">כמה הכנסנו החודש?</div>
+    <div class="frame-card frame-ok">
+      <div class="frame-val" id="d-inc" style="color:var(--green)">₪0</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">כמה הוצאנו החודש?</div>
+    <div class="frame-card frame-ok">
+      <div class="frame-val" id="d-exp" style="color:var(--orange)">₪0</div>
+    </div>
   </div>
   <div class="sec">
     <div class="sec-t">מסגרת תקציב</div>
     <div class="frame-card frame-ok" id="d-frame">
       <div class="frame-lbl" id="d-frame-lbl">✓ בתוך התקציב</div>
       <div class="frame-val" id="d-frame-val">₪0</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">עו"ש פנוי</div>
+    <div class="frame-card frame-ok">
+      <div class="frame-val" id="d-bf" style="color:var(--purple)">₪0</div>
     </div>
   </div>
 
@@ -689,7 +698,7 @@ function render() {
   el('d-inc').textContent = fmt(cc.income);
   el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged);
   var dbf = el('d-bf');
-  if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.className = 'met-v ' + (cc.bankFree >= 0 ? 'c-purple' : 'c-red'); }
+  if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.style.color = cc.bankFree >= 0 ? 'var(--purple)' : 'var(--red)'; }
   var totalDays = daysInMonth(curMonth);
   var dailyAlloc = totalDays > 0 ? cc.alloc / totalDays : 0;
   var ddaily = el('d-daily'); if (ddaily) ddaily.textContent = fmt(dailyAlloc);
