@@ -5,144 +5,168 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>כלכלת בית</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --green:#1B5E42;--green-l:#E8F5EE;--green-m:#2A7A58;
-  --blue:#1A3A6B;--blue-l:#EAF0FB;
-  --orange:#7B3000;--orange-l:#FDF0E6;
-  --purple:#4A1A7A;--red:#C0392B;--amber:#E67E22;
-  --dark:#111827;--bg:#F5F7FA;--card:#FFF;--border:#E5E7EB;
-  --text:#111827;--text-m:#6B7280;--text-l:#9CA3AF;
-  --r:14px;--rs:10px;--sh:0 1px 3px rgba(0,0,0,0.08);
+  --green:#00A878;--green-l:#E3F5EE;--green-m:#00835E;
+  --blue:#17212B;--blue-l:#E3F5EE;
+  --navy:#17212B;--navy-soft:#3C4A5A;
+  --orange:#E07A3E;--orange-l:#FCECE0;
+  --purple:#7A5FC0;--purple-l:#EFEBFA;--red:#D7263D;--red-dark:#A91B2C;--amber:#E8B83A;
+  --dark:#17212B;--bg:#F4F6F6;--card:#FFF;--border:#E3E7E8;
+  --text:#17212B;--text-m:#8A97A3;--text-l:#C7CFD3;
+  --r:16px;--rs:13px;--sh:0 1px 2px rgba(23,33,43,0.05),0 1px 1px rgba(23,33,43,0.04);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{height:100%;-webkit-text-size-adjust:100%;}
-body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;display:flex;flex-direction:column;}
+body{font-family:'Rubik','Assistant',sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;display:flex;flex-direction:column;}
 .app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;width:100%;position:relative;}
-.nav{background:var(--card);border-top:1px solid var(--border);display:flex;flex-shrink:0;box-shadow:0 -1px 0 var(--border),0 -4px 12px rgba(0,0,0,0.05);}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 7px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;gap:2px;}
-.nb .ni{font-size:20px;line-height:1;transition:transform .15s;}
-.nb .nl{font-size:9px;font-weight:600;color:var(--text-l);}
-.nb.on .ni{transform:scale(1.15);}
-.nb.on .nl{color:var(--blue);font-weight:700;}
+.topbar{padding:14px 16px 2px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar .brand{font-weight:800;font-size:18px;letter-spacing:-.3px;color:var(--navy);}
+.topbar .brand span{color:var(--green);}
+.topbar .avatar{width:32px;height:32px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;}
+.nav{background:var(--card);border-top:1px solid var(--border);display:flex;flex-shrink:0;box-shadow:0 -4px 16px rgba(23,33,43,.06);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 11px;background:none;border:none;cursor:pointer;font-family:'Rubik',sans-serif;gap:3px;}
+.nb .ni{font-size:15px;line-height:1;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.nb .nl{font-size:10px;font-weight:600;color:var(--navy-soft);}
+.nb.on .ni{background:var(--green);}
+.nb.on .nl{color:var(--green-m);font-weight:800;}
 .screens{flex:1;overflow:hidden;position:relative;}
 .sc{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .sc.on{display:block;}
-.ph{background:var(--card);padding:14px 14px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+.ph{background:var(--bg);padding:12px 14px 8px;border-bottom:none;position:sticky;top:0;z-index:50;}
 .ph-row{display:flex;justify-content:space-between;align-items:center;}
-.ph h1{font-size:18px;font-weight:900;}
-.mbadge{background:var(--blue-l);color:var(--blue);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
-.tabs{display:flex;margin:10px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);}
-.tab{flex:1;padding:10px 6px;background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-left:1px solid var(--border);}
-.tab:first-child{border-left:none;}
-.tab.on{background:var(--blue);color:#fff;font-weight:700;}
+.ph h1{font-size:17px;font-weight:800;color:var(--navy);}
+.mbadge{background:var(--green-l);color:var(--green-m);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.tabs{display:flex;gap:8px;margin:10px 12px 0;background:none;border:none;box-shadow:none;}
+.tab{flex:1;padding:10px 6px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:'Rubik',sans-serif;font-size:13px;font-weight:700;color:var(--navy-soft);box-shadow:var(--sh);}
+.tab:first-child{border-left:1px solid var(--border);}
+.tab.on{background:var(--navy);color:#fff;font-weight:800;border-color:var(--navy);}
 .tab-content{display:none;}.tab-content.on{display:block;}
-.hero{margin:10px 12px 0;background:var(--blue);border-radius:var(--r);padding:18px 16px 14px;color:#fff;transition:background .4s ease;}
-.hero-lbl{font-size:11px;font-weight:500;opacity:.7;margin-bottom:1px;}
-.hero-val{font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px;}
-.hero-val.neg{color:#FF8A80;}
-.hero-sub{font-size:11px;opacity:.65;margin-top:4px;}
-.prog-wrap{margin-top:10px;}
-.prog-row{display:flex;justify-content:space-between;font-size:11px;opacity:.8;margin-bottom:4px;}
-.prog-track{height:5px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden;}
-.prog-fill{height:100%;border-radius:3px;background:#fff;transition:width .5s ease;}
+.hero{margin:10px 12px 0;background:linear-gradient(135deg,var(--navy) 0%,#223243 100%);border-radius:var(--r);padding:20px 18px 18px;color:#fff;transition:background .4s ease;box-shadow:0 8px 20px rgba(23,33,43,.18);position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;top:-30px;right:-30px;width:140px;height:140px;background:radial-gradient(circle,rgba(0,168,120,.35),transparent 70%);pointer-events:none;}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1;}
+.hero-icon{width:36px;height:36px;border-radius:11px;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,168,120,.4);}
+.hero-lbl{font-size:12px;font-weight:600;color:#B9C6D0;margin-bottom:4px;position:relative;z-index:1;}
+.hero-val{font-size:40px;font-weight:800;line-height:1;letter-spacing:-1px;position:relative;z-index:1;}
+.hero-val.neg{color:#FF9B8A;}
+.hero-sub{font-size:12px;color:#AEBBC6;margin-top:3px;position:relative;z-index:1;}
+.prog-wrap{margin-top:14px;position:relative;z-index:1;}
+.prog-row{display:flex;justify-content:space-between;font-size:11.5px;color:#AEBBC6;margin-bottom:6px;font-weight:600;}
+.prog-track{height:6px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;background:var(--green);transition:width .5s ease;}
 .c-green{color:var(--green);}.c-blue{color:var(--blue);}.c-orange{color:var(--orange);}.c-purple{color:var(--purple);}.c-red{color:var(--red);}
-.sec{margin:10px 12px 0;}
-.sec-t{font-size:10px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.sec{margin:16px 12px 0;}
+.sec-t{font-size:13.5px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:10px;text-transform:none;letter-spacing:0;}
+.mini-icon{width:26px;height:26px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 12px 0;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px 14px 12px;box-shadow:var(--sh);}
+.stat-card.wide{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;}
+.stat-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px;flex-shrink:0;}
+.stat-icon.mint{background:var(--green-l);color:var(--green-m);}
+.stat-icon.orange{background:var(--orange-l);color:var(--orange);}
+.stat-icon.purple{background:var(--purple-l);color:var(--purple);}
+.stat-card.wide .stat-icon{margin-bottom:0;}
+.stat-row{display:flex;align-items:center;gap:12px;}
+.stat-label{font-size:11.5px;font-weight:600;color:var(--navy-soft);margin-bottom:3px;}
+.stat-value{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--navy);}
 .lcard{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
-.lrow{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid var(--border);}
+.lrow{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--border);}
 .lrow:last-child{border-bottom:none;}
-.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.rn{font-size:13px;flex:1;min-width:0;line-height:1.3;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rn{font-size:13.5px;flex:1;min-width:0;line-height:1.3;color:var(--navy);}
 .rn.est{color:var(--text-m);font-style:italic;}
-.rv{font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;}
-.del-btn{font-size:17px;color:var(--text-l);cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;}
-.empty{padding:14px;text-align:center;font-size:12px;color:var(--text-l);}
-.ltotal{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-top:2px solid var(--border);font-weight:700;font-size:13px;}
-.chip{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;margin-right:3px;background:#FFF3E0;color:#E65100;}
-.frame-card{border-radius:var(--rs);padding:14px 14px;text-align:center;transition:background .3s ease,color .3s ease,padding .3s ease;}
-.frame-card.frame-ok{background:var(--card);border:1px solid var(--border);box-shadow:var(--sh);}
-.frame-card.frame-ok .frame-lbl{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px;}
-.frame-card.frame-ok .frame-val{font-size:20px;font-weight:900;color:var(--blue);letter-spacing:-.5px;}
-.frame-card.frame-over{background:var(--red);border:1px solid var(--red);padding:18px 14px;}
-.frame-card.frame-over .frame-lbl{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
-.frame-card.frame-over .frame-val{font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:var(--rs);border:1.5px dashed var(--border);background:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;color:var(--text-m);margin-top:7px;}
-.add-btn:active{background:var(--bg);}
-.datebar{margin:10px 12px 0;background:var(--orange-l);border:1px solid #EAC08A;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;gap:8px;}
+.rv{font-size:13.5px;font-weight:700;white-space:nowrap;cursor:pointer;}
+.del-btn{font-size:16px;color:var(--red);cursor:pointer;padding:2px 6px;line-height:1;flex-shrink:0;background:#F3E5E6;border-radius:7px;}
+.empty{padding:16px;text-align:center;font-size:12px;color:var(--text-l);}
+.ltotal{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:2px solid var(--border);font-weight:800;font-size:14px;color:var(--navy);}
+.chip{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;margin-right:3px;background:var(--orange-l);color:var(--orange);}
+.frame-card{border-radius:var(--rs);padding:16px 16px;text-align:center;transition:background .3s ease,color .3s ease,padding .3s ease;box-shadow:var(--sh);}
+.frame-card.frame-ok{background:var(--card);border:1px solid var(--border);}
+.frame-card.frame-ok .frame-lbl{font-size:13px;font-weight:700;color:var(--green-m);margin-bottom:3px;}
+.frame-card.frame-ok .frame-val{font-size:20px;font-weight:800;color:var(--green-m);letter-spacing:-.3px;}
+.frame-card.frame-over{background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);border:none;padding:22px 16px;box-shadow:0 10px 24px rgba(215,38,61,.35);animation:pulse-alarm 2.2s ease-in-out infinite;}
+.frame-card.frame-over .frame-lbl{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
+.frame-card.frame-over .frame-val{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+@keyframes pulse-alarm{0%,100%{box-shadow:0 10px 24px rgba(215,38,61,.35);}50%{box-shadow:0 10px 32px rgba(215,38,61,.55);}}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;border-radius:var(--rs);border:1.5px dashed #C7CFD3;background:none;cursor:pointer;font-family:'Rubik',sans-serif;font-size:13.5px;font-weight:700;color:var(--green-m);margin-top:8px;}
+.add-btn:active{background:var(--green-l);}
+.datebar{margin:10px 12px 0;background:var(--orange-l);border:1px solid #F0C9A8;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;gap:8px;}
 .datebar label{font-size:11px;font-weight:700;color:var(--orange);white-space:nowrap;}
-.datebar input{flex:1;border:1px solid #EAC08A;border-radius:6px;padding:5px 8px;font-size:14px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:#fff;}
-.cum-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;margin-bottom:10px;}
-.cum-header{padding:12px 14px;border-bottom:1px solid var(--border);}
-.cum-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-.cum-name{font-size:14px;font-weight:700;}
-.cum-amounts{display:flex;gap:12px;font-size:11px;color:var(--text-m);margin-bottom:6px;}
+.datebar input{flex:1;border:1px solid #F0C9A8;border-radius:8px;padding:5px 8px;font-size:14px;font-family:'Rubik',sans-serif;font-weight:700;color:var(--orange);background:#fff;}
+.cum-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;margin-bottom:12px;}
+.cum-header{padding:14px 14px;border-bottom:1px solid var(--border);}
+.cum-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cum-name{font-size:14.5px;font-weight:700;color:var(--navy);}
+.cum-amounts{display:flex;gap:12px;font-size:11.5px;color:var(--text-m);margin-bottom:8px;}
 .over{color:var(--red)!important;}
-.cum-prog-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.cum-prog-fill{height:100%;border-radius:3px;transition:width .4s ease;}
-.cum-entry{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
+.cum-prog-track{height:6px;background:#E7EBEB;border-radius:4px;overflow:hidden;}
+.cum-prog-fill{height:100%;border-radius:4px;transition:width .4s ease;}
+.cum-entry{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #F0F2F2;font-size:12px;}
 .cum-entry:last-child{border-bottom:none;}
 .cum-entry .en{flex:1;color:var(--text-m);}
-.cum-entry .ev{font-weight:700;}
-.cum-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:none;background:var(--bg);cursor:pointer;font-family:'Heebo',sans-serif;font-size:12px;font-weight:600;color:var(--text-m);border-top:1px solid var(--border);}
-.transfer-card{background:var(--card);border-radius:var(--rs);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
-.transfer-row{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--border);}
+.cum-entry .ev{font-weight:700;color:var(--navy);}
+.cum-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:none;background:var(--green-l);cursor:pointer;font-family:'Rubik',sans-serif;font-size:12px;font-weight:700;color:var(--green-m);border-top:1px solid var(--border);}
+.transfer-card{background:transparent;border-radius:0;border:none;box-shadow:none;overflow:visible;}
+.transfer-row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:13px 14px;box-shadow:var(--sh);}
 .transfer-row:last-child{border-bottom:none;}
-.transfer-label{font-size:13px;font-weight:600;}
+.transfer-label{font-size:13.5px;font-weight:600;color:var(--navy);}
 .transfer-sub{font-size:11px;color:var(--text-m);margin-top:2px;}
-.transfer-input{width:110px;border:1.5px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;text-align:center;background:var(--bg);}
-.transfer-input:focus{outline:none;border-color:var(--blue);}
-.bank-hdr{background:var(--dark);color:#fff;padding:9px 12px;font-size:12px;font-weight:700;border-radius:var(--rs) var(--rs) 0 0;}
-.bank-body{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--rs) var(--rs);overflow:hidden;}
-.brow{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;}
+.transfer-input{width:90px;border:1px solid var(--border);border-radius:9px;padding:7px 8px;font-size:14px;font-family:'Rubik',sans-serif;font-weight:700;text-align:center;background:#F8F9F9;color:var(--navy);}
+.transfer-input:focus{outline:none;border-color:var(--green);}
+.bank-hdr{background:transparent;color:var(--navy);padding:0 2px 10px;font-size:13.5px;font-weight:700;border-radius:0;display:flex;align-items:center;gap:8px;}
+.bank-body{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--navy);}
 .brow:last-child{border-bottom:none;}
-.brow.hi{background:var(--green-l);font-weight:700;color:var(--green);}
+.brow.hi{background:var(--card);font-weight:600;color:var(--navy);}
 .brow.dim{color:var(--text-m);font-size:12px;}
-.brow.total-row{background:var(--dark);color:#fff;font-weight:700;font-size:14px;}
+.brow.total-row{background:var(--navy);color:#fff;font-weight:700;font-size:14px;}
 .bank-inp-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;box-shadow:var(--sh);}
 .bank-inp-wrap label{font-size:10px;font-weight:700;color:var(--text-m);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
-.bank-inp-wrap input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:18px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);background:var(--bg);}
+.bank-inp-wrap input{width:100%;border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;font-size:18px;font-family:'Rubik',sans-serif;font-weight:700;color:var(--green-m);background:var(--bg);}
 .bank-inp-wrap input:focus{border-color:var(--green);outline:none;}
-.hist-banner{margin:8px 12px 0;background:var(--amber);color:#fff;border-radius:var(--rs);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;}
-.hist-back{background:rgba(255,255,255,.25);border:none;color:#fff;padding:4px 10px;border-radius:20px;font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
-.mbg{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.hist-banner{margin:10px 12px 0;background:var(--amber);color:var(--navy);border-radius:var(--rs);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:700;}
+.hist-back{background:rgba(23,33,43,.15);border:none;color:var(--navy);padding:5px 12px;border-radius:20px;font-family:'Rubik',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.mbg{position:absolute;inset:0;background:rgba(23,33,43,.5);display:flex;align-items:flex-end;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
 .mbg.on{opacity:1;pointer-events:all;}
-.modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;max-height:85vh;overflow-y:auto;}
+.modal{background:var(--card);width:100%;border-radius:20px 20px 0 0;padding:20px 16px 24px;transform:translateY(100%);transition:transform .25s ease;max-height:85vh;overflow-y:auto;}
 .mbg.on .modal{transform:translateY(0);}
-.modal h3{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal h3{font-size:17px;font-weight:800;margin-bottom:14px;color:var(--navy);}
 .modal label{font-size:11px;font-weight:700;color:var(--text-m);display:block;margin:10px 0 3px;text-transform:uppercase;letter-spacing:.4px;}
-.modal input{width:100%;padding:10px 11px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);}
-.modal input:focus{border-color:var(--blue);outline:none;}
+.modal input{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:'Rubik',sans-serif;background:#F8F9F9;color:var(--navy);}
+.modal input:focus{border-color:var(--green);outline:none;}
 .est-row{display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer;}
-.est-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);}
+.est-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);}
 .est-row span{font-size:13px;color:var(--text-m);}
 .mbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
-.btn-save{padding:12px;border-radius:var(--rs);border:none;background:var(--dark);color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
-.btn-cancel{padding:12px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;color:var(--text-m);}
-.nm-modal{background:var(--card);width:100%;border-radius:var(--r) var(--r) 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
+.btn-save{padding:13px;border-radius:var(--rs);border:none;background:var(--navy);color:#fff;font-family:'Rubik',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;}
+.btn-cancel{padding:13px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Rubik',sans-serif;font-size:14.5px;cursor:pointer;color:var(--text-m);}
+.nm-modal{background:var(--card);width:100%;border-radius:20px 20px 0 0;padding:18px 14px 22px;transform:translateY(100%);transition:transform .25s ease;}
 .mbg.on .nm-modal{transform:translateY(0);}
-.nm-option{padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:9px;cursor:pointer;font-size:14px;font-weight:600;}
-.nm-option:active{background:var(--bg);}
+.nm-option{padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:9px;cursor:pointer;font-size:14px;font-weight:600;color:var(--navy);}
+.nm-option:active{background:var(--green-l);}
 .nm-sub{font-size:11px;font-weight:400;color:var(--text-m);margin-top:2px;}
-.toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
+.toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
 .toast.on{opacity:1;}
 
 .pb{padding-bottom:10px;}
 
 .month-prog-bar{height:4px;background:var(--border);}
-.month-prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .5s ease;}
+.month-prog-fill{height:100%;background:var(--green);transition:width .5s ease;}
 </style>
 </head>
 <body>
 <div class="app">
+<div class="topbar">
+  <div class="brand">כלכלת <span>בית</span></div>
+  <div class="avatar">י+נ</div>
+</div>
 <div class="screens">
 
 <!-- S1: DASHBOARD -->
 <div class="sc on" id="s-dashboard">
-  <div class="ph">
-    <div class="ph-row"><h1>כלכלת בית 🏡</h1></div>
-  </div>
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-dash" style="width:0%"></div></div>
   <div id="hb-dash"></div>
   <div class="datebar">
@@ -156,51 +180,59 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       style="background:none;border:none;font-size:17px;line-height:1;cursor:pointer;padding:2px 4px;flex-shrink:0;color:var(--orange);">↺</button>
   </div>
   <div class="hero">
-    <div class="hero-lbl" id="d-hero-lbl">נשאר להוציא השבוע</div>
-    <div class="hero-val" id="d-weekly">₪0</div>
-    <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה (<span id="d-daily">₪0</span> ליום)</div>
+    <div class="hero-top">
+      <div>
+        <div class="hero-lbl" id="d-hero-lbl">נשאר להוציא השבוע</div>
+        <div class="hero-val" id="d-weekly">₪0</div>
+        <div class="hero-sub">מתוך <span id="d-alloc">₪0</span> שהוקצו לחודש זה (<span id="d-daily">₪0</span> ליום)</div>
+      </div>
+      <div class="hero-icon">💸</div>
+    </div>
     <div class="prog-wrap">
       <div class="prog-row"><span>הוצא עד כה: <span id="d-spent">₪0</span></span><span id="d-pct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
     </div>
   </div>
-  <div class="sec">
-    <div class="sec-t">כמה הכנסנו החודש?</div>
-    <div class="frame-card frame-ok">
-      <div class="frame-val" id="d-inc" style="color:var(--green)">₪0</div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-icon mint">📈</div>
+      <div class="stat-label">כמה הכנסנו החודש?</div>
+      <div class="stat-value" id="d-inc">₪0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">📉</div>
+      <div class="stat-label">כמה הוצאנו החודש?</div>
+      <div class="stat-value" id="d-exp">₪0</div>
+    </div>
+    <div class="stat-card wide">
+      <div class="stat-row">
+        <div class="stat-icon purple">🏦</div>
+        <div class="stat-label" style="margin:0;">עו"ש פנוי</div>
+      </div>
+      <div class="stat-value" id="d-bf" style="color:var(--purple)">₪0</div>
     </div>
   </div>
+
   <div class="sec">
-    <div class="sec-t">כמה הוצאנו החודש?</div>
-    <div class="frame-card frame-ok">
-      <div class="frame-val" id="d-exp" style="color:var(--orange)">₪0</div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-t">מסגרת תקציב</div>
+    <div class="sec-t"><span class="mini-icon">⚖️</span>מסגרת תקציב</div>
     <div class="frame-card frame-ok" id="d-frame">
       <div class="frame-lbl" id="d-frame-lbl">✓ בתוך התקציב</div>
       <div class="frame-val" id="d-frame-val">₪0</div>
     </div>
   </div>
-  <div class="sec">
-    <div class="sec-t">עו"ש פנוי</div>
-    <div class="frame-card frame-ok">
-      <div class="frame-val" id="d-bf" style="color:var(--purple)">₪0</div>
-    </div>
-  </div>
 
   <!-- העברות -->
   <div class="sec">
-    <div class="sec-t">העברות חודשיות</div>
+    <div class="sec-t"><span class="mini-icon">↑</span>העברות חודשיות</div>
     <div class="transfer-card">
       <div class="transfer-row">
         <div><div class="transfer-label">העברה לעו"ש ↑</div><div class="transfer-sub">הקפאת עודף לעו"ש</div></div>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="number" id="transfer-to-display" inputmode="numeric" placeholder="0"
             oninput="onTransferToEdit(this.value)"
-            style="width:90px;border:1.5px solid var(--blue);border-radius:var(--rs);padding:5px 8px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--blue);text-align:center;background:#fff;outline:none;">
-          <button onclick="openTransferModal('to')" style="background:var(--blue);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">＋</button>
+            style="width:90px;border:1px solid var(--border);border-radius:9px;padding:7px 8px;font-size:14px;font-family:'Rubik',sans-serif;font-weight:700;color:var(--navy);text-align:center;background:#F8F9F9;outline:none;">
+          <button onclick="openTransferModal('to')" style="background:var(--green);color:#fff;border:none;border-radius:9px;width:34px;height:34px;font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0;">＋</button>
         </div>
       </div>
     </div>
@@ -208,21 +240,21 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
 
   <!-- יתרת עו"ש -->
   <div class="sec">
-    <div class="bank-hdr">יתרת עו"ש</div>
+    <div class="bank-hdr"><span class="mini-icon">💼</span>יתרת עו"ש</div>
     <div class="bank-body">
-      <div class="brow hi" style="padding:10px 12px;">
+      <div class="brow hi" style="padding:12px 14px;">
         <span>עו"ש תחילת חודש</span>
         <input type="number" id="bank-in" inputmode="numeric" placeholder="0" oninput="onBankIn()"
-          style="width:130px;border:1.5px solid var(--green);border-radius:var(--rs);background:#fff;
-                 font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--green);
-                 text-align:center;padding:5px 8px;outline:none;">
+          style="width:110px;border:1px solid var(--border);border-radius:9px;background:#F8F9F9;
+                 font-size:14px;font-family:'Rubik',sans-serif;font-weight:700;color:var(--navy);
+                 text-align:center;padding:7px 8px;outline:none;">
       </div>
     </div>
   </div>
 
   <!-- הקצאות עתידיות -->
   <div class="sec">
-    <div class="bank-hdr">הקצאות עתידיות</div>
+    <div class="bank-hdr"><span class="mini-icon">🎯</span>הקצאות עתידיות</div>
     <div class="bank-body" id="alloc-list"></div>
     <button class="add-btn" onclick="openModal('alloc')">＋ הוסף הקצאה</button>
   </div>
@@ -236,12 +268,12 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-inc" style="width:0%"></div></div>
   <div id="hb-inc"></div>
   <div class="datebar"><label>📅 חודש:</label><input type="month" id="month-picker" onchange="onMonthPick(this.value)"></div>
-  <div class="sec"><div class="sec-t">מקורות הכנסה</div><div class="lcard" id="inc-list"></div>
+  <div class="sec"><div class="sec-t"><span class="mini-icon">💰</span>מקורות הכנסה</div><div class="lcard" id="inc-list"></div>
     <button class="add-btn" onclick="openModal('income')">＋ הוסף הכנסה</button>
   </div>
   <div class="sec"><div class="lcard"><div class="ltotal"><span>סה"כ הכנסות</span><span id="inc-tot" class="c-green">₪0</span></div></div></div>
   <div class="sec">
-    <div class="sec-t">הכנסות עסק נעה — חודש הבא</div>
+    <div class="sec-t"><span class="mini-icon">📅</span>הכנסות עסק נעה — חודש הבא</div>
     <div class="lcard" id="nm-list"></div>
     <button class="add-btn" onclick="openModal('nextMonth')">＋ הוסף</button>
     <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ לחודש הבא</span><span id="nm-tot" class="c-green">₪0</span></div></div>
@@ -255,6 +287,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-exp" style="width:0%"></div></div>
   <div id="hb-exp"></div>
   <div class="sec">
+    <div class="sec-t"><span class="mini-icon">📋</span>הוצאות קבועות</div>
     <button class="add-btn" onclick="openModal('fixed')">＋ הוסף הוצאה חודשית</button>
     <div class="lcard" style="margin-top:7px;" id="fixed-list"></div>
     <div class="lcard" style="margin-top:6px;"><div class="ltotal"><span>סה"כ</span><span id="fixed-tot" class="c-blue">₪0</span></div></div>
@@ -276,7 +309,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="cum-card">
         <div class="cum-header">
           <div class="cum-title-row">
-            <span class="cum-name">אוכל ופארם</span>
+            <span class="cum-name">🛒 אוכל ופארם</span>
             <span style="font-size:11px;color:var(--text-m)">צפי: <strong id="food-exp-lbl">₪0</strong></span>
           </div>
           <div class="cum-amounts">
@@ -291,7 +324,7 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
       <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-radius:var(--rs);border:1px solid var(--border);">
         <span style="font-size:12px;color:var(--text-m);flex:1;">עדכן צפי חודשי:</span>
         <input type="number" id="food-exp-input" inputmode="numeric" placeholder="0" oninput="updateFoodExp(this.value)"
-          style="width:100px;border:1.5px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:15px;font-family:'Heebo',sans-serif;font-weight:700;color:var(--orange);background:var(--bg);text-align:center;">
+          style="width:100px;border:1.5px solid var(--border);border-radius:var(--rs);padding:6px 10px;font-size:15px;font-family:'Rubik',sans-serif;font-weight:700;color:var(--orange);background:var(--bg);text-align:center;">
         <span style="font-size:13px;font-weight:700;color:var(--orange);">₪</span>
       </div>
     </div>
@@ -316,16 +349,21 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="month-prog-bar"><div class="month-prog-fill" id="mpb-un" style="width:0%"></div></div>
   <div id="hb-un"></div>
   <div class="hero">
-    <div class="hero-lbl">נשאר להוציא השבוע</div>
-    <div class="hero-val" id="un-weekly">₪0</div>
-    <div class="hero-sub">מתוך <span id="un-alloc">₪0</span> שהוקצו לחודש זה</div>
+    <div class="hero-top">
+      <div>
+        <div class="hero-lbl">נשאר להוציא השבוע</div>
+        <div class="hero-val" id="un-weekly">₪0</div>
+        <div class="hero-sub">מתוך <span id="un-alloc">₪0</span> שהוקצו לחודש זה</div>
+      </div>
+      <div class="hero-icon">🛍️</div>
+    </div>
     <div class="prog-wrap">
       <div class="prog-row"><span>הוצא עד כה: <span id="un-spent">₪0</span></span><span id="un-pct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="un-prog" style="width:0%"></div></div>
     </div>
   </div>
   <div class="sec">
-    <div class="sec-t">הוצאות החודש</div>
+    <div class="sec-t"><span class="mini-icon">🧾</span>הוצאות החודש</div>
     <button class="add-btn" onclick="openModal('unexp')">＋ הוסף הוצאה</button>
     <div class="lcard" style="margin-top:7px;" id="un-list"><div class="empty">אין עדיין</div></div>
   </div>
@@ -349,8 +387,8 @@ body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);heigh
     <h3>👋 מי אתה?</h3>
     <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;">הבחירה תישמר בטלפון זה</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <button onclick="setUser('יפתח')" style="padding:18px;border-radius:var(--rs);border:2px solid var(--blue);background:var(--blue-l);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:var(--blue);cursor:pointer;">יפתח</button>
-      <button onclick="setUser('נעה')" style="padding:18px;border-radius:var(--rs);border:2px solid #6B1A3A;background:#F9EDF2;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;color:#6B1A3A;cursor:pointer;">נעה</button>
+      <button onclick="setUser('יפתח')" style="padding:18px;border-radius:var(--rs);border:2px solid var(--blue);background:var(--blue-l);font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;color:var(--blue);cursor:pointer;">יפתח</button>
+      <button onclick="setUser('נעה')" style="padding:18px;border-radius:var(--rs);border:2px solid #6B1A3A;background:#F9EDF2;font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;color:#6B1A3A;cursor:pointer;">נעה</button>
     </div>
   </div>
 </div>
@@ -678,15 +716,15 @@ function render() {
   var paceRatio = expectedWeekly > 0 ? actualWeekly / expectedWeekly : 1;
   var heroBg;
   if (isHist) {
-    heroBg = 'var(--blue)'; // historical: always blue, no pace warning
+    heroBg = 'linear-gradient(135deg,var(--navy) 0%,#223243 100%)'; // historical: calm navy, no pace warning
   } else if (heroVal < 0) {
-    heroBg = '#E74C3C'; // אדום בוהק — חריגה מהתקציב
+    heroBg = 'var(--red)'; // חריגה מהתקציב
   } else if (paceRatio < 0.5) {
-    heroBg = '#C0392B'; // אדום — קצב גבוה משמעותית
+    heroBg = 'var(--red-dark)'; // קצב גבוה משמעותית
   } else if (paceRatio < 0.85) {
-    heroBg = '#D35400'; // כתום — קצב גבוה מהמתוכנן
+    heroBg = 'var(--orange)'; // קצב גבוה מהמתוכנן
   } else {
-    heroBg = 'var(--blue)'; // כחול — קצב תקין
+    heroBg = 'linear-gradient(135deg,var(--navy) 0%,#223243 100%)'; // קצב תקין
   }
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
