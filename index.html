@@ -759,9 +759,12 @@ function render() {
   dp.style.width = cc.pct + '%';
   dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
   el('d-inc').textContent = fmt(cc.income);
-  // כולל גם מה שמומש מהקצאות החודש: זה נכנס כהכנסה (ברשימת ההכנסות) ולכן
-  // צריך לצאת גם כהוצאה כאן — אחרת זה ייראה כאילו הרווחנו כסף "סתם" החודש.
-  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged + cc.realizedTot);
+  // כולל גם מה שמומש מהקצאות החודש (נכנס כהכנסה ברשימת ההכנסות, ולכן צריך
+  // לצאת גם כהוצאה כאן — אחרת ייראה כאילו הרווחנו כסף "סתם" החודש) וגם את
+  // ההעברה לעו"ש (tTo) — היא כבר יורדת פעם אחת מ"מסגרת תקציב"/ההקצאה
+  // (cc.frame/cc.alloc), ורק מוצגת כאן בנוסף כדי ש"הכנסנו פחות הוצאנו" יתאים
+  // בדיוק ל"מסגרת תקציב" ולא ישאיר פער מבלבל בגובה ההעברה.
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged + cc.realizedTot + cc.tTo);
   var dbf = el('d-bf');
   if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.style.color = cc.bankFree >= 0 ? 'var(--purple)' : 'var(--red)'; }
   var totalDays = daysInMonth(curMonth);
