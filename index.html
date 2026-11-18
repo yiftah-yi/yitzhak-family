@@ -745,9 +745,9 @@ function render() {
   } else if (heroVal < 0) {
     heroBg = 'linear-gradient(135deg,var(--flat-red) 0%,var(--flat-red-d) 100%)'; // חריגה מהתקציב
   } else if (paceRatio < 0.5) {
-    heroBg = 'var(--flat-red-d)'; // קצב גבוה משמעותית
+    heroBg = 'linear-gradient(135deg,var(--terracotta-d) 0%,var(--flat-red-d) 100%)'; // קצב גבוה משמעותית - אדום כהה יותר, קרוב לאזהרה
   } else if (paceRatio < 0.85) {
-    heroBg = 'linear-gradient(135deg,var(--butter-d) 0%,var(--terracotta-d) 100%)'; // קצב גבוה מהמתוכנן
+    heroBg = 'linear-gradient(135deg,var(--terracotta) 0%,var(--terracotta-d) 100%)'; // קצב גבוה מהמתוכנן - אדמדם נעים
   } else {
     heroBg = 'linear-gradient(135deg,var(--cocoa) 0%,var(--cocoa-d) 100%)'; // קצב תקין
   }
