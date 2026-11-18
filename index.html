@@ -741,15 +741,15 @@ function render() {
   var paceRatio = expectedWeekly > 0 ? actualWeekly / expectedWeekly : 1;
   var heroBg;
   if (isHist) {
-    heroBg = 'linear-gradient(135deg,var(--cocoa) 0%,var(--cocoa-d) 100%)'; // historical: calm, no pace warning
+    heroBg = 'linear-gradient(135deg,var(--butter-l) 0%,var(--butter) 100%)'; // historical: calm, no pace warning
   } else if (heroVal < 0) {
-    heroBg = 'linear-gradient(135deg,var(--flat-red) 0%,var(--flat-red-d) 100%)'; // חריגה מהתקציב
+    heroBg = 'linear-gradient(135deg,var(--flat-red) 0%,var(--flat-red-d) 100%)'; // חריגה מהתקציב - הכי בוהק ואזהרתי
   } else if (paceRatio < 0.5) {
-    heroBg = 'linear-gradient(135deg,var(--terracotta-d) 0%,var(--flat-red-d) 100%)'; // קצב גבוה משמעותית - אדום כהה יותר, קרוב לאזהרה
+    heroBg = 'linear-gradient(135deg,var(--terracotta) 0%,var(--flat-red) 100%)'; // קצב גבוה משמעותית - כתום-אדום בוהק, קרוב לאזהרה
   } else if (paceRatio < 0.85) {
-    heroBg = 'linear-gradient(135deg,var(--terracotta) 0%,var(--terracotta-d) 100%)'; // קצב גבוה מהמתוכנן - אדמדם נעים
+    heroBg = 'linear-gradient(135deg,var(--butter-d) 0%,var(--terracotta) 100%)'; // קצב גבוה מהמתוכנן - זהב-כתום בוהק
   } else {
-    heroBg = 'linear-gradient(135deg,var(--cocoa) 0%,var(--cocoa-d) 100%)'; // קצב תקין
+    heroBg = 'linear-gradient(135deg,var(--butter-l) 0%,var(--butter) 100%)'; // קצב תקין - נעים, לא חום
   }
   heroEls.forEach(function(h){ h.style.background = heroBg; });
   el('d-alloc').textContent = fmt(cc.alloc);
