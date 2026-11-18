@@ -759,7 +759,9 @@ function render() {
   dp.style.width = cc.pct + '%';
   dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
   el('d-inc').textContent = fmt(cc.income);
-  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged);
+  // כולל גם מה שמומש מהקצאות החודש: זה נכנס כהכנסה (ברשימת ההכנסות) ולכן
+  // צריך לצאת גם כהוצאה כאן — אחרת זה ייראה כאילו הרווחנו כסף "סתם" החודש.
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged + cc.realizedTot);
   var dbf = el('d-bf');
   if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.style.color = cc.bankFree >= 0 ? 'var(--purple)' : 'var(--red)'; }
   var totalDays = daysInMonth(curMonth);
