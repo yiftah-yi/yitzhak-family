@@ -215,6 +215,10 @@ body{font-family:'Rubik','Assistant',sans-serif;background:linear-gradient(160de
     <div class="row-text"><div class="row-label">כמה הוצאנו החודש?</div><div class="row-value" id="d-exp">₪0</div></div>
   </div>
   <div class="row calm">
+    <div class="icon-badge tone-rose">🏧</div>
+    <div class="row-text"><div class="row-label">כמה משכנו מהעו"ש</div><div class="row-value" id="d-withdrawn">₪0</div></div>
+  </div>
+  <div class="row calm">
     <div class="icon-badge tone-rose">🏦</div>
     <div class="row-text"><div class="row-label">עו"ש פנוי</div><div class="row-value" id="d-bf">₪0</div></div>
   </div>
@@ -758,13 +762,14 @@ function render() {
   var dp = el('d-prog');
   dp.style.width = cc.pct + '%';
   dp.style.background = cc.pct>85 ? '#FF8A80' : cc.pct>65 ? '#FFD54F' : '#fff';
-  el('d-inc').textContent = fmt(cc.income);
-  // כולל גם מה שמומש מהקצאות החודש (נכנס כהכנסה ברשימת ההכנסות, ולכן צריך
-  // לצאת גם כהוצאה כאן — אחרת ייראה כאילו הרווחנו כסף "סתם" החודש) וגם את
-  // ההעברה לעו"ש (tTo) — היא כבר יורדת פעם אחת מ"מסגרת תקציב"/ההקצאה
-  // (cc.frame/cc.alloc), ורק מוצגת כאן בנוסף כדי ש"הכנסנו פחות הוצאנו" יתאים
-  // בדיוק ל"מסגרת תקציב" ולא ישאיר פער מבלבל בגובה ההעברה.
-  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged + cc.realizedTot + cc.tTo);
+  // d-inc/d-exp הם "ההכנסה/ההוצאה האמיתית" של החודש בלי הניפוח המלאכותי של
+  // מימוש הקצאות (הכנסה שהיא בעצם משיכה מכסף שכבר היה שלנו) — הסכום הזה
+  // מוצג בנפרד בשורת "כמה משכנו מהעו"ש" (d-withdrawn) ולכן לא כפול כאן.
+  // ה-tTo (העברה לעו"ש) עדיין מתווסף ל-d-exp כדי ש"הכנסנו פחות הוצאנו" יתאים
+  // בדיוק ל"מסגרת תקציב" (הוא יורד שם פעם אחת מ-cc.frame/cc.alloc).
+  el('d-inc').textContent = fmt(cc.income - cc.realizedTot);
+  el('d-exp').textContent = fmt(cc.fixed + cc.foodExp + cc.chugsExp + cc.splurged + cc.tTo);
+  var dwd = el('d-withdrawn'); if (dwd) dwd.textContent = fmt(cc.realizedTot);
   var dbf = el('d-bf');
   if (dbf) { dbf.textContent = fmt(cc.bankFree); dbf.style.color = cc.bankFree >= 0 ? 'var(--purple)' : 'var(--red)'; }
   var totalDays = daysInMonth(curMonth);
